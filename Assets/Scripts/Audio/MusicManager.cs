@@ -12,10 +12,10 @@ public class MusicManager : MonoBehaviour
 
     void Start()
     {
-        if (instance != null) { UnityEngine.Debug.LogError("Multiple Audio Managers in Scene!"); }
+        if (instance != null) { UnityEngine.Debug.LogError("Multiple Music Managers in Scene! Destroying: " + this.name); Destroy(this); }
         else { instance = this; DontDestroyOnLoad(instance); }
 
-        if (dataDontDestroyOnLoad != null) { UnityEngine.Debug.LogError("Multiple Audio Managers in Scene!"); }
+        if (dataDontDestroyOnLoad != null) { UnityEngine.Debug.LogError("Multiple DataDontDestroyOnLoad in Scene!"); }
         else { dataDontDestroyOnLoad = GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>(); }
 
         foreach (Sound s in tracks)

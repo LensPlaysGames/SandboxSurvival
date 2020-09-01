@@ -116,7 +116,7 @@ public class MouseController : MonoBehaviour
     {
         WorldGenerator worldGenerator = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>();
         world = worldGenerator.GetWorldInstance();
-        world.SaveTiles();
+        world.SaveTiles(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
         //world.SaveTile(selectedTile.tileX, selectedTile.tileY);
     }
 }

@@ -12,14 +12,12 @@ public class SaveManager : MonoBehaviour
 
     #region Singleton
 
-    public SaveManager instance;
+    public static SaveManager instance;
 
-    void Awake()
+    void Start()
     {
-        if (instance != null) { UnityEngine.Debug.LogError("MULTIPLE SaveManagers IN SCENE"); }
-        instance = this;
-
-        DontDestroyOnLoad(instance);
+        if (instance != null) { UnityEngine.Debug.LogError("MULTIPLE SaveManagers IN SCENE. Destroying " + this.name); Destroy(this); }
+        else { instance = this; DontDestroyOnLoad(instance); }
     }
 
     #endregion
@@ -30,9 +28,9 @@ public class SaveManager : MonoBehaviour
 
     public void SaveWorldDataToDisk(string name, Tile[] SAVETHESETILES)
     {
-        UnityEngine.Debug.Log("Saving World!");
-
         FileStream file = new FileStream(Application.persistentDataPath + Path.DirectorySeparatorChar + "world_" + name + ".map", FileMode.OpenOrCreate);
+
+        UnityEngine.Debug.Log("Saving To World: " + "world_" + name + ".map");
 
         try
         {
@@ -94,6 +92,23 @@ public class SaveManager : MonoBehaviour
         {
             // Initialize All Save Files so Load Save Game UI can Update Correctly
             UnityEngine.Debug.Log("Save File Exists. Name: " + Path.GetFileName(save));
+        }
+    }
+
+    public void DeleteSaveFile(string name)
+    {
+        GetSaveFiles();
+        foreach (string s in saves)
+        {
+            string saveFileName = Path.GetFileName(s);
+            string saveName = saveFileName.Substring(saveFileName.IndexOf("_") + 1);
+            int index = saveName.LastIndexOf(".");
+            if (index > 0) { saveName = saveName.Substring(0, index); }
+
+            if (saveName == name) // Found Save to Delete
+            {
+                File.Delete(s);
+            }
         }
     }
 }

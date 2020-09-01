@@ -57,6 +57,19 @@ public class MenuHandler : MonoBehaviour
         }
     }
 
+    public void BackToMain()
+    {
+        // Get Rid Of Load Game Buttons That Are Instantiated in SelectSaveFileMenu (Garbage Cleanup)
+        GameObject go = GameObject.Find("WorldSavesBackground");
+        for (int i = 0; i < go.transform.childCount; i++)
+        {
+            Destroy(go.transform.GetChild(i).gameObject);
+        }
+
+        mainMenu.SetActive(true);
+        selectSaveMenu.SetActive(false);
+    }
+
     // Take in button, Set World To Load Name to button name
     public void LoadSavedGame(Button button)
     {

@@ -73,7 +73,7 @@ public class UIHandler : MonoBehaviour
     {
         WorldGenerator worldGenerator = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>();
         world = worldGenerator.GetWorldInstance();
-        world.SaveTiles();
+        world.SaveTiles(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
     }
     public void ExitGame()
     {

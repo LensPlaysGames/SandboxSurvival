@@ -136,7 +136,7 @@ public class World
 
     #region Save and Load Tiles
 
-    public void SaveTiles() // Loop Through All Tiles in World and Save 2D Tile[,] tiles Array to 1D tilesToSave Array; Get Reference to Save Manager And Save Data To File on Hard Disk
+    public void SaveTiles(string saveName) // Loop Through All Tiles in World and Save 2D Tile[,] tiles Array to 1D tilesToSave Array; Get Reference to Save Manager And Save Data To File on Hard Disk
     {
         int index = 0;
 
@@ -152,7 +152,7 @@ public class World
         }
 
         saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        saveManager.SaveWorldDataToDisk("Lens", tilesToSave);
+        saveManager.SaveWorldDataToDisk(saveName, tilesToSave);
 
     }
 

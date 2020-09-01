@@ -5,9 +5,14 @@ using UnityEngine;
 
 public class OnFirstRun : MonoBehaviour
 {
-    int firstRun = 0;
+    public static OnFirstRun instance;
+
+    public int firstRun = 0;
     void Start()
     {
+        if (instance != null) { UnityEngine.Debug.LogError("Multiple ONFIRSTRUNs in Game. Destroying " + this.name); Destroy(this); }
+        else { instance = this; DontDestroyOnLoad(this); }
+
         firstRun = PlayerPrefs.GetInt("cachedFirstRun");
 
         if (firstRun == 0) 
@@ -38,6 +43,7 @@ public class OnFirstRun : MonoBehaviour
     {
         if (Input.GetButtonDown("Debug_Reset"))
         {
+            UnityEngine.Debug.Log("Debug_Reset");
             PlayerPrefs.SetInt("cachedFirstRun", 0);
         }
     }

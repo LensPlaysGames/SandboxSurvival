@@ -4,21 +4,28 @@ using UnityEngine;
 
 public class DataDontDestroyOnLoad : MonoBehaviour
 {
-    public DataDontDestroyOnLoad instance;
+    #region Singleton
+
+    public static DataDontDestroyOnLoad instance;
+    
+    void Start()
+    {
+        if (instance != null)
+        {
+            UnityEngine.Debug.LogError("Multiple DataDontDestroyOnLoad In Scene!!! Destroying " + this.name);
+            Destroy(this);
+        }
+        else
+        {
+            instance = this;
+            DontDestroyOnLoad(this);
+        }
+
+    }
+    #endregion
 
     public bool newWorld;
     public bool playingMusic;
 
     public string saveName = "Lens";
-
-    void Start()
-    {
-        if (instance != null)
-        {
-            UnityEngine.Debug.LogError("Multiple DataDontDestroyOnLoad In Scene!!!");
-        }
-        instance = this;
-
-        DontDestroyOnLoad(this);
-    }
 }
