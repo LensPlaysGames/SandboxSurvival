@@ -50,9 +50,14 @@ public class MouseController : MonoBehaviour
 
     void SetCanSelect()
     {
+        GameObject pauseMenu = GameObject.Find("UICanvas").GetComponent<UIHandler>().pauseMenu;
+
         if (Mathf.Abs(Cursor.transform.position.x - Player.transform.position.x) > 6) { canSelect = false; } // If Too Far from Player Sideways, Can Not Select
         else if (Cursor.transform.position.y - Player.transform.position.y > 8) { canSelect = false; } // If Above max y, Can Not Select
         else if (Cursor.transform.position.y - Player.transform.position.y < -4) { canSelect = false; } // below min y, Can Not Select
+
+        else if (pauseMenu.activeInHierarchy) { canSelect = false; } // If Player is In Pause Menu
+
         else { canSelect = true; }
 
         if (canSelect) { Cursor.GetComponent<SpriteRenderer>().color = Color.white; }
@@ -85,9 +90,6 @@ public class MouseController : MonoBehaviour
             GameObject.Find("Player").GetComponent<Inventory>().AddItemToSlot(selectedTile.Type);
             // Actually Build The Damn Thing (if it's breakable)
             selectedTile.Type = Tile.TileType.Air;
-
-            // Save Change To World
-            //SaveGame();
         }
     }
 
@@ -105,8 +107,6 @@ public class MouseController : MonoBehaviour
                 Player.GetComponent<Inventory>().TakeFromSlot(Player.GetComponent<Inventory>().selectedSlot);
                 // Set Tile To The Intended Build Tile
                 selectedTile.Type = buildTile;
-
-                //SaveGame();
             }
 
         }
