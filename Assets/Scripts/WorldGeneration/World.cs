@@ -1,0 +1,190 @@
+﻿using System;
+using UnityEngine;
+
+[Serializable]
+public class World
+{
+    #region World Generation Characteristics
+
+    private float surfaceHeightMultiplier = .8f, undergroundHeightMultiplier = .69f;
+
+    #endregion
+
+    #region Singletons
+
+    public static World instance;
+    public static SaveManager saveManager;
+
+    void Start()
+    {
+        if (instance != null) { UnityEngine.Debug.LogError("MULTIPLE WORLDS TRYING TO CREATE"); }
+        instance = this;
+
+        if (saveManager != null) { UnityEngine.Debug.LogError("There Should NOT be more than one SaveManager"); }
+        saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        UnityEngine.Debug.Log("Save Manager cached in World.cs as saveManager SaveManager");
+    }
+
+    #endregion
+
+    public Tile[,] tiles;
+    public Tile[] tilesToSave;
+
+    private int width;
+    private int height;
+
+    #region Accessors
+
+    public int Width
+    {
+        get
+        {
+            return width;
+        }
+    }
+    public int Height
+    {
+        get
+        {
+            return height;
+        }
+    }
+
+    #endregion
+
+    #region Constructs
+
+    public World() : this(270, 90) { } // Default Initilializer for serializtion something something grumble grumble
+
+    public World(int _width, int _height) // Creates tile at each point within world width and height
+    {
+        this.width = _width;
+        this.height = _height;
+
+        tiles = new Tile[width, height];
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                tiles[x, y] = new Tile(this, x, y);
+            }
+        }
+
+        UnityEngine.Debug.Log("World Created. Size: " + (width * height) + " Width: " + width + " Height: " + height);
+    }
+
+    #endregion
+
+    #region World Generation
+
+    public void GenerateRandomTiles() // All this does is goes through each tile in world and sets tile type to something
+    {
+        for (int x = 0; x < width; x++)
+        {
+            surfaceHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f);
+            undergroundHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f);
+
+            surfaceHeightMultiplier = Mathf.Clamp(surfaceHeightMultiplier, 0.72f, .99f);
+            undergroundHeightMultiplier = Mathf.Clamp(undergroundHeightMultiplier, 0.4f, .72f);
+
+            for (int y = 0; y < height; y++)
+            {
+                if (y > (height * surfaceHeightMultiplier))
+                {
+                    // Generate Sky Area Above Ground
+                    tiles[x, y].Type = Tile.TileType.Air;
+                    // Generate Grass at bottom of Sky and top of Floor
+                    if ((y - 1) < (height * surfaceHeightMultiplier)) { tiles[x, y].Type = Tile.TileType.Grass; }
+                }
+                else if (y < (height * undergroundHeightMultiplier))
+                {
+                    // Generate Underground
+                    int randInt = UnityEngine.Random.Range(0, 11);
+                    if (randInt == 0) { tiles[x, y].Type = Tile.TileType.Air; }
+
+                    // INSERT UNDERGROUND RESOURCES HERE
+
+                    else { tiles[x, y].Type = Tile.TileType.Stone; } // Default Underground Resource Type
+                }
+                else if (y == 0) { tiles[x, y].Type = Tile.TileType.DevTile; }
+                else
+                {
+                    // Tile is Dirt
+                    tiles[x, y].Type = Tile.TileType.Dirt;
+                }
+
+                // Get Random Number from 0 to 1, if 0 set to Air, if 1 set to Grass
+                #region Air or Grass Random Generation 
+
+                //int randInt = Random.Range(0, 2);
+                //if(randInt == 0)
+                //{
+                //    tiles[x, y].Type = Tile.TileType.Air;
+                //}
+                //else
+                //{
+                //    tiles[x, y].Type = Tile.TileType.Grass;
+                //}
+
+                #endregion
+            }
+        }
+    }
+
+    #endregion
+
+    #region Save and Load Tiles
+
+    public void SaveTiles() // Loop Through All Tiles in World and Save 2D Tile[,] tiles Array to 1D tilesToSave Array; Get Reference to Save Manager And Save Data To File on Hard Disk
+    {
+        int index = 0;
+
+        tilesToSave = new Tile[tiles.Length];
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++) 
+            {
+                tilesToSave[index] = tiles[x, y];
+                index++;
+            }
+        }
+
+        saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        saveManager.SaveWorldDataToDisk("Lens", tilesToSave);
+
+    }
+
+    public void LoadTiles() // Reset (Data) 2D tiles Array; Get Reference to Save Manager and Load Data From Hard Disk; Loop through all tiles and set Tile (Data) to loadedTile (Data)
+    {
+        tiles = new Tile[width, height];
+
+        saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        saveManager.LoadWorldDataFromDisk("Lens");
+
+        int index = 0;
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                tiles[x, y] = saveManager.loadedTiles[index];
+                index++;
+            }
+        }
+
+    }
+
+    #endregion
+
+    public Tile GetTileAt(int _x, int _y) // Get Tile Data At Certain X and Y in (Data) 2D tiles Array
+    {
+        if (_x > width || _x < 0 || _y > width || _y < 0)
+        {
+            UnityEngine.Debug.LogError("Tile (" + _x + "," + _y + ") is out of World");
+            return null;
+        }
+        return tiles[_x, _y];
+    }
+}
+
