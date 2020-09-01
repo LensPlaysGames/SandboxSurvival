@@ -32,7 +32,7 @@ public class SaveManager : MonoBehaviour
     {
         UnityEngine.Debug.Log("Saving World!");
 
-        FileStream file = new FileStream(Application.persistentDataPath + "/World_"+name+".map", FileMode.OpenOrCreate);
+        FileStream file = new FileStream(Application.persistentDataPath + Path.DirectorySeparatorChar + "world_" + name + ".map", FileMode.OpenOrCreate);
 
         try
         {
@@ -54,12 +54,14 @@ public class SaveManager : MonoBehaviour
     {
         UnityEngine.Debug.Log("Loading World!");
 
-        if (File.Exists(Application.persistentDataPath + "/World_" + name + ".map")) 
+        string savePath = Application.persistentDataPath + Path.DirectorySeparatorChar + "world_" + name + ".map";
+
+        if (File.Exists(savePath)) 
         {
             UnityEngine.Debug.Log("Save File Exists! Attempting to Load...");
-            UnityEngine.Debug.Log("Save File Path: " + Application.persistentDataPath + "/World_" + name + ".map");
+            UnityEngine.Debug.Log("Attempting To Load From Save File Path: " + savePath);
 
-            FileStream file = new FileStream(Application.persistentDataPath + "/World_" + name + ".map", FileMode.Open);
+            FileStream file = new FileStream(savePath, FileMode.Open);
 
             try
             {
@@ -78,8 +80,20 @@ public class SaveManager : MonoBehaviour
         }
         else
         {
-            UnityEngine.Debug.Log("Save File NULL at path: " + Application.persistentDataPath + "/World_" + name + ".map");
+            UnityEngine.Debug.Log("Save File NULL at path: " + savePath);
             SceneManager.LoadScene("Menu");
+        }
+    }
+
+    public string[] saves;
+
+    public void GetSaveFiles()
+    {
+        saves = Directory.GetFiles(Application.persistentDataPath.ToString(), "*.map");
+        foreach (string save in saves)
+        {
+            // Initialize All Save Files so Load Save Game UI can Update Correctly
+            UnityEngine.Debug.Log("Save File Exists. Name: " + Path.GetFileName(save));
         }
     }
 }

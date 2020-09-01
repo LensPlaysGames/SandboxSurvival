@@ -9,6 +9,8 @@ public class DataDontDestroyOnLoad : MonoBehaviour
     public bool newWorld;
     public bool playingMusic;
 
+    public string saveName = "Lens";
+
     void Start()
     {
         if (instance != null)

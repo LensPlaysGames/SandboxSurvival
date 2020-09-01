@@ -31,7 +31,7 @@ public class WorldGenerator : MonoBehaviour
         if (GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().newWorld) { CreateNewWorld(); }
         else 
         {
-            LoadSavedWorld();
+            LoadSavedWorld(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
         }
     }
 
@@ -69,12 +69,11 @@ public class WorldGenerator : MonoBehaviour
 
     }
 
-    public void LoadSavedWorld()
+    public void LoadSavedWorld(string saveName)
     {
         world = new World(270, 90);
 
-        world.LoadTiles();
-
+        world.LoadTiles(saveName);
         // TILE DATA IS CORRECTLY LOADED IN WORLD, NOW EACH TILE HAS TO UPDATE TO A NEW TYPE OTHERWISE IT IS STAYING INVISIBLE/ NOT UPDATING
 
         for (int x = 0; x < world.Width; x++)

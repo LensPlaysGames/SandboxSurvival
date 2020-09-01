@@ -156,12 +156,12 @@ public class World
 
     }
 
-    public void LoadTiles() // Reset (Data) 2D tiles Array; Get Reference to Save Manager and Load Data From Hard Disk; Loop through all tiles and set Tile (Data) to loadedTile (Data)
+    public void LoadTiles(string saveName) // Reset (Data) 2D tiles Array; Get Reference to Save Manager and Load Data From Hard Disk; Loop through all tiles and set Tile (Data) to loadedTile (Data)
     {
         tiles = new Tile[width, height];
 
         saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        saveManager.LoadWorldDataFromDisk("Lens");
+        saveManager.LoadWorldDataFromDisk(saveName);
 
         int index = 0;
         for (int x = 0; x < width; x++)
