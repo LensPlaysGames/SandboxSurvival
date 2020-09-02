@@ -8,6 +8,10 @@ public class World
 
     private float surfaceHeightMultiplier = .8f, undergroundHeightMultiplier = .69f;
 
+    private float treeChance = 10f;
+    private float leafOnTreeHeightMultiplier = 0.5f;
+    private int minTreeHeight = 4, maxTreeHeight = 9;
+
     #endregion
 
     #region Singletons
@@ -113,21 +117,52 @@ public class World
                     // Tile is Dirt
                     tiles[x, y].Type = Tile.TileType.Dirt;
                 }
+            }
+        }
 
-                // Get Random Number from 0 to 1, if 0 set to Air, if 1 set to Grass
-                #region Air or Grass Random Generation 
+        FindGrassMakeTrees();
 
-                //int randInt = Random.Range(0, 2);
-                //if(randInt == 0)
-                //{
-                //    tiles[x, y].Type = Tile.TileType.Air;
-                //}
-                //else
-                //{
-                //    tiles[x, y].Type = Tile.TileType.Grass;
-                //}
+    }
 
-                #endregion
+    public void FindGrassMakeTrees()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                // Tree Chance
+                int randTreeInt = UnityEngine.Random.Range(0, 100);
+
+                if ((randTreeInt) < treeChance)
+                {
+                    // Find If Tile Type is Grass
+                    if (tiles[x, y].Type == Tile.TileType.Grass)
+                    {
+                        UnityEngine.Debug.Log("Generating Tree at x: " + x + " y: " + y);
+                        // Generate Tree
+
+                        int treeHeight = UnityEngine.Random.Range(minTreeHeight, maxTreeHeight);
+                        for (int t = 0; t <= treeHeight; t++)
+                        {
+                            // Place Dirt Below Tree
+                            if (t == 0) { tiles[x, (y)].Type = Tile.TileType.Dirt; }
+                            // Place Wood Until Tree Height is Reached
+                            else { tiles[x, (y + t)].Type = Tile.TileType.Wood_Boards; }
+
+                            // Leaf Generation
+                            leafOnTreeHeightMultiplier = UnityEngine.Random.Range(0.45f, 0.72f);
+                            if (t > (treeHeight * leafOnTreeHeightMultiplier))
+                            {
+                                tiles[x - 1, y + t].Type = Tile.TileType.DevTile;
+                                tiles[x + 1, y + t].Type = Tile.TileType.DevTile;
+                            }
+                            if (t == treeHeight)
+                            {
+                                tiles[x, y + t + 1].Type = Tile.TileType.DevTile;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

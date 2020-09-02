@@ -4875,11 +4875,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 0}
-  runSpeed: 18
-  walkSpeed: 9
+  runSpeed: 16
+  walkSpeed: 10
   darkened: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 1}
-  defaultJumpForce: 13.5
-  lesserJumpForce: 7
+  defaultJumpForce: 10.5
+  lesserJumpForce: 8
+  fallMultiplier: 2.5
   groundedRadius: 0.36
   ground:
     serializedVersion: 2
@@ -4922,74 +4923,74 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedSlotIndex: 0
   selectedSlot:
-    slotParent: {fileID: 0}
-    countText: {fileID: 0}
     tileType: 0
     empty: 0
     count: 0
-    sprite: {fileID: 0}
+    slotParentName: 
+    countTextName: 
+    spriteName: 
   slotSelector: {fileID: 1115309246}
   slots:
-  - slotParent: {fileID: 0}
-    countText: {fileID: 0}
-    tileType: 0
+  - tileType: 0
     empty: 1
     count: 0
-    sprite: {fileID: 0}
-  - slotParent: {fileID: 0}
-    countText: {fileID: 0}
-    tileType: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
     empty: 1
     count: 0
-    sprite: {fileID: 0}
-  - slotParent: {fileID: 0}
-    countText: {fileID: 0}
-    tileType: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
     empty: 1
     count: 0
-    sprite: {fileID: 0}
-  - slotParent: {fileID: 0}
-    countText: {fileID: 0}
-    tileType: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
     empty: 1
     count: 0
-    sprite: {fileID: 0}
-  - slotParent: {fileID: 0}
-    countText: {fileID: 0}
-    tileType: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
     empty: 1
     count: 0
-    sprite: {fileID: 0}
-  - slotParent: {fileID: 0}
-    countText: {fileID: 0}
-    tileType: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
     empty: 1
     count: 0
-    sprite: {fileID: 0}
-  - slotParent: {fileID: 0}
-    countText: {fileID: 0}
-    tileType: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
     empty: 1
     count: 0
-    sprite: {fileID: 0}
-  - slotParent: {fileID: 0}
-    countText: {fileID: 0}
-    tileType: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
     empty: 1
     count: 0
-    sprite: {fileID: 0}
-  - slotParent: {fileID: 0}
-    countText: {fileID: 0}
-    tileType: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
     empty: 1
     count: 0
-    sprite: {fileID: 0}
-  - slotParent: {fileID: 0}
-    countText: {fileID: 0}
-    tileType: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
     empty: 1
     count: 0
-    sprite: {fileID: 0}
+    slotParentName: 
+    countTextName: 
+    spriteName: 
   sprites:
   - {fileID: 0}
   - {fileID: 21300000, guid: 6adac7561ffc2bb4fb07711cf9cbe1b5, type: 3}
@@ -4998,6 +4999,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: bf5b3389b9f427c498603403b0fa4568, type: 3}
   - {fileID: 21300000, guid: ac34490458439a34ead3aaa76e24f382, type: 3}
   empty: {fileID: 8460229477713023736, guid: 8d823fcc5de606c42bdc3fbd8ba2d56d, type: 3}
+  slotsToSave: []
 --- !u!1 &1777065676
 GameObject:
   m_ObjectHideFlags: 0

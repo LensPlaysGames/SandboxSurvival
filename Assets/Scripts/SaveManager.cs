@@ -22,9 +22,9 @@ public class SaveManager : MonoBehaviour
 
     #endregion
 
-    public World loadedWorld;
-
     public Tile[] loadedTiles;
+    public World loadedWorld;
+    public Slot[] loadedSlots;
 
     public void SaveWorldDataToDisk(string name, Tile[] SAVETHESETILES)
     {
@@ -56,8 +56,7 @@ public class SaveManager : MonoBehaviour
 
         if (File.Exists(savePath)) 
         {
-            UnityEngine.Debug.Log("Save File Exists! Attempting to Load...");
-            UnityEngine.Debug.Log("Attempting To Load From Save File Path: " + savePath);
+            UnityEngine.Debug.Log("Save File Exists! Attempting to Load From " + savePath);
 
             FileStream file = new FileStream(savePath, FileMode.Open);
 
@@ -82,6 +81,57 @@ public class SaveManager : MonoBehaviour
             SceneManager.LoadScene("Menu");
         }
     }
+
+    public void SaveInventoryDataToDisk(string name, Slot[] SAVETHESESLOTS)
+    {
+        FileStream file = new FileStream(Application.persistentDataPath + Path.DirectorySeparatorChar + "inventory_" + name + ".dat", FileMode.OpenOrCreate);
+
+        UnityEngine.Debug.Log("Saving To Inventory " + "inventory_" + name + ".dat");
+
+        try
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            bf.Serialize(file, SAVETHESESLOTS);
+            UnityEngine.Debug.Log("Saved Inventory!");
+        }
+        catch (SerializationException e)
+        {
+            UnityEngine.Debug.LogError("Issue Serializing Inventory Data: " + e.Message);
+        }
+        finally
+        {
+            file.Close();
+        }
+    }
+
+    public void LoadInventoryDataFromDisk(string name)
+    {
+        string savePath = Application.persistentDataPath + Path.DirectorySeparatorChar + "inventory_" + name + ".dat";
+
+        if (File.Exists(savePath))
+        {
+            UnityEngine.Debug.Log("Inventory Save Exists At " + savePath + "   ATTEMPTING TO LOAD   ");
+
+            FileStream file = new FileStream(savePath, FileMode.Open);
+
+            try
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                loadedSlots = (Slot[])bf.Deserialize(file);
+                UnityEngine.Debug.Log("Loaded Inventory!");
+            }
+            catch (SerializationException e)
+            {
+                UnityEngine.Debug.Log("Error Loading Inventory Data: " + e.Message);
+            }
+            finally
+            {
+                file.Close();
+            }
+        }
+        
+    }
+
 
     public string[] saves;
 

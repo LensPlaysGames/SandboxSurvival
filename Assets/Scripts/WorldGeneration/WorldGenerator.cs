@@ -66,6 +66,7 @@ public class WorldGenerator : MonoBehaviour
         }
         world.GenerateRandomTiles(); // Set Each Tile to Random Tile Type
 
+        // Make Sure New World is Saved As New and doesn't Overwrite Old World
         saveManager.GetSaveFiles();
         foreach (string s in saveManager.saves)
         {
@@ -77,12 +78,10 @@ public class WorldGenerator : MonoBehaviour
             if (GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName == saveName)
             {
                 UnityEngine.Debug.Log("World " + saveName + " was found when trying to create new world, setting new world name");
-                GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName += UnityEngine.Random.Range(0, 100000).ToString();
+                GameObject.Find(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName += UnityEngine.Random.Range(0, 100000).ToString());
             }
         }
-
         world.SaveTiles(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
-
     }
 
     public void LoadSavedWorld(string saveName)
@@ -90,16 +89,17 @@ public class WorldGenerator : MonoBehaviour
         world = new World(270, 90);
 
         world.LoadTiles(saveName);
-        // TILE DATA IS CORRECTLY LOADED IN WORLD, NOW EACH TILE HAS TO UPDATE TO A NEW TYPE OTHERWISE IT IS STAYING INVISIBLE/ NOT UPDATING
+
+        // LOAD INVENTORY DATA -- CURRENTLY I AM HAVING TROUBLE LOADING GAMEOBJECT REFERENCES THROUGH SERIALIZED DATA
+        //Inventory inventory = GameObject.Find("Player").GetComponent<Inventory>();
+        //inventory.LoadInventory(saveName);
 
         for (int x = 0; x < world.Width; x++)
         {
             for (int y = 0; y < world.Height; y++)
             {
                 GameObject tile = new GameObject();
-                Tile tileData = world.GetTileAt(x, y);
-
-                //tileData.Type = (Tile.TileType)tileData.Type - 1;
+                Tile tileData = world.GetTileAt(x, y);;
 
                 tile.name = "Tile." + x + "_" + y;
                 tile.layer = 9;
@@ -113,10 +113,7 @@ public class WorldGenerator : MonoBehaviour
 
                 tileData.SetTileTypeChangedCallback((_tile) => { OnTileTypeChanged(_tile, tile); });
 
-                //tileData.Type = Tile.TileType.DevTile;
-                //tileData.Type = (Tile.TileType)tileData.Type + 1;
-                OnTileTypeChanged(tileData, tile);
-
+                OnTileTypeChanged(tileData, tile); // CALL CALLBACK DIRECTLY BECAUSE BUGS AND THINGS
             }
         }
     }
@@ -170,9 +167,9 @@ public class WorldGenerator : MonoBehaviour
 
     public Tile GetTileAtWorldCoord(Vector3 coord)
     {
-        int x = (int)Mathf.Round(coord.x / 2);
-        int y = (int)Mathf.Round(coord.y / 2);
+            int x = (int)Mathf.Round(coord.x / 2);
+            int y = (int)Mathf.Round(coord.y / 2);
 
-        return world.GetTileAt(x, y);
+            return world.GetTileAt(x, y);
     }
 }

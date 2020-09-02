@@ -17,6 +17,7 @@ public class Inventory : MonoBehaviour
 
     public GameObject empty;
 
+    public Slot[] slotsToSave;
     private int a;
     
     void Start()
@@ -93,7 +94,11 @@ public class Inventory : MonoBehaviour
                     slots[s1].count = 0;
                     slots[s1].count++;
 
-                    slots[s1].sprite = sprites[(int)tileType];
+                    if (sprites[(int)tileType] != null)
+                    {
+                        slots[s1].sprite = sprites[(int)tileType];
+                    }
+                    else { UnityEngine.Debug.LogError("Error when trying to AddItemToSlot: Sprite for " + tileType.ToString() + " not found in Inventory Sprites Array!"); }
 
                     itemDealt = true;
 
@@ -112,11 +117,12 @@ public class Inventory : MonoBehaviour
 
     void UpdateSlotUI(int slotNum) 
     {
-        // If Image Exists In Slot, Destroy It
+        // If Image Exists In Slot, Destroy It, We're about to Update it
         if (slots[slotNum].slotParent.transform.Find("EmptyImagePrefab(Clone)") != null)
         {
             Destroy(slots[slotNum].slotParent.transform.Find("EmptyImagePrefab(Clone)").gameObject);
         }
+
         // If slot is populated, create image and update text
         if (slots[slotNum].count != 0)
         {
@@ -137,6 +143,53 @@ public class Inventory : MonoBehaviour
             slots[slotNum].count = 0;
             slots[slotNum].countText.GetComponent<TextMeshProUGUI>().text = "";
             slots[slotNum].sprite = null;
+        }
+    }
+
+
+    public void SaveInventory(string saveName)
+    {
+        for (int slot = 0; slot < slots.Length; slot++)
+        {
+            slotsToSave[slot] = slots[slot];
+
+            // LOG NAMES TO SAVE
+            UnityEngine.Debug.Log(slots[slot].slotParent.name);
+            UnityEngine.Debug.Log(slots[slot].countText.name);
+            UnityEngine.Debug.Log(slots[slot].sprite.name);
+
+            slotsToSave[slot].slotParentName = slots[slot].slotParent.name;
+            slotsToSave[slot].countTextName = slots[slot].countText.name;
+            slotsToSave[slot].spriteName = slots[slot].sprite.name;
+        }
+
+        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        saveManager.SaveInventoryDataToDisk(saveName, slotsToSave);
+    }
+
+    public void LoadInventory(string saveName)
+    {
+        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        saveManager.LoadInventoryDataFromDisk(saveName);
+
+        for (int slot = 0; slot < slots.Length; slot++)
+        {
+            // Set Slot Data to Loaded Slot Data
+            slots[slot] = saveManager.loadedSlots[slot];
+
+            // LOG NAMES TO LOAD
+            UnityEngine.Debug.Log(saveManager.loadedSlots[slot].slotParentName);
+            UnityEngine.Debug.Log(saveManager.loadedSlots[slot].countTextName);
+            UnityEngine.Debug.Log(saveManager.loadedSlots[slot].spriteName);
+
+            slots[slot].slotParent = GameObject.Find(saveManager.loadedSlots[slot].slotParentName);
+            slots[slot].countText = GameObject.Find(saveManager.loadedSlots[slot].countTextName);
+            slots[slot].sprite = Resources.Load<Sprite>(saveManager.loadedSlots[slot].spriteName);
+
+            UnityEngine.Debug.Log(slots[slot].slotParent);
+
+            // Update UI (Visual GameObject) to Represent New Data Loaded
+            UpdateSlotUI(slot);
         }
     }
 }

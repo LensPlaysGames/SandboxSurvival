@@ -10,7 +10,9 @@ public class Player : MonoBehaviour
     public float runSpeed, walkSpeed;
     public Color darkened;
     [Range(1f, 20f)]
-    public float defaultJumpForce, lesserJumpForce; 
+    public float defaultJumpForce, lesserJumpForce;
+    [Range(2f, 20f)]
+    public float fallMultiplier;
     [Range(0.01f, 10f)]
     public float groundedRadius;
     public LayerMask ground;
@@ -31,8 +33,8 @@ public class Player : MonoBehaviour
         input.x = Input.GetAxisRaw("Horizontal");
 
         // Run/Walk
-        if (Input.GetKey(KeyCode.LeftShift)) { speed = walkSpeed; jumpForce = defaultJumpForce; GetComponent<SpriteRenderer>().color = darkened; }
-        else { speed = runSpeed; jumpForce = lesserJumpForce; GetComponent<SpriteRenderer>().color = Color.white; }
+        if (Input.GetKey(KeyCode.LeftShift)) { speed = runSpeed; jumpForce = lesserJumpForce; GetComponent<SpriteRenderer>().color = darkened; }
+        else { speed = walkSpeed; jumpForce = defaultJumpForce; GetComponent<SpriteRenderer>().color = Color.white; }
 
         // Jump
         groundedPoint = grounded.position;
@@ -50,10 +52,19 @@ public class Player : MonoBehaviour
         rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
     }
 
+    public void MultiplyFall()
+    {
+        if (rb.velocity.y < 0)
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+        }
+    }
+
     void FixedUpdate()
     {
         GetInput();
         MovePlayer();
+        MultiplyFall();
     }
 
     private void OnDrawGizmosSelected()

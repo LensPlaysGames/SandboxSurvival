@@ -73,14 +73,10 @@ public class MenuHandler : MonoBehaviour
     // Take in button, Set World To Load Name to button name
     public void LoadSavedGame(Button button)
     {
-        SetSaveNameToButtonName(button);
+        GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName = button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
         GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().newWorld = false;
         SceneManager.LoadScene("SampleScene");
     }
 
-    // Take in Load World Button and Return World Name from Text
-    public void SetSaveNameToButtonName(Button button)
-    {
-        GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName = button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
-    }
+    
 }

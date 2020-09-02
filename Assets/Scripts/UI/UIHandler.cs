@@ -71,9 +71,16 @@ public class UIHandler : MonoBehaviour
 
     public void SaveGame()
     {
+        string saveName = GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName;
+
+        // Save World
         WorldGenerator worldGenerator = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>();
         world = worldGenerator.GetWorldInstance();
-        world.SaveTiles(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
+        world.SaveTiles(saveName);
+
+        // Save Inventory   --   CURRENTLY HAVING TROUBLES LOADING GAMEOBJECT REFERENCES FROM SERIALIZED DATA
+        //Inventory inventory = player.GetComponent<Inventory>();
+        //inventory.SaveInventory(saveName);
     }
     public void ExitGame()
     {
@@ -122,8 +129,8 @@ public class UIHandler : MonoBehaviour
 
     void SetCoordinateUI(float x, float y)
     {
-        coordX.text = Mathf.Round(x).ToString();
-        coordY.text = Mathf.Round(y).ToString();
+        coordX.text = Mathf.Round(x / 2).ToString();
+        coordY.text = Mathf.Round(y / 2).ToString();
     }
 
     #endregion
