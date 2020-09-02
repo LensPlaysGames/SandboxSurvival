@@ -13,6 +13,8 @@ public class WorldGenerator : MonoBehaviour
 
     public Sprite fullGrassSprite, dirtSprite, stoneSprite, woodBoardsSprite, devTex;
 
+    public GameObject player;
+
     public World GetWorldInstance()
     {
         return world;
@@ -28,6 +30,9 @@ public class WorldGenerator : MonoBehaviour
 
         if (saveManager != null) { UnityEngine.Debug.LogError("There Should NOT be more than one SaveManager"); }
         saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+
+        if (player != null) { UnityEngine.Debug.LogError("There Should NOT be more than one Player"); }
+        player = GameObject.Find("Player");
 
         if (GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().newWorld) { CreateNewWorld(); }
         else 
@@ -69,7 +74,7 @@ public class WorldGenerator : MonoBehaviour
         // Make Sure New World is Saved As New and doesn't Overwrite Old World
         // I DON'T EVEN KNOW IF THIS IS IS A BUG THAT STILL EXISTS BUT: WHEN MAKING A NEW WORLD IT JUST SOMETIMES DOESN'T WORK AND OVERWRITES PREVIOUS SAVES...  I THINK IT HAS SOMETHING TO DO WITH THIS NOT BEING CALLED AT THE CORRECT PLACE OR SOMETHING
         saveManager.GetSaveFiles();
-        foreach (string s in saveManager.saves)
+        foreach (string s in saveManager.worldSaves)
         {
             string saveFileName = Path.GetFileName(s);
             string saveName = saveFileName.Substring(saveFileName.IndexOf("_") + 1);
@@ -82,8 +87,14 @@ public class WorldGenerator : MonoBehaviour
                 GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName += UnityEngine.Random.Range(0, 100000).ToString();
             }
         }
+
+        // Save Newly Created World to Disk
         world.SaveTiles(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
+        // Save Inventory (once player loads) So that Game Doesn't BAZINGA when loading if player alt-f4s a new world without saving
+        StartCoroutine(SavePlayerInventoryAfterX(1f)); 
     }
+
+    public IEnumerator SavePlayerInventoryAfterX(float x) { yield return new WaitForSeconds(x); player.GetComponent<Inventory>().SaveInventory(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName); }
 
     public void LoadSavedWorld(string saveName)
     {

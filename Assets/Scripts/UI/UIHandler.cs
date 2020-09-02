@@ -9,13 +9,15 @@ public class UIHandler : MonoBehaviour
 {
     public World world;
 
-    public GameObject pauseMenu, player, inventoryUI, inventoryUIShowHideArrow;
+    public GameObject pauseMenu, player, inventoryUI, inventoryUIShowHideArrow, notificationBG, notification;
     private Sprite inventoryHideUI, inventoryShowUI;
 
     public TextMeshProUGUI coordX, coordY;
     private Vector3 lastPlayerPos;
 
     private bool pauseMenuToggle;
+
+    public float notificationTime = 5f;
 
     void Start()
     {
@@ -34,6 +36,9 @@ public class UIHandler : MonoBehaviour
         player = GameObject.Find("Player");
         coordX = GameObject.Find("coordX").GetComponent<TextMeshProUGUI>();
         coordY = GameObject.Find("coordY").GetComponent<TextMeshProUGUI>();
+
+        notificationBG = GameObject.Find("--NotificationUI--");
+        notification = Resources.Load<GameObject>("Notification");
     }
 
     void Update()
@@ -130,6 +135,20 @@ public class UIHandler : MonoBehaviour
     {
         coordX.text = Mathf.Round(x / 2).ToString();
         coordY.text = Mathf.Round(y / 2).ToString();
+    }
+
+    #endregion
+
+    #region Notifications
+
+    public void SendNotif(string notifText) { StartCoroutine(SendNotification(notifText)); }
+
+    public IEnumerator SendNotification(string notifText)
+    {
+        GameObject notif = Instantiate(notification, notificationBG.transform);
+        notif.GetComponentInChildren<TextMeshProUGUI>().text = notifText;
+        yield return new WaitForSeconds(notificationTime);
+        Destroy(notif);
     }
 
     #endregion

@@ -70,6 +70,10 @@ public class Inventory : MonoBehaviour
     {
         bool itemDealt = false;
 
+        // Notify Player
+        GameObject.Find("UICanvas").GetComponent<UIHandler>().SendNotif("Added One " + tileType.ToString());
+
+        // Find Slot To Add To
         for (int s1 = 0; s1 < slots.Length; s1++)
         {
             for (int s = 0; s < slots.Length; s++)

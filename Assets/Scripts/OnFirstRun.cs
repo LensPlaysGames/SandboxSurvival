@@ -22,9 +22,11 @@ public class OnFirstRun : MonoBehaviour
             #region Insert Pioneer World to Save Location
 
             string pioneerWorldPath = Application.dataPath + Path.DirectorySeparatorChar + "Resources" + Path.DirectorySeparatorChar + "World_PioneerWorld.map";
+            string pioneerInventoryPath = Application.dataPath + Path.DirectorySeparatorChar + "Resources" + Path.DirectorySeparatorChar + "inventory_PioneerWorld.dat";
             string saveFileLocation = Application.persistentDataPath + Path.DirectorySeparatorChar;
 
             File.Copy(pioneerWorldPath, saveFileLocation + Path.GetFileName(pioneerWorldPath), true);
+            File.Copy(pioneerInventoryPath, saveFileLocation + Path.GetFileName(pioneerInventoryPath), true);
 
             #endregion
 
@@ -35,7 +37,7 @@ public class OnFirstRun : MonoBehaviour
         {
             firstRun++;
             PlayerPrefs.SetInt("cachedFirstRun", firstRun);
-            UnityEngine.Debug.Log("This is the " + firstRun + " Time the Game Has Ran");
+            UnityEngine.Debug.Log("The Game Has Ran " + firstRun + " Times");
         }
     }
 

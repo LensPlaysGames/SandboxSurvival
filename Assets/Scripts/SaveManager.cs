@@ -133,22 +133,29 @@ public class SaveManager : MonoBehaviour
     }
 
 
-    public string[] saves;
+    public string[] worldSaves, inventorySaves;
 
+    // Initialize All Save Files to Reference
     public void GetSaveFiles()
     {
-        saves = Directory.GetFiles(Application.persistentDataPath.ToString(), "*.map");
-        foreach (string save in saves)
+        worldSaves = Directory.GetFiles(Application.persistentDataPath.ToString(), "*.map");
+        foreach (string worldSave in worldSaves)
         {
-            // Initialize All Save Files so Load Save Game UI can Update Correctly
-            UnityEngine.Debug.Log("Save File Exists. Name: " + Path.GetFileName(save));
+            
+            UnityEngine.Debug.Log("World Save Found on Disk! Exists. Name: " + Path.GetFileName(worldSave));
+        }
+
+        inventorySaves = Directory.GetFiles(Application.persistentDataPath.ToString(), "*.dat");
+        foreach (string inventorySave in inventorySaves)
+        {
+            UnityEngine.Debug.Log("Inventory Save Found on Disk! Name: " + Path.GetFileName(inventorySave));
         }
     }
 
     public void DeleteSaveFile(string name)
     {
         GetSaveFiles();
-        foreach (string s in saves)
+        foreach (string s in worldSaves)
         {
             string saveFileName = Path.GetFileName(s);
             string saveName = saveFileName.Substring(saveFileName.IndexOf("_") + 1);
@@ -157,6 +164,21 @@ public class SaveManager : MonoBehaviour
 
             if (saveName == name) // Found Save to Delete
             {
+                UnityEngine.Debug.Log("DELETING WORLD SAVE AT " + s);
+                File.Delete(s);
+            }
+        }
+
+        foreach (string s in inventorySaves)
+        {
+            string saveFileName = Path.GetFileName(s);
+            string saveName = saveFileName.Substring(saveFileName.IndexOf("_") + 1);
+            int index = saveName.LastIndexOf(".");
+            if (index > 0) { saveName = saveName.Substring(0, index); }
+
+            if (saveName == name) // Found Save to Delete
+            {
+                UnityEngine.Debug.Log("DELETING INVENTORY SAVE AT " + s);
                 File.Delete(s);
             }
         }

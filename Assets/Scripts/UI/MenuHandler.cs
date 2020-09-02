@@ -41,7 +41,7 @@ public class MenuHandler : MonoBehaviour
         selectSaveMenu.SetActive(true);
 
         // For Every Save File found, Create Button and Give it Correct Name
-        foreach (string s in saveManager.saves)
+        foreach (string s in saveManager.worldSaves)
         {
             // Create Button
             GameObject loadSaveButton = Instantiate(loadWorldButton, GameObject.Find("WorldSavesBackground").transform);
