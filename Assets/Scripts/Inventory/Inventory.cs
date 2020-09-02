@@ -8,6 +8,8 @@ public class Inventory : MonoBehaviour
 {
     public static Inventory instance;
 
+    public bool inventoryLoaded = false;
+
     public int selectedSlotIndex;
     public Slot selectedSlot;
     public GameObject slotSelector;
@@ -28,15 +30,18 @@ public class Inventory : MonoBehaviour
         }
         else { instance = this; }
 
-        foreach (Slot slot in slots)
+        if (!inventoryLoaded)
         {
-            a++;
-            slot.slotParent = GameObject.Find("Slot (" + a + ")");
-            slot.countText = GameObject.Find("Slot (" + a + ") Count");
-            slot.tileType = Tile.TileType.Air;
-            slot.empty = true;
-            slot.count = 0;
-            slot.sprite = null;
+            foreach (Slot slot in slots)
+            {
+                a++;
+                slot.slotParent = GameObject.Find("Slot (" + a + ")");
+                slot.countText = GameObject.Find("Slot (" + a + ") Count");
+                slot.tileType = Tile.TileType.Air;
+                slot.empty = true;
+                slot.count = 0;
+                slot.sprite = null;
+            }
         }
 
         if (selectedSlot.slotParent == null)
@@ -151,16 +156,17 @@ public class Inventory : MonoBehaviour
     {
         for (int slot = 0; slot < slots.Length; slot++)
         {
-            slotsToSave[slot] = slots[slot];
-
-            // LOG NAMES TO SAVE
-            UnityEngine.Debug.Log(slots[slot].slotParent.name);
-            UnityEngine.Debug.Log(slots[slot].countText.name);
-            UnityEngine.Debug.Log(slots[slot].sprite.name);
+            slotsToSave[slot].tileType = slots[slot].tileType;
+            slotsToSave[slot].empty = slots[slot].empty;
+            slotsToSave[slot].count = slots[slot].count;
 
             slotsToSave[slot].slotParentName = slots[slot].slotParent.name;
             slotsToSave[slot].countTextName = slots[slot].countText.name;
-            slotsToSave[slot].spriteName = slots[slot].sprite.name;
+            if (slots[slot].sprite != null)
+            {
+                slotsToSave[slot].spriteName = slots[slot].sprite.name;
+            }
+            else { slotsToSave[slot].spriteName = "Air"; }
         }
 
         SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
@@ -174,19 +180,17 @@ public class Inventory : MonoBehaviour
 
         for (int slot = 0; slot < slots.Length; slot++)
         {
-            // Set Slot Data to Loaded Slot Data
-            slots[slot] = saveManager.loadedSlots[slot];
 
-            // LOG NAMES TO LOAD
-            UnityEngine.Debug.Log(saveManager.loadedSlots[slot].slotParentName);
-            UnityEngine.Debug.Log(saveManager.loadedSlots[slot].countTextName);
-            UnityEngine.Debug.Log(saveManager.loadedSlots[slot].spriteName);
+            // Set Slot Data to Loaded Slot Data
+            slots[slot].tileType = saveManager.loadedSlots[slot].tileType;
+            slots[slot].empty = saveManager.loadedSlots[slot].empty;
+            slots[slot].count = saveManager.loadedSlots[slot].count;
 
             slots[slot].slotParent = GameObject.Find(saveManager.loadedSlots[slot].slotParentName);
             slots[slot].countText = GameObject.Find(saveManager.loadedSlots[slot].countTextName);
             slots[slot].sprite = Resources.Load<Sprite>(saveManager.loadedSlots[slot].spriteName);
 
-            UnityEngine.Debug.Log(slots[slot].slotParent);
+            inventoryLoaded = true;
 
             // Update UI (Visual GameObject) to Represent New Data Loaded
             UpdateSlotUI(slot);

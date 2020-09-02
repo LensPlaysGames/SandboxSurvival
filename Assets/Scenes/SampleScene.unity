@@ -4999,7 +4999,67 @@ MonoBehaviour:
   - {fileID: 21300000, guid: bf5b3389b9f427c498603403b0fa4568, type: 3}
   - {fileID: 21300000, guid: ac34490458439a34ead3aaa76e24f382, type: 3}
   empty: {fileID: 8460229477713023736, guid: 8d823fcc5de606c42bdc3fbd8ba2d56d, type: 3}
-  slotsToSave: []
+  slotsToSave:
+  - tileType: 0
+    empty: 0
+    count: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
+    empty: 0
+    count: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
+    empty: 0
+    count: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
+    empty: 0
+    count: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
+    empty: 0
+    count: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
+    empty: 0
+    count: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
+    empty: 0
+    count: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
+    empty: 0
+    count: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
+    empty: 0
+    count: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
+  - tileType: 0
+    empty: 0
+    count: 0
+    slotParentName: 
+    countTextName: 
+    spriteName: 
 --- !u!1 &1777065676
 GameObject:
   m_ObjectHideFlags: 0

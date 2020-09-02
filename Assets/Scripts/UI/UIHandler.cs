@@ -78,9 +78,8 @@ public class UIHandler : MonoBehaviour
         world = worldGenerator.GetWorldInstance();
         world.SaveTiles(saveName);
 
-        // Save Inventory   --   CURRENTLY HAVING TROUBLES LOADING GAMEOBJECT REFERENCES FROM SERIALIZED DATA
-        //Inventory inventory = player.GetComponent<Inventory>();
-        //inventory.SaveInventory(saveName);
+        // Save Inventory
+        player.GetComponent<Inventory>().SaveInventory(saveName);
     }
     public void ExitGame()
     {

@@ -67,6 +67,7 @@ public class WorldGenerator : MonoBehaviour
         world.GenerateRandomTiles(); // Set Each Tile to Random Tile Type
 
         // Make Sure New World is Saved As New and doesn't Overwrite Old World
+        // I DON'T EVEN KNOW IF THIS IS IS A BUG THAT STILL EXISTS BUT: WHEN MAKING A NEW WORLD IT JUST SOMETIMES DOESN'T WORK AND OVERWRITES PREVIOUS SAVES...  I THINK IT HAS SOMETHING TO DO WITH THIS NOT BEING CALLED AT THE CORRECT PLACE OR SOMETHING
         saveManager.GetSaveFiles();
         foreach (string s in saveManager.saves)
         {
@@ -78,7 +79,7 @@ public class WorldGenerator : MonoBehaviour
             if (GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName == saveName)
             {
                 UnityEngine.Debug.Log("World " + saveName + " was found when trying to create new world, setting new world name");
-                GameObject.Find(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName += UnityEngine.Random.Range(0, 100000).ToString());
+                GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName += UnityEngine.Random.Range(0, 100000).ToString();
             }
         }
         world.SaveTiles(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
@@ -90,9 +91,9 @@ public class WorldGenerator : MonoBehaviour
 
         world.LoadTiles(saveName);
 
-        // LOAD INVENTORY DATA -- CURRENTLY I AM HAVING TROUBLE LOADING GAMEOBJECT REFERENCES THROUGH SERIALIZED DATA
-        //Inventory inventory = GameObject.Find("Player").GetComponent<Inventory>();
-        //inventory.LoadInventory(saveName);
+        // LOAD INVENTORY DATA -- CURRENTLY I AM HAVING TROUBLE WITH INVENTORY INSTANCES AND STUFF
+        Inventory inventory = GameObject.Find("Player").GetComponent<Inventory>();
+        inventory.LoadInventory(saveName);
 
         for (int x = 0; x < world.Width; x++)
         {
