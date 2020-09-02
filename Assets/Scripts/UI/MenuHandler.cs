@@ -9,7 +9,7 @@ using TMPro;
 
 public class MenuHandler : MonoBehaviour
 {
-    public GameObject mainMenu, selectSaveMenu;
+    public GameObject mainMenu, selectSaveMenu, newWorldOptions;
 
     void Start()
     {
@@ -19,6 +19,23 @@ public class MenuHandler : MonoBehaviour
         {
             selectSaveMenu.SetActive(false);
         }
+        newWorldOptions = GameObject.Find("--NewWorldOptions--");
+        if (newWorldOptions != null)
+        {
+            newWorldOptions.SetActive(false);
+        }
+
+    }
+
+    public void GoToEnterWorldName()
+    {
+        mainMenu.SetActive(false);
+        newWorldOptions.SetActive(true);
+    }
+
+    public void SetWorldNameFromInput()
+    {
+        GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName = newWorldOptions.transform.Find("WorldNameInput").GetComponent<TMP_InputField>().text;
     }
 
     public void StartNewGame()

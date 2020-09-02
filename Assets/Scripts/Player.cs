@@ -58,6 +58,10 @@ public class Player : MonoBehaviour
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
         }
+        else if (rb.velocity.y > 0 && Input.GetAxisRaw("Jump") == 0)
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * Time.deltaTime;
+        }
     }
 
     void FixedUpdate()
