@@ -85,6 +85,9 @@ public class UIHandler : MonoBehaviour
 
         // Save Inventory
         player.GetComponent<Inventory>().SaveInventory(saveName);
+
+        // Notify Player Game Saved
+        SendNotif('\"' + saveName + '\"' + " Saved", Color.green);
     }
     public void ExitGame()
     {
@@ -141,12 +144,14 @@ public class UIHandler : MonoBehaviour
 
     #region Notifications
 
-    public void SendNotif(string notifText) { StartCoroutine(SendNotification(notifText)); }
+    public void SendNotif(string notifText, Color notifColor) { StartCoroutine(SendNotification(notifText, notifColor)); }
 
-    public IEnumerator SendNotification(string notifText)
+    public IEnumerator SendNotification(string notifText, Color notifColor)
     {
         GameObject notif = Instantiate(notification, notificationBG.transform);
         notif.GetComponentInChildren<TextMeshProUGUI>().text = notifText;
+        notif.GetComponentInChildren<TextMeshProUGUI>().color = notifColor;
+        notif.GetComponent<Animator>().SetFloat("ShowNotif", 1f);
         yield return new WaitForSeconds(notificationTime);
         Destroy(notif);
     }
