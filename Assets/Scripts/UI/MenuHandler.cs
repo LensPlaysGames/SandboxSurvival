@@ -74,26 +74,19 @@ public class MenuHandler : MonoBehaviour
         }
     }
 
-    public void BackToMain()
+    public void BackToMain(GameObject currentMenu)
     {
-        // Get Rid Of Load Game Buttons That Are Instantiated in SelectSaveFileMenu (Garbage Cleanup)
-        GameObject go = GameObject.Find("WorldSavesBackground");
-        for (int i = 0; i < go.transform.childCount; i++)
-        {
-            Destroy(go.transform.GetChild(i).gameObject);
-        }
-
         mainMenu.SetActive(true);
-        selectSaveMenu.SetActive(false);
+        currentMenu.SetActive(false);
     }
 
-    // Take in button, Set World To Load Name to button name
+    // Take in button, Set world to load Name to button Name
     public void LoadSavedGame(Button button)
     {
         GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName = button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
         GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().newWorld = false;
         SceneManager.LoadScene("SampleScene");
     }
-
     
+    public void QuitGame() { UnityEngine.Debug.Log("Game Shutting Down. Good Night... "); Application.Quit(); }
 }

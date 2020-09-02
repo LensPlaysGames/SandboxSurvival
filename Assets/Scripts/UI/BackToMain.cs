@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class BackToMain : MonoBehaviour
 {
-
     void Update()
     {
-        if (Input.GetButtonDown("Cancel")) { GameObject.Find("Canvas").GetComponent<MenuHandler>().BackToMain(); }
+        if (Input.GetButtonDown("Cancel")) { GameObject.Find("Canvas").GetComponent<MenuHandler>().BackToMain(this.gameObject); }
     }
 }
