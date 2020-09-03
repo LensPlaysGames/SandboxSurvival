@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +16,7 @@ public class Inventory : MonoBehaviour
     public GameObject slotSelector;
 
     public Slot[] slots;
-    public Sprite[] sprites;
+    public Sprite[] sprites; // THIS HAS TO MATCH Tile.TileType INDEX PERFECTLY. IF LOADING WRONG IMAGE BUT CORRECT DATA IN INVENTORY, THIS IS THE CULPRIT
 
     public GameObject empty;
 
@@ -43,6 +44,12 @@ public class Inventory : MonoBehaviour
                 slot.tileType = Tile.TileType.Air;
                 slot.sprite = null;
             }
+        }
+
+        // Initialize sprites Array to Sprite based on list of Tile Types in Tile.cs
+        for (int tileTypeIndex = 0; tileTypeIndex < Enum.GetNames(typeof(Tile.TileType)).Length; tileTypeIndex++)
+        {
+            sprites[tileTypeIndex] = Resources.Load<Sprite>(Enum.GetName(typeof(Tile.TileType), tileTypeIndex));
         }
 
         if (selectedSlot.slotParent == null)

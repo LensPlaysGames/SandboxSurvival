@@ -6,9 +6,9 @@ public class World
 {
     #region World Generation Characteristics
 
-    private float surfaceHeightMultiplier = .8f, undergroundHeightMultiplier = .69f;
+    private float surfaceHeightMultiplier = .81f, undergroundHeightMultiplier = .69f;
 
-    private float treeChance = 10f;
+    private float treeChance = .1f;
     private float leafOnTreeHeightMultiplier = 0.5f;
     private int minTreeHeight = 4, maxTreeHeight = 9;
 
@@ -84,13 +84,18 @@ public class World
 
     public void GenerateRandomTiles() // All this does is goes through each tile in world and sets tile type to something
     {
+        // Initialize World Generation Characteristics from Where they Are Set In Inspector (DataDontDestroyOnLoad.WorldGenerationParameters.cs)
+        WorldGenerationParameters worldGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<WorldGenerationParameters>();
+        surfaceHeightMultiplier = worldGenParams.surfaceHeightPercentage;
+        undergroundHeightMultiplier = worldGenParams.undergroundHeightPercentage;
+
         for (int x = 0; x < width; x++)
         {
             surfaceHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f);
             undergroundHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f);
 
-            surfaceHeightMultiplier = Mathf.Clamp(surfaceHeightMultiplier, 0.72f, .99f);
-            undergroundHeightMultiplier = Mathf.Clamp(undergroundHeightMultiplier, 0.4f, .72f);
+            surfaceHeightMultiplier = Mathf.Clamp(surfaceHeightMultiplier, undergroundHeightMultiplier, .99f);
+            undergroundHeightMultiplier = Mathf.Clamp(undergroundHeightMultiplier, 0.4f, worldGenParams.undergroundHeightPercentage);
 
             for (int y = 0; y < height; y++)
             {
@@ -126,6 +131,13 @@ public class World
 
     public void FindGrassMakeTrees()
     {
+        // Initialize Tree Generation Characteristics from Where they Are Set In Inspector (DataDontDestroyOnLoad.WorldGenerationParameters.cs)
+        WorldGenerationParameters worldGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<WorldGenerationParameters>();
+        treeChance = worldGenParams.treeSpawnChance;
+        leafOnTreeHeightMultiplier = worldGenParams.leafHeightOnTree;
+        minTreeHeight = worldGenParams.minTreeHeight;
+        maxTreeHeight = worldGenParams.maxTreeHeight;
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -133,7 +145,7 @@ public class World
                 // Tree Chance
                 int randTreeInt = UnityEngine.Random.Range(0, 100);
 
-                if ((randTreeInt) < treeChance)
+                if ((randTreeInt) < (treeChance * 100))
                 {
                     // Find If Tile Type is Grass
                     if (tiles[x, y].Type == Tile.TileType.Grass)
@@ -147,18 +159,18 @@ public class World
                             // Place Dirt Below Tree
                             if (t == 0) { tiles[x, (y)].Type = Tile.TileType.Dirt; }
                             // Place Wood Until Tree Height is Reached
-                            else { tiles[x, (y + t)].Type = Tile.TileType.Wood_Boards; }
+                            else { tiles[x, (y + t)].Type = Tile.TileType.Log; }
 
                             // Leaf Generation
                             leafOnTreeHeightMultiplier = UnityEngine.Random.Range(0.45f, 0.72f);
                             if (t > (treeHeight * leafOnTreeHeightMultiplier))
                             {
-                                tiles[x - 1, y + t].Type = Tile.TileType.DevTile;
-                                tiles[x + 1, y + t].Type = Tile.TileType.DevTile;
+                                tiles[x - 1, y + t].Type = Tile.TileType.Leaves;
+                                tiles[x + 1, y + t].Type = Tile.TileType.Leaves;
                             }
                             if (t == treeHeight)
                             {
-                                tiles[x, y + t + 1].Type = Tile.TileType.DevTile;
+                                tiles[x, y + t + 1].Type = Tile.TileType.Leaves;
                             }
                         }
                     }

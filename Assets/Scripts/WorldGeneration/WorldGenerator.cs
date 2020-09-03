@@ -11,7 +11,7 @@ public class WorldGenerator : MonoBehaviour
 
     public World world { get; protected set; }
 
-    public Sprite fullGrassSprite, dirtSprite, stoneSprite, woodBoardsSprite, devTex;
+    public Sprite fullGrassSprite, dirtSprite, stoneSprite, logSprite, leavesSprite, woodBoardsSprite, devTex;
 
     public GameObject player;
 
@@ -135,7 +135,7 @@ public class WorldGenerator : MonoBehaviour
 
         if (tileData.Type == Tile.TileType.Grass)
         {
-            tile.GetComponent<SpriteRenderer>().sprite = fullGrassSprite;
+            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Grass");
 
             tile.GetComponent<BoxCollider2D>().enabled = true;
             tile.layer = 8;
@@ -146,27 +146,39 @@ public class WorldGenerator : MonoBehaviour
             tile.GetComponent<BoxCollider2D>().enabled = false;
             tile.layer = 9;
         }
-        else if(tileData.Type == Tile.TileType.DevTile)
-        {
-            tile.GetComponent<SpriteRenderer>().sprite = devTex;
-            tile.GetComponent<BoxCollider2D>().enabled = true;
-            tile.layer = 8;
-        }
         else if(tileData.Type == Tile.TileType.Dirt)
         {
-            tile.GetComponent<SpriteRenderer>().sprite = dirtSprite;
+            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Dirt");
             tile.GetComponent<BoxCollider2D>().enabled = true;
             tile.layer = 8;
         }
         else if (tileData.Type == Tile.TileType.Stone)
         {
-            tile.GetComponent<SpriteRenderer>().sprite = stoneSprite;
+            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Stone");
             tile.GetComponent<BoxCollider2D>().enabled = true;
             tile.layer = 8;
         }
+        else if (tileData.Type == Tile.TileType.Log)
+        {
+            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Log");
+            tile.GetComponent<BoxCollider2D>().enabled = true;
+            tile.layer = 8;
+        }
+        else if (tileData.Type == Tile.TileType.Leaves)
+        {
+            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Leaves");
+            tile.GetComponent<BoxCollider2D>().enabled = false;
+            tile.layer = 9;
+        }
         else if(tileData.Type == Tile.TileType.Wood_Boards)
         {
-            tile.GetComponent<SpriteRenderer>().sprite = woodBoardsSprite;
+            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("WoodBoards");
+            tile.GetComponent<BoxCollider2D>().enabled = true;
+            tile.layer = 8;
+        }
+        else if (tileData.Type == Tile.TileType.DevTile)
+        {
+            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("DevTex"); ;
             tile.GetComponent<BoxCollider2D>().enabled = true;
             tile.layer = 8;
         }
