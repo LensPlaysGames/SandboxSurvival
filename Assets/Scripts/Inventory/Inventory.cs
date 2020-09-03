@@ -37,9 +37,10 @@ public class Inventory : MonoBehaviour
                 a++;
                 slot.slotParent = GameObject.Find("Slot (" + a + ")");
                 slot.countText = GameObject.Find("Slot (" + a + ") Count");
-                slot.tileType = Tile.TileType.Air;
                 slot.empty = true;
                 slot.count = 0;
+                slot.isTile = false;
+                slot.tileType = Tile.TileType.Air;
                 slot.sprite = null;
             }
         }
@@ -66,7 +67,7 @@ public class Inventory : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha0)) { selectedSlot = slots[9]; slotSelector.transform.position = slots[9].slotParent.transform.position; selectedSlotIndex = 9; }
     }
 
-    public void AddItemToSlot(Tile.TileType tileType)
+    public void AddTileToSlot(Tile.TileType tileType)
     {
         bool itemDealt = false;
 
@@ -82,6 +83,7 @@ public class Inventory : MonoBehaviour
                 {
                     // STACK ITEMS
                     slots[s].count++;
+                    slots[s].isTile = true;
 
                     itemDealt = true;
 
@@ -102,6 +104,7 @@ public class Inventory : MonoBehaviour
                     slots[s1].empty = false;
                     slots[s1].count = 0;
                     slots[s1].count++;
+                    slots[s1].isTile = true;
 
                     if (sprites[(int)tileType] != null)
                     {
@@ -148,6 +151,7 @@ public class Inventory : MonoBehaviour
             }
 
             slots[slotNum].tileType = Tile.TileType.Air;
+            slots[slotNum].isTile = false;
             slots[slotNum].empty = true;
             slots[slotNum].count = 0;
             slots[slotNum].countText.GetComponent<TextMeshProUGUI>().text = "";
@@ -156,14 +160,16 @@ public class Inventory : MonoBehaviour
     }
 
 
+
     public void SaveInventory(string saveName)
     {
         for (int slot = 0; slot < slots.Length; slot++)
         {
-            slotsToSave[slot].tileType = slots[slot].tileType;
+            slotsToSave[slot].isTile = slots[slot].isTile;
             slotsToSave[slot].empty = slots[slot].empty;
             slotsToSave[slot].count = slots[slot].count;
 
+            slotsToSave[slot].tileType = slots[slot].tileType;
             slotsToSave[slot].slotParentName = slots[slot].slotParent.name;
             slotsToSave[slot].countTextName = slots[slot].countText.name;
             if (slots[slot].sprite != null)
@@ -184,12 +190,12 @@ public class Inventory : MonoBehaviour
 
         for (int slot = 0; slot < slots.Length; slot++)
         {
-
             // Set Slot Data to Loaded Slot Data
-            slots[slot].tileType = saveManager.loadedSlots[slot].tileType;
+            slots[slot].isTile = saveManager.loadedSlots[slot].isTile;
             slots[slot].empty = saveManager.loadedSlots[slot].empty;
             slots[slot].count = saveManager.loadedSlots[slot].count;
 
+            slots[slot].tileType = saveManager.loadedSlots[slot].tileType;
             slots[slot].slotParent = GameObject.Find(saveManager.loadedSlots[slot].slotParentName);
             slots[slot].countText = GameObject.Find(saveManager.loadedSlots[slot].countTextName);
             slots[slot].sprite = Resources.Load<Sprite>(saveManager.loadedSlots[slot].spriteName);

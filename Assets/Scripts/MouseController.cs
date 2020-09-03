@@ -36,8 +36,14 @@ public class MouseController : MonoBehaviour
 
         if (canSelect)
         {
-            if (Input.GetMouseButtonDown(0)) { DestroySelectedTile(); }
-            if (Input.GetMouseButtonUp(1)) { BuildTile(); }
+            // Destroy Selected Tile, Add to Inventory
+            if (Input.GetMouseButtonDown(0)) { TryToDestroySelectedTile(); }
+            // Use Selected Slot Key
+            if (Input.GetMouseButtonUp(1)) 
+            {
+                // Check if Item in Selected Slot is a Tile, if so, Build Tile
+                if (Player.GetComponent<Inventory>().selectedSlot.isTile == true) { BuildTile(); }
+            }
         }
     }
 
@@ -64,51 +70,107 @@ public class MouseController : MonoBehaviour
         else { Cursor.GetComponent<SpriteRenderer>().color = Color.red; }
     }
 
-    void DestroySelectedTile()
+    #region Break Tile
+
+    void TryToDestroySelectedTile()
     {
-        #region Play Sound based on Tile Type
+        #region Based on Tile Type: Set Tile Break Time
+
         if (selectedTile.Type == Tile.TileType.Grass || selectedTile.Type == Tile.TileType.Dirt)
         {
-            GameObject destroyParticles = Instantiate(particlesOnGrassDestroyed, Cursor.transform.position, Quaternion.identity);
-            GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("dirtCrunch" + Random.Range(1, 4));
+            selectedTile.tileDestroyTime = .25f;
         }
-        else if(selectedTile.Type == Tile.TileType.Stone)
+        else if (selectedTile.Type == Tile.TileType.Stone)
         {
-            GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("placedTile");
-            GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("Hit");
+            selectedTile.tileDestroyTime = .5f;
         }
-        else if (selectedTile.Type == Tile.TileType.Wood_Boards)
+        else if (selectedTile.Type == Tile.TileType.Wood_Boards || selectedTile.Type == Tile.TileType.DevTile)
         {
-            GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("placedTile");
+            selectedTile.tileDestroyTime = .4f;
         }
 
         #endregion
 
-        if (selectedTile.Type != Tile.TileType.Air)
+        if (selectedTile.Type != Tile.TileType.Air) // If tile isn't Air (aka a tile to break and collect) Then Actually try to destroy it
         {
-            // Add The Damn Thing To Player Inventory
-            GameObject.Find("Player").GetComponent<Inventory>().AddItemToSlot(selectedTile.Type);
-            // Actually Build The Damn Thing (if it's breakable)
-            selectedTile.Type = Tile.TileType.Air;
+            UnityEngine.Debug.Log("Attempting to BreakTileAfterX");
+            // Start Breaking Block Until tileDestroyTime <= 0
+            StartCoroutine(BreakTileAfterX(selectedTile.tileDestroyTime));
         }
     }
 
-    void BuildTile()
+    IEnumerator BreakTileAfterX(float x) 
+    {
+        while (x >= 0) // REMOVE TIME SINCE LAST FRAME FROM DESTROY TIME EVERY FRAME IF PLAYER IS HOLDING BUTTON STILL
+        {
+            if (Input.GetMouseButton(0))
+            {
+                x -= Mathf.Round(Time.deltaTime * 100f) / 100f;
+                yield return null;
+            }
+            else
+            {
+                yield break;
+            }
+        }
+
+        if (selectedTile.Type != Tile.TileType.Air) // Protection for player dragging off of block to break
+        {
+            if (x <= 0f) // IF BLOCK SHOULD BE DESTROYED
+            {
+
+                #region Based On Tile Type: Play Particles, Play Sound
+
+                if (selectedTile.Type == Tile.TileType.Grass || selectedTile.Type == Tile.TileType.Dirt)
+                {
+                    GameObject destroyParticles = Instantiate(particlesOnGrassDestroyed, Cursor.transform.position, Quaternion.identity);
+                    GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("dirtCrunch" + Random.Range(1, 4));
+                }
+                else if (selectedTile.Type == Tile.TileType.Stone)
+                {
+                    GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("placedTile");
+                    GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("Hit");
+                }
+                else
+                {
+                    GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("placedTile");
+                }
+
+                #endregion
+
+                // Actually add the damned thing to Inventory
+                Player.GetComponent<Inventory>().AddTileToSlot(selectedTile.Type);
+                // Actually Break The Damn Tile
+                selectedTile.Type = Tile.TileType.Air;
+
+                yield break;
+            }
+        }
+
+    }
+
+    #endregion
+
+    void BuildTile() 
     {
         if (selectedTile.Type == Tile.TileType.Air)
         {
-            // Set Player Intended Build Tile to tile that is in the Selected Slot in Inventory
-            buildTile = Player.GetComponent<Inventory>().selectedSlot.tileType;
-            if (buildTile != Tile.TileType.Air)
+            // Check if Selected Slot isTile, if so, place it
+            if (Player.GetComponent<Inventory>().selectedSlot.isTile == true)
             {
-                // Play Placed Tile Sound (could be based on tile type in future)
-                GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("placedTile");
-                // Remove Tile Placed From Slot Selected
-                Player.GetComponent<Inventory>().TakeFromSlot(Player.GetComponent<Inventory>().selectedSlot);
-                // Set Tile To The Intended Build Tile
-                selectedTile.Type = buildTile;
+                // Set Player Intended Build Tile to tile that is in the Selected Slot in Inventory
+                buildTile = Player.GetComponent<Inventory>().selectedSlot.tileType;
+                // If slot is not empty
+                if (buildTile != Tile.TileType.Air)
+                {
+                    // Play Placed Tile Sound (could be based on tile type in future)
+                    GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("placedTile");
+                    // Remove Tile Placed From Slot Selected
+                    Player.GetComponent<Inventory>().TakeFromSlot(Player.GetComponent<Inventory>().selectedSlot);
+                    // Set Tile To The Intended Build Tile
+                    selectedTile.Type = buildTile;
+                }
             }
-
         }
     }
 

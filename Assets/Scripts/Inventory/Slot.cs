@@ -12,11 +12,12 @@ public class Slot
     [NonSerialized]
     public Sprite sprite;
 
-    public Tile.TileType tileType;
-
     public bool empty;
-
     public int count;
+
+    public bool isTile;
+
+    public Tile.TileType tileType;
 
     public string slotParentName;
     public string countTextName;

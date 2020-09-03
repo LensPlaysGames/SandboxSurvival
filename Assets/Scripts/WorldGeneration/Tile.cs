@@ -19,6 +19,8 @@ public class Tile
     int x;
     int y;
 
+    public float tileDestroyTime;
+
     [NonSerialized]
     Action<Tile> tileTypeChangedCallback; // An Action is basically a list of functions under one name  THIS ONE IS GIVEN TO EACH TILE AND CALLED WHEN Type type ACCESSOR IS SET
 
