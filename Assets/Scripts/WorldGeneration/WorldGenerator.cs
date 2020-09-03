@@ -45,8 +45,11 @@ public class WorldGenerator : MonoBehaviour
     {
         UnityEngine.Debug.Log("Creating World");
 
+        // Get World Size
+        WorldGenerationParameters worldGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<WorldGenerationParameters>();
+
         // Initialize World
-        world = new World(270, 90);
+        world = new World(worldGenParams.worldWidth, worldGenParams.worldHeight);
 
         // Create GameObjects (Visual Layer) For Each Tile in World (Data Layer)
         for (int x = 0; x < world.Width; x++)
@@ -72,7 +75,6 @@ public class WorldGenerator : MonoBehaviour
         world.GenerateRandomTiles(); // Set Each Tile to Random Tile Type
 
         // Make Sure New World is Saved As New and doesn't Overwrite Old World
-        // I DON'T EVEN KNOW IF THIS IS IS A BUG THAT STILL EXISTS BUT: WHEN MAKING A NEW WORLD IT JUST SOMETIMES DOESN'T WORK AND OVERWRITES PREVIOUS SAVES...  I THINK IT HAS SOMETHING TO DO WITH THIS NOT BEING CALLED AT THE CORRECT PLACE OR SOMETHING
         saveManager.GetSaveFiles();
         foreach (string s in saveManager.worldSaves)
         {
@@ -91,20 +93,23 @@ public class WorldGenerator : MonoBehaviour
         // Save Newly Created World to Disk
         world.SaveTiles(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
         // Save Inventory (once player loads) So that Game Doesn't BAZINGA when loading if player alt-f4s a new world without saving
-        StartCoroutine(SavePlayerInventoryAfterX(1f)); 
+        StartCoroutine(SavePlayerInventoryAfterX(1f));
+        StartCoroutine(SavePlayerDataAfterX(1f));
     }
 
     public IEnumerator SavePlayerInventoryAfterX(float x) { yield return new WaitForSeconds(x); player.GetComponent<Inventory>().SaveInventory(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName); }
 
+    public IEnumerator SavePlayerDataAfterX(float x) { yield return new WaitForSeconds(x); player.GetComponent<Player>().SavePlayerData(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName); }
+
     public void LoadSavedWorld(string saveName)
     {
-        world = new World(270, 90);
+        world = new World(270, 135);
 
         world.LoadTiles(saveName);
 
-        // LOAD INVENTORY DATA -- CURRENTLY I AM HAVING TROUBLE WITH INVENTORY INSTANCES AND STUFF
-        Inventory inventory = GameObject.Find("Player").GetComponent<Inventory>();
-        inventory.LoadInventory(saveName);
+        // LOAD INVENTORY DATA
+        GameObject player = GameObject.Find("Player");
+        player.GetComponent<Inventory>().LoadInventory(saveName);
 
         for (int x = 0; x < world.Width; x++)
         {
@@ -128,23 +133,25 @@ public class WorldGenerator : MonoBehaviour
                 OnTileTypeChanged(tileData, tile); // CALL CALLBACK DIRECTLY BECAUSE BUGS AND THINGS
             }
         }
+
+        // LOAD PLAYER DATA (position)
+        player.GetComponent<Player>().LoadPlayerData(saveName);
     }
 
     public void OnTileTypeChanged(Tile tileData, GameObject tile) // Callback for when Tile Changes so Tile Visuals are updated when Tile Data is updated
     {
-
-        if (tileData.Type == Tile.TileType.Grass)
+        if (tileData.Type == Tile.TileType.Air)
+        {
+            tile.GetComponent<SpriteRenderer>().sprite = null;
+            tile.GetComponent<BoxCollider2D>().enabled = false;
+            tile.layer = 9;
+        }
+        else if(tileData.Type == Tile.TileType.Grass)
         {
             tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Grass");
 
             tile.GetComponent<BoxCollider2D>().enabled = true;
             tile.layer = 8;
-        }
-        else if (tileData.Type == Tile.TileType.Air)
-        {
-            tile.GetComponent<SpriteRenderer>().sprite = null;
-            tile.GetComponent<BoxCollider2D>().enabled = false;
-            tile.layer = 9;
         }
         else if(tileData.Type == Tile.TileType.Dirt)
         {
@@ -184,9 +191,17 @@ public class WorldGenerator : MonoBehaviour
         }
         else
         {
-            UnityEngine.Debug.LogWarning("Unrecognized Tile Type, Can't Set Tile Data");
+            UnityEngine.Debug.LogWarning("Unrecognized Tile Type: " + tileData.Type.ToString() + ", Can't Set Tile Data");
         }
 
+    }
+
+    public GameObject GetTileGameObjectAtWorldCoord(Vector3 coord)
+    {
+        int x = (int)Mathf.Round(coord.x / 2);
+        int y = (int)Mathf.Round(coord.y / 2);
+
+        return GameObject.Find("Tile." + x + "_" + y);
     }
 
     public Tile GetTileAtWorldCoord(Vector3 coord)

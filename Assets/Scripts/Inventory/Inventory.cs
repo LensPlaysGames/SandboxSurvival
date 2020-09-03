@@ -74,6 +74,13 @@ public class Inventory : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha0)) { selectedSlot = slots[9]; slotSelector.transform.position = slots[9].slotParent.transform.position; selectedSlotIndex = 9; }
     }
 
+    public void SetSelectedSlot(int slotIndex)
+    {
+        selectedSlot = slots[slotIndex]; 
+        slotSelector.transform.position = slots[slotIndex].slotParent.transform.position; 
+        selectedSlotIndex = slotIndex;
+    }
+
     public void AddTileToSlot(Tile.TileType tileType)
     {
         bool itemDealt = false;

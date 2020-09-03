@@ -1884,8 +1884,12 @@ MonoBehaviour:
   loadedWorld:
     tilesToSave: []
   loadedSlots: []
+  loadedPlayerData:
+    x: 0
+    y: 0
   worldSaves: []
   inventorySaves: []
+  playerDataSaves: []
 --- !u!4 &1436620612
 Transform:
   m_ObjectHideFlags: 0
@@ -2305,7 +2309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: -1
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
@@ -2710,12 +2714,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30c3d098ce94d6b4faf3a8c29bcae2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  surfaceHeightPercentage: 0.81
-  undergroundHeightPercentage: 0.69
+  surfaceHeightPercentage: 0.72
+  undergroundHeightPercentage: 0.64
   treeSpawnChance: 0.1
   minTreeHeight: 4
   maxTreeHeight: 9
   leafHeightOnTree: 0.5
+  dirtDestroyTime: 0.18
+  grassDestroyTime: 0.27
+  stoneDestroyTime: 0.54
+  logDestroyTime: 0.36
+  leavesDestroyTime: 0.02
+  wood_BoardsDestroyTime: 0.27
+  devTileDestroyTime: 0.2
 --- !u!1 &1956171693
 GameObject:
   m_ObjectHideFlags: 0

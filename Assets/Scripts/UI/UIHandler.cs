@@ -86,6 +86,9 @@ public class UIHandler : MonoBehaviour
         // Save Inventory
         player.GetComponent<Inventory>().SaveInventory(saveName);
 
+        // Save Player Data
+        player.GetComponent<Player>().SavePlayerData(saveName);
+
         // Notify Player Game Saved
         SendNotif('\"' + saveName + '\"' + " Saved", Color.green);
     }

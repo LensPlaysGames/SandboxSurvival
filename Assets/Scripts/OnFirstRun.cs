@@ -19,17 +19,6 @@ public class OnFirstRun : MonoBehaviour
         {
             UnityEngine.Debug.Log("First Time Game has Ran on " + System.Environment.UserName);
 
-            #region Insert Pioneer World to Save Location
-
-            string pioneerWorldPath = Application.dataPath + Path.DirectorySeparatorChar + "Resources" + Path.DirectorySeparatorChar + "World_PioneerWorld.map";
-            string pioneerInventoryPath = Application.dataPath + Path.DirectorySeparatorChar + "Resources" + Path.DirectorySeparatorChar + "inventory_PioneerWorld.dat";
-            string saveFileLocation = Application.persistentDataPath + Path.DirectorySeparatorChar;
-
-            File.Copy(pioneerWorldPath, saveFileLocation + Path.GetFileName(pioneerWorldPath), true);
-            File.Copy(pioneerInventoryPath, saveFileLocation + Path.GetFileName(pioneerInventoryPath), true);
-
-            #endregion
-
             firstRun = 1;
             PlayerPrefs.SetInt("cachedFirstRun", firstRun);
         }

@@ -60,7 +60,7 @@ public class MouseController : MonoBehaviour
 
         if (Mathf.Abs(Cursor.transform.position.x - Player.transform.position.x) > 6) { canSelect = false; } // If Too Far from Player Sideways, Can Not Select
         else if (Cursor.transform.position.y - Player.transform.position.y > 8) { canSelect = false; } // If Above max y, Can Not Select
-        else if (Cursor.transform.position.y - Player.transform.position.y < -4) { canSelect = false; } // below min y, Can Not Select
+        else if (Cursor.transform.position.y - Player.transform.position.y < -4.2) { canSelect = false; } // below min y, Can Not Select
 
         else if (pauseMenu.activeInHierarchy) { canSelect = false; } // If Player is In Pause Menu
 
@@ -76,24 +76,43 @@ public class MouseController : MonoBehaviour
     {
         #region Based on Tile Type: Set Tile Break Time
 
-        if (selectedTile.Type == Tile.TileType.Grass || selectedTile.Type == Tile.TileType.Dirt)
+        WorldGenerationParameters tileDestroyParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<WorldGenerationParameters>();
+
+        if (selectedTile.Type == Tile.TileType.Dirt)
         {
-            selectedTile.tileDestroyTime = .25f;
+            selectedTile.tileDestroyTime = tileDestroyParams.dirtDestroyTime;
+        }
+        else if (selectedTile.Type == Tile.TileType.Grass)
+        {
+            selectedTile.tileDestroyTime = tileDestroyParams.grassDestroyTime;
         }
         else if (selectedTile.Type == Tile.TileType.Stone)
         {
-            selectedTile.tileDestroyTime = .5f;
+            selectedTile.tileDestroyTime = tileDestroyParams.stoneDestroyTime;
         }
-        else if (selectedTile.Type == Tile.TileType.Wood_Boards || selectedTile.Type == Tile.TileType.DevTile)
+        else if (selectedTile.Type == Tile.TileType.Log)
         {
-            selectedTile.tileDestroyTime = .4f;
+            selectedTile.tileDestroyTime = tileDestroyParams.logDestroyTime;
         }
+        else if (selectedTile.Type == Tile.TileType.Log)
+        {
+            selectedTile.tileDestroyTime = tileDestroyParams.leavesDestroyTime;
+        }
+        else if (selectedTile.Type == Tile.TileType.Wood_Boards)
+        {
+            selectedTile.tileDestroyTime = tileDestroyParams.wood_BoardsDestroyTime;
+        }
+        else if (selectedTile.Type == Tile.TileType.DevTile)
+        {
+            selectedTile.tileDestroyTime = tileDestroyParams.devTileDestroyTime;
+        }
+        else { selectedTile.tileDestroyTime = .02f; }
 
         #endregion
 
         if (selectedTile.Type != Tile.TileType.Air) // If tile isn't Air (aka a tile to break and collect) Then Actually try to destroy it
         {
-            UnityEngine.Debug.Log("Attempting to BreakTileAfterX");
+            // UnityEngine.Debug.Log("Attempting to BreakTileAfterX");
             // Start Breaking Block Until tileDestroyTime <= 0
             StartCoroutine(BreakTileAfterX(selectedTile.tileDestroyTime));
         }
@@ -105,7 +124,7 @@ public class MouseController : MonoBehaviour
         {
             if (Input.GetMouseButton(0))
             {
-                x -= Mathf.Round(Time.deltaTime * 100f) / 100f;
+                x -= Time.deltaTime;
                 yield return null;
             }
             else

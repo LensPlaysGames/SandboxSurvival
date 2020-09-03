@@ -58,7 +58,7 @@ public class World
 
     #region Constructs
 
-    public World() : this(270, 90) { } // Default Initilializer for serializtion something something grumble grumble
+    public World() : this(270, 135) { } // Default Initilializer for serializtion something something grumble grumble
 
     public World(int _width, int _height) // Creates tile at each point within world width and height
     {
@@ -138,7 +138,7 @@ public class World
         minTreeHeight = worldGenParams.minTreeHeight;
         maxTreeHeight = worldGenParams.maxTreeHeight;
 
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < width; x += 3)
         {
             for (int y = 0; y < height; y++)
             {

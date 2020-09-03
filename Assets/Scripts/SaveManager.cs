@@ -25,6 +25,7 @@ public class SaveManager : MonoBehaviour
     public Tile[] loadedTiles;
     public World loadedWorld;
     public Slot[] loadedSlots;
+    public PlayerSaveData loadedPlayerData;
 
     public void SaveWorldDataToDisk(string name, Tile[] SAVETHESETILES)
     {
@@ -84,7 +85,7 @@ public class SaveManager : MonoBehaviour
 
     public void SaveInventoryDataToDisk(string name, Slot[] SAVETHESESLOTS)
     {
-        FileStream file = new FileStream(Application.persistentDataPath + Path.DirectorySeparatorChar + "inventory_" + name + ".dat", FileMode.OpenOrCreate);
+        FileStream file = new FileStream(Application.persistentDataPath + Path.DirectorySeparatorChar + "inventory_" + name + ".inv", FileMode.OpenOrCreate);
 
         UnityEngine.Debug.Log("Saving To Inventory " + "inventory_" + name + ".dat");
 
@@ -106,7 +107,7 @@ public class SaveManager : MonoBehaviour
 
     public void LoadInventoryDataFromDisk(string name)
     {
-        string savePath = Application.persistentDataPath + Path.DirectorySeparatorChar + "inventory_" + name + ".dat";
+        string savePath = Application.persistentDataPath + Path.DirectorySeparatorChar + "inventory_" + name + ".inv";
 
         if (File.Exists(savePath))
         {
@@ -132,24 +133,79 @@ public class SaveManager : MonoBehaviour
         
     }
 
+    public void SavePlayerDataToDisk(string name, PlayerSaveData playerData)
+    {
+        FileStream file = new FileStream(Application.persistentDataPath + Path.DirectorySeparatorChar + "player_" + name + ".dat", FileMode.OpenOrCreate);
+
+        UnityEngine.Debug.Log("Saving Player Data: " + "player_" + name + ".dat");
+
+        try
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            bf.Serialize(file, playerData);
+            UnityEngine.Debug.Log("Saved Player Data!");
+        }
+        catch (SerializationException e)
+        {
+            UnityEngine.Debug.LogError("Issue Serializing Player Data: " + e.Message);
+        }
+        finally
+        {
+            file.Close();
+        }
+    }
+
+    public void LoadPlayerDataFromDisk(string name)
+    {
+        string savePath = Application.persistentDataPath + Path.DirectorySeparatorChar + "player_" + name + ".dat";
+
+        if (File.Exists(savePath))
+        {
+            UnityEngine.Debug.Log("Player Save Exists At " + savePath + "   ATTEMPTING TO LOAD   ");
+
+            FileStream file = new FileStream(savePath, FileMode.Open);
+
+            try
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                loadedPlayerData = (PlayerSaveData)bf.Deserialize(file);
+                UnityEngine.Debug.Log("Loaded Player Data!");
+            }
+            catch (SerializationException e)
+            {
+                UnityEngine.Debug.Log("Error Loading Player Data: " + e.Message);
+            }
+            finally
+            {
+                file.Close();
+            }
+        }
+
+    }
 
 
-    public string[] worldSaves, inventorySaves;
+
+    public string[] worldSaves, inventorySaves, playerDataSaves;
 
     // Initialize All Save Files to Reference
     public void GetSaveFiles()
     {
         worldSaves = Directory.GetFiles(Application.persistentDataPath.ToString(), "*.map");
         foreach (string worldSave in worldSaves)
-        {
-            
+        {         
             UnityEngine.Debug.Log("World Save Found on Disk! Exists. Name: " + Path.GetFileName(worldSave));
         }
 
-        inventorySaves = Directory.GetFiles(Application.persistentDataPath.ToString(), "*.dat");
+        inventorySaves = Directory.GetFiles(Application.persistentDataPath.ToString(), "*.inv");
         foreach (string inventorySave in inventorySaves)
         {
             UnityEngine.Debug.Log("Inventory Save Found on Disk! Name: " + Path.GetFileName(inventorySave));
+        }
+
+        playerDataSaves = Directory.GetFiles(Application.persistentDataPath.ToString(), "*.dat");
+        foreach (string playerDataSave in playerDataSaves)
+        {
+            UnityEngine.Debug.Log("Player Save Found on Disk! Name: " + Path.GetFileName(playerDataSave));
         }
     }
 
@@ -180,6 +236,20 @@ public class SaveManager : MonoBehaviour
             if (saveName == name) // Found Save to Delete
             {
                 UnityEngine.Debug.Log("DELETING INVENTORY SAVE AT " + s);
+                File.Delete(s);
+            }
+        }
+
+        foreach (string s in playerDataSaves)
+        {
+            string saveFileName = Path.GetFileName(s);
+            string saveName = saveFileName.Substring(saveFileName.IndexOf("_") + 1);
+            int index = saveName.LastIndexOf(".");
+            if (index > 0) { saveName = saveName.Substring(0, index); }
+
+            if (saveName == name) // Found Save to Delete
+            {
+                UnityEngine.Debug.Log("DELETING PLAYER DATA SAVE AT " + s);
                 File.Delete(s);
             }
         }
