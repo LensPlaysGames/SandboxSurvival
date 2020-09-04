@@ -12,7 +12,10 @@ public class MouseController : MonoBehaviour
 
     Vector3 mousePos;
     Tile selectedTile;
-    Tile.TileType buildTile = Tile.TileType.Wood_Boards;
+    Tile.TileType buildTile = Tile.TileType.WoodBoards;
+
+    public float scale;
+    bool scaleSet;
 
     public GameObject particlesOnGrassDestroyed;
 
@@ -24,20 +27,31 @@ public class MouseController : MonoBehaviour
 
     void Update()
     {
+        if (GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().worldCreated && !scaleSet)
+        {
+            scale = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().GetWorldInstance().scale;
+            scaleSet = true;
+        }
+
         // Get World Coordinates of Mouse Position
         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0f;
 
         // Get Currently Selected Tile
-        selectedTile = WorldGenerator.instance.GetTileAtWorldCoord(mousePos);
+        if (scale != 0) { selectedTile = WorldGenerator.instance.GetTileAtWorldCoord(mousePos); }
+        
 
-        SetCursorPos();
+        if (selectedTile != null)
+        {
+            SetCursorPos();
+        }
+
         SetCanSelect();
 
         if (canSelect)
         {
             // Destroy Selected Tile, Add to Inventory
-            if (Input.GetMouseButtonDown(0)) { TryToDestroySelectedTile(); }
+            if (Input.GetMouseButton(0)) { TryToDestroySelectedTile(); }
             // Use Selected Slot Key
             if (Input.GetMouseButtonUp(1)) 
             {
@@ -50,7 +64,7 @@ public class MouseController : MonoBehaviour
     void SetCursorPos()
     {
         // Set Cursor Position so it follows mouse and stays on grid
-        Vector3 cursorPos = new Vector3(selectedTile.tileX * 2, selectedTile.tileY * 2, 0);
+        Vector3 cursorPos = new Vector3(selectedTile.tileX * scale, selectedTile.tileY * scale, 0);
         Cursor.transform.position = cursorPos;
     }
 
@@ -98,9 +112,9 @@ public class MouseController : MonoBehaviour
         {
             selectedTile.tileDestroyTime = tileDestroyParams.leavesDestroyTime;
         }
-        else if (selectedTile.Type == Tile.TileType.Wood_Boards)
+        else if (selectedTile.Type == Tile.TileType.WoodBoards)
         {
-            selectedTile.tileDestroyTime = tileDestroyParams.wood_BoardsDestroyTime;
+            selectedTile.tileDestroyTime = tileDestroyParams.woodBoardsDestroyTime;
         }
         else if (selectedTile.Type == Tile.TileType.DevTile)
         {
@@ -191,13 +205,5 @@ public class MouseController : MonoBehaviour
                 }
             }
         }
-    }
-
-    void SaveGame()
-    {
-        WorldGenerator worldGenerator = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>();
-        world = worldGenerator.GetWorldInstance();
-        world.SaveTiles(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
-        //world.SaveTile(selectedTile.tileX, selectedTile.tileY);
     }
 }

@@ -34,6 +34,8 @@ public class World
     public Tile[,] tiles;
     public Tile[] tilesToSave;
 
+    public float scale;
+
     private int width;
     private int height;
 
@@ -58,8 +60,10 @@ public class World
 
     #region Constructs
 
-    public World() : this(270, 135) { } // Default Initilializer for serializtion something something grumble grumble
+    // Default Initilializer for serializtion something something grumble grumble
+    public World() : this(270, 135) { } 
 
+    // Actual Construct that is called
     public World(int _width, int _height) // Creates tile at each point within world width and height
     {
         this.width = _width;
@@ -110,7 +114,7 @@ public class World
                 {
                     // Generate Underground
                     int randInt = UnityEngine.Random.Range(0, 11);
-                    if (randInt == 0) { tiles[x, y].Type = Tile.TileType.Air; }
+                    if (randInt == 0) { tiles[x, y].Type = Tile.TileType.DarkStone; }
 
                     // INSERT UNDERGROUND RESOURCES HERE
 
@@ -181,7 +185,7 @@ public class World
 
     #endregion
 
-    #region Save and Load Tiles
+    #region Save and Load World
 
     public void SaveTiles(string saveName) // Loop Through All Tiles in World and Save 2D Tile[,] tiles Array to 1D tilesToSave Array; Get Reference to Save Manager And Save Data To File on Hard Disk
     {
@@ -199,7 +203,7 @@ public class World
         }
 
         saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        saveManager.SaveWorldDataToDisk(saveName, tilesToSave);
+        saveManager.SetTilesSaveData(saveName, tilesToSave);
 
     }
 
@@ -208,14 +212,14 @@ public class World
         tiles = new Tile[width, height];
 
         saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        saveManager.LoadWorldDataFromDisk(saveName);
+        saveManager.LoadAllDataFromDisk(saveName);
 
         int index = 0;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                tiles[x, y] = saveManager.loadedTiles[index];
+                tiles[x, y] = saveManager.loadedData.tiles[index];
                 index++;
             }
         }

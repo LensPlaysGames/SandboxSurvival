@@ -83,6 +83,17 @@ public class UIHandler : MonoBehaviour
         world = worldGenerator.GetWorldInstance();
         world.SaveTiles(saveName);
 
+        // Save World Width and Height
+        int worldWidth = world.Width;
+        int worldHeight = world.Height;
+        UnityEngine.Debug.Log("World Width: " + worldWidth + " World Height: " + worldHeight);
+        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        saveManager.SetWorldWidthHeightSaveData(saveName, worldWidth, worldHeight);
+
+        // Save World Scale
+        float worldScale = world.scale;
+        saveManager.SetWorldScaleSaveData(saveName, worldScale);
+
         // Save Inventory
         player.GetComponent<Inventory>().SaveInventory(saveName);
 

@@ -35,7 +35,10 @@ public class MenuHandler : MonoBehaviour
 
     public void SetWorldNameFromInput()
     {
-        GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName = newWorldOptions.transform.Find("WorldNameInput").GetComponent<TMP_InputField>().text;
+        // Check For Empty World Name, Set To Random Number
+        if (newWorldOptions.transform.Find("WorldNameInput").GetComponent<TMP_InputField>().text == "") { GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName = UnityEngine.Random.Range(0, 1000000).ToString(); }
+        else { GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName = newWorldOptions.transform.Find("WorldNameInput").GetComponent<TMP_InputField>().text; }
+        
     }
 
     public void StartNewGame()

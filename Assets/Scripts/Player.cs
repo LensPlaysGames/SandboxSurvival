@@ -15,6 +15,8 @@ public class Player : MonoBehaviour
     public float defaultJumpForce, lesserJumpForce;
     [Range(2f, 20f)]
     public float fallMultiplier;
+    [Range(0f, 18f)]
+    public float minVertSpeed;
     [Range(0.01f, 10f)]
     public float groundedRadius;
     public LayerMask ground;
@@ -35,18 +37,30 @@ public class Player : MonoBehaviour
         if (!playerDataLoaded)
         {
             World world = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().GetWorldInstance();
-            Vector3 middleOfWorld = new Vector3(world.Width, world.Height * 1.95f);
-            UnityEngine.Debug.Log("Player Data Not Loaded! Setting Position to: " + middleOfWorld);
-            transform.position = middleOfWorld;
+            Vector3 middleTopofWorld = new Vector3(world.Width / world.scale, world.Height * world.scale);
+            UnityEngine.Debug.Log("Player Data Not Loaded! Setting Position to: " + middleTopofWorld);
+            transform.position = middleTopofWorld;
             playerDataLoaded = true;
         }
+
+        stamina = totalStamina;
+    }
+
+    void FixedUpdate()
+    {
+        GetInput(); // Get Data
+
+        MovePlayer(); // Do Physics
+        MultiplyFall(); // Do Physics
+
+        Animate(); // Update Visuals
     }
 
     public void GetInput()
     {
         input.x = Input.GetAxisRaw("Horizontal");
 
-        // Run/Walk
+        // Run/Walk && Stamina
         if (Input.GetKey(KeyCode.LeftShift))
         {
             if (stamina > 0)
@@ -67,7 +81,9 @@ public class Player : MonoBehaviour
         else
         {
             // Player Walking
-            stamina = totalStamina; speed = walkSpeed;
+            if (stamina < totalStamina) { stamina += Time.deltaTime; }
+            else if (stamina >= totalStamina) { stamina = totalStamina; }
+            speed = walkSpeed;
             jumpForce = defaultJumpForce;
             GetComponent<SpriteRenderer>().color = Color.white;
         }
@@ -90,7 +106,11 @@ public class Player : MonoBehaviour
 
     public void MultiplyFall()
     {
-        if (rb.velocity.y < 0)
+        if (rb.velocity.y < minVertSpeed) 
+        { 
+            rb. velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime; 
+        }
+        else if (rb.velocity.y < 0)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
         }
@@ -100,27 +120,33 @@ public class Player : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
-    {
-        GetInput();
-        MovePlayer();
-        MultiplyFall();
-        Animate();
-    }
-
     public void Animate()
     {
         float playerSpeed = GetPlayerSpeed();
         anim.SetFloat("playerSpeed", playerSpeed);
         anim.SetFloat("playerHorizontalInput", input.x);
     }
+
+    #region Player Stat Accessors
+
     Vector3 lastPos = Vector3.zero;
+
     public float GetPlayerSpeed()
     {
         float speed = (transform.position - lastPos).magnitude;
         lastPos = transform.position;
         return speed;
     }
+
+    public float GetPlayerStamina()
+    {
+        float playerStamina = (stamina / totalStamina);
+        return playerStamina;
+    }
+
+    #endregion
+
+    #region Player Data Save/Load
 
     public void SavePlayerData(string saveName)
     {
@@ -130,24 +156,30 @@ public class Player : MonoBehaviour
         playerData.y = transform.position.y;
 
         SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        saveManager.SavePlayerDataToDisk(saveName, playerData);
+        saveManager.SetPlayerDataSaveData(saveName, playerData);
     }
 
     public void LoadPlayerData(string saveName)
     {
         SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        saveManager.LoadPlayerDataFromDisk(saveName);
+        saveManager.LoadAllDataFromDisk(saveName);
 
-        Vector3 loadedPos = new Vector3(saveManager.loadedPlayerData.x, saveManager.loadedPlayerData.y);
+        Vector3 loadedPos = new Vector3(saveManager.loadedData.playerData.x, saveManager.loadedData.playerData.y);
 
         transform.position = loadedPos;
 
         playerDataLoaded = true;
     }
 
+    #endregion
+
+    #region DEBUG
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(groundedPoint, groundedRadius);
     }
+
+    #endregion
 }

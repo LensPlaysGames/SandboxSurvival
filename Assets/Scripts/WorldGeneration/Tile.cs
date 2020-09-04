@@ -11,9 +11,10 @@ public class Tile
         Grass, 
         Dirt, 
         Stone, 
+        DarkStone,
         Log,
         Leaves,
-        Wood_Boards, 
+        WoodBoards, 
         DevTile 
     };
 

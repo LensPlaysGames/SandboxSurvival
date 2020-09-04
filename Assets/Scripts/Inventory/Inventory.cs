@@ -194,25 +194,25 @@ public class Inventory : MonoBehaviour
         }
 
         SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        saveManager.SaveInventoryDataToDisk(saveName, slotsToSave);
+        saveManager.SetPlayerInvSaveData(saveName, slotsToSave);
     }
 
     public void LoadInventory(string saveName)
     {
         SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        saveManager.LoadInventoryDataFromDisk(saveName);
+        saveManager.LoadAllDataFromDisk(saveName);
 
         for (int slot = 0; slot < slots.Length; slot++)
         {
             // Set Slot Data to Loaded Slot Data
-            slots[slot].isTile = saveManager.loadedSlots[slot].isTile;
-            slots[slot].empty = saveManager.loadedSlots[slot].empty;
-            slots[slot].count = saveManager.loadedSlots[slot].count;
+            slots[slot].isTile = saveManager.loadedData.playerInv[slot].isTile;
+            slots[slot].empty = saveManager.loadedData.playerInv[slot].empty;
+            slots[slot].count = saveManager.loadedData.playerInv[slot].count;
 
-            slots[slot].tileType = saveManager.loadedSlots[slot].tileType;
-            slots[slot].slotParent = GameObject.Find(saveManager.loadedSlots[slot].slotParentName);
-            slots[slot].countText = GameObject.Find(saveManager.loadedSlots[slot].countTextName);
-            slots[slot].sprite = Resources.Load<Sprite>(saveManager.loadedSlots[slot].spriteName);
+            slots[slot].tileType = saveManager.loadedData.playerInv[slot].tileType;
+            slots[slot].slotParent = GameObject.Find(saveManager.loadedData.playerInv[slot].slotParentName);
+            slots[slot].countText = GameObject.Find(saveManager.loadedData.playerInv[slot].countTextName);
+            slots[slot].sprite = Resources.Load<Sprite>(saveManager.loadedData.playerInv[slot].spriteName);
 
             inventoryLoaded = true;
 

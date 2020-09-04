@@ -1877,19 +1877,102 @@ MonoBehaviour:
   m_GameObject: {fileID: 1436620610}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e587ef3bafd91fc4ab3d9fd7b109d61d, type: 3}
+  m_Script: {fileID: 11500000, guid: 2b949dcbbf874ce40a55f0a459578252, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dataToSave:
+    tiles: []
+    worldScale: 0
+    playerData:
+      x: 0
+      y: 0
+    playerInv:
+    - empty: 0
+      count: 0
+      isTile: 0
+      tileType: 0
+      slotParentName: 
+      countTextName: 
+      spriteName: 
+    - empty: 0
+      count: 0
+      isTile: 0
+      tileType: 0
+      slotParentName: 
+      countTextName: 
+      spriteName: 
+    - empty: 0
+      count: 0
+      isTile: 0
+      tileType: 0
+      slotParentName: 
+      countTextName: 
+      spriteName: 
+    - empty: 0
+      count: 0
+      isTile: 0
+      tileType: 0
+      slotParentName: 
+      countTextName: 
+      spriteName: 
+    - empty: 0
+      count: 0
+      isTile: 0
+      tileType: 0
+      slotParentName: 
+      countTextName: 
+      spriteName: 
+    - empty: 0
+      count: 0
+      isTile: 0
+      tileType: 0
+      slotParentName: 
+      countTextName: 
+      spriteName: 
+    - empty: 0
+      count: 0
+      isTile: 0
+      tileType: 0
+      slotParentName: 
+      countTextName: 
+      spriteName: 
+    - empty: 0
+      count: 0
+      isTile: 0
+      tileType: 0
+      slotParentName: 
+      countTextName: 
+      spriteName: 
+    - empty: 0
+      count: 0
+      isTile: 0
+      tileType: 0
+      slotParentName: 
+      countTextName: 
+      spriteName: 
+    - empty: 0
+      count: 0
+      isTile: 0
+      tileType: 0
+      slotParentName: 
+      countTextName: 
+      spriteName: 
+  loadedData:
+    tiles: []
+    worldScale: 0
+    playerData:
+      x: 0
+      y: 0
+    playerInv: []
   loadedTiles: []
   loadedWorld:
     tilesToSave: []
+    scale: 0
   loadedSlots: []
   loadedPlayerData:
     x: 0
     y: 0
   worldSaves: []
-  inventorySaves: []
-  playerDataSaves: []
 --- !u!4 &1436620612
 Transform:
   m_ObjectHideFlags: 0
@@ -1990,14 +2073,14 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 5
+  m_ContentType: 0
   m_InputType: 0
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 5
+  m_CharacterValidation: 0
   m_RegexValue: 
   m_GlobalPointSize: 36
   m_CharacterLimit: 0
@@ -2062,7 +2145,7 @@ MonoBehaviour:
   m_ResetOnDeActivation: 1
   m_RestoreOriginalTextOnEscape: 1
   m_isRichTextEditingAllowed: 0
-  m_LineLimit: 0
+  m_LineLimit: 1
   m_InputValidator: {fileID: 0}
 --- !u!114 &1486778070
 MonoBehaviour:
@@ -2714,6 +2797,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30c3d098ce94d6b4faf3a8c29bcae2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldWidth: 270
+  worldHeight: 135
+  tileScale: 1.5
   surfaceHeightPercentage: 0.72
   undergroundHeightPercentage: 0.64
   treeSpawnChance: 0.1
@@ -2725,7 +2811,7 @@ MonoBehaviour:
   stoneDestroyTime: 0.54
   logDestroyTime: 0.36
   leavesDestroyTime: 0.02
-  wood_BoardsDestroyTime: 0.27
+  woodBoardsDestroyTime: 0.36
   devTileDestroyTime: 0.2
 --- !u!1 &1956171693
 GameObject:
