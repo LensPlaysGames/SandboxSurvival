@@ -7,6 +7,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
+
 public class SaveManager : MonoBehaviour
 {
 
@@ -25,42 +27,19 @@ public class SaveManager : MonoBehaviour
     public AllData dataToSave;
     public AllData loadedData;
 
-    public Tile[] loadedTiles;
-    public World loadedWorld;
-    public Slot[] loadedSlots;
-    public PlayerSaveData loadedPlayerData;
-
-    public void SetTilesSaveData(string name, Tile[] SAVETHESETILES)
+    public void SetWorldSaveData(string name, LevelSaveData SAVETHISLEVEL)
     {
-        UnityEngine.Debug.Log("Setting World Tiles to Save ");
-        dataToSave.tiles = SAVETHESETILES;
-        SaveAllDataToDisk(name, dataToSave);
-    }
-    public void SetWorldWidthHeightSaveData(string name, int x, int y)
-    {
-        UnityEngine.Debug.Log("Setting World Width To: " + x + " Setting World Height To: " + y);
-        dataToSave.worldWidth = x;
-        dataToSave.worldHeight = y;
-        SaveAllDataToDisk(name, dataToSave);
-    }
-    public void SetPlayerInvSaveData(string name, Slot[] playerInv)
-    {
-        UnityEngine.Debug.Log("Setting Player Inventory to Save");
-        dataToSave.playerInv = playerInv;
+        UnityEngine.Debug.Log("Setting World Data to Save");
+        dataToSave.levelsSaved[SAVETHISLEVEL.levelIndex] = SAVETHISLEVEL;
         SaveAllDataToDisk(name, dataToSave);
     }
     public void SetPlayerDataSaveData(string name, PlayerSaveData playerData)
     {
-        UnityEngine.Debug.Log("Setting Player Data to Save");
+        UnityEngine.Debug.Log("Saving All Player Data");
         dataToSave.playerData = playerData;
         SaveAllDataToDisk(name, dataToSave);
     }
-    public void SetWorldScaleSaveData(string name, float worldScale)
-    {
-        UnityEngine.Debug.Log("Setting World Scale To: " + worldScale);
-        dataToSave.worldScale = worldScale;
-        SaveAllDataToDisk(name, dataToSave);
-    }
+
 
     public void SaveAllDataToDisk(string name, AllData data)
     {

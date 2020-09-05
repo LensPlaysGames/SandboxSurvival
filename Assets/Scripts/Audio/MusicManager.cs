@@ -2,11 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class MusicManager : MonoBehaviour
 {
     public static MusicManager instance;
     public DataDontDestroyOnLoad dataDontDestroyOnLoad;
+
+    public AudioMixer mixer;
 
     public Sound[] tracks;
 
@@ -18,6 +21,8 @@ public class MusicManager : MonoBehaviour
         if (dataDontDestroyOnLoad != null) { UnityEngine.Debug.LogError("Multiple DataDontDestroyOnLoad in Scene!"); }
         else { dataDontDestroyOnLoad = GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>(); }
 
+        mixer = Resources.Load<AudioMixer>("Audio/AudioMixer");
+
         foreach (Sound s in tracks)
         {
             s.source = gameObject.AddComponent<AudioSource>();
@@ -27,14 +32,32 @@ public class MusicManager : MonoBehaviour
             s.source.pitch = s.pitch;
 
             s.source.loop = s.loop;
+
+            s.source.outputAudioMixerGroup = mixer.FindMatchingGroups("Music")[0];
         }
+
+        UpdateMixerVolumes();
 
         if (dataDontDestroyOnLoad.playingMusic == false)
         {
-            PlayMusic("track01");
+            PlayRandomMusic();
             dataDontDestroyOnLoad.playingMusic = true;
         }
 
+    }
+
+    public void UpdateMixerVolumes()
+    {
+        mixer.SetFloat("Master Volume", PlayerPrefs.GetFloat("Master Volume", 1f));
+        mixer.SetFloat("Music Volume", PlayerPrefs.GetFloat("Music Volume", 1f));
+        mixer.SetFloat("Sfx Volume", PlayerPrefs.GetFloat("Sfx Volume", 1f));
+    }
+
+    public void PlayRandomMusic()
+    {
+        int randTrack = UnityEngine.Random.Range(0, tracks.Length);
+        Sound s = tracks[randTrack];
+        s.source.Play();
     }
 
     public void PlayMusic(string name)

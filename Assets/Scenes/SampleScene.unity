@@ -876,7 +876,7 @@ GameObject:
   - component: {fileID: 194591186}
   - component: {fileID: 194591185}
   m_Layer: 0
-  m_Name: FreeformGlobalLight
+  m_Name: GlobalLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1511,9 +1511,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Cursor: {fileID: 46708938}
   Player: {fileID: 0}
-  world:
+  level:
+    levelIndex: 0
+    day: 0
+    time: 0
     tilesToSave: []
-    scale: 0
   canSelect: 0
   scale: 0
   particlesOnGrassDestroyed: {fileID: 2132055997394618401, guid: d921a6295f1b0e144957e43a09729e16, type: 3}
@@ -2425,31 +2427,31 @@ MonoBehaviour:
   sounds:
   - name: dirtCrunch1
     clip: {fileID: 8300000, guid: cc0263e80fc33f1448b1d0b8b3f6dd41, type: 3}
-    volume: 0.137
+    volume: 0.54
     pitch: 1
     loop: 0
     source: {fileID: 0}
   - name: dirtCrunch2
     clip: {fileID: 8300000, guid: 644b8af52e46727408589df30de7f027, type: 3}
-    volume: 0.195
+    volume: 0.63
     pitch: 1
     loop: 0
     source: {fileID: 0}
   - name: dirtCrunch3
     clip: {fileID: 8300000, guid: 094f8c50b05865f42b58df4865e0d7f1, type: 3}
-    volume: 0.189
+    volume: 0.6
     pitch: 1
     loop: 0
     source: {fileID: 0}
   - name: placedTile
     clip: {fileID: 8300000, guid: 39af2e08c6cd9e74ab0cea893fb92b12, type: 3}
-    volume: 0.228
+    volume: 0.6
     pitch: 1
     loop: 0
     source: {fileID: 0}
   - name: Hit
     clip: {fileID: 8300000, guid: d7ecc4c7e08376c4cb2e4c867ecf4fbc, type: 3}
-    volume: 0.302
+    volume: 0.7
     pitch: 1
     loop: 0
     source: {fileID: 0}
@@ -3244,9 +3246,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c7b1fc4c2ad76d429a2269f87700e9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  world:
+  level:
+    levelIndex: 0
+    day: 0
+    time: 0
     tilesToSave: []
-    scale: 0
   pauseMenu: {fileID: 0}
   player: {fileID: 0}
   inventoryUI: {fileID: 0}
@@ -3256,6 +3260,7 @@ MonoBehaviour:
   coordX: {fileID: 0}
   coordY: {fileID: 0}
   notificationTime: 5
+  scale: 0
 --- !u!1 &1053258400
 GameObject:
   m_ObjectHideFlags: 0
@@ -3576,6 +3581,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1111209387}
   - component: {fileID: 1111209386}
+  - component: {fileID: 1111209388}
   m_Layer: 0
   m_Name: WorldGenerator
   m_TagString: Untagged
@@ -3595,13 +3601,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a68a42a50a282d41961f2f6e71f3a6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fullGrassSprite: {fileID: 21300000, guid: 6adac7561ffc2bb4fb07711cf9cbe1b5, type: 3}
-  dirtSprite: {fileID: 21300000, guid: f6cc0c59c9ac4664e9837333288688f6, type: 3}
-  stoneSprite: {fileID: 21300000, guid: 972b6daf7c1e8274098daa2410d43d4d, type: 3}
-  logSprite: {fileID: 0}
-  leavesSprite: {fileID: 0}
-  woodBoardsSprite: {fileID: 21300000, guid: bf5b3389b9f427c498603403b0fa4568, type: 3}
-  devTex: {fileID: 21300000, guid: ac34490458439a34ead3aaa76e24f382, type: 3}
   player: {fileID: 0}
   worldCreated: 0
 --- !u!4 &1111209387
@@ -3618,6 +3617,33 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1111209388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1111209385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e80d52625aa03c47830ba04ce7ef740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isRunning: 0
+  isDay: 0
+  nightColor: {r: 0.7764706, g: 0.7839416, b: 1, a: 1}
+  dayColor: {r: 1, g: 0.96862745, b: 0.7764706, a: 0}
+  dayBrightness: 1.05
+  nightBrightness: 0.72
+  lightingChangeDuration: 20
+  dayLength: 600
+  dayMorning: 170
+  dayNight: 510
+  cycleSpeed: 1
+  sun: {fileID: 0}
+  player: {fileID: 0}
+  day: 0
+  currentTime: 0
 --- !u!1 &1115309246
 GameObject:
   m_ObjectHideFlags: 0
@@ -5685,6 +5711,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 0}
   anim: {fileID: 0}
+  level: 0
   runSpeed: 16
   walkSpeed: 10
   totalStamina: 4
@@ -5736,6 +5763,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventoryLoaded: 0
+  spritesLoaded: 0
   selectedSlotIndex: 0
   selectedSlot:
     empty: 0

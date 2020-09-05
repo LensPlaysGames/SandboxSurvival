@@ -9,15 +9,13 @@ public class WorldGenerator : MonoBehaviour
     public static WorldGenerator instance { get; protected set; }
     public static SaveManager saveManager;
 
-    public World world { get; protected set; }
-
-    public Sprite fullGrassSprite, dirtSprite, stoneSprite, logSprite, leavesSprite, woodBoardsSprite, devTex;
+    public Level level { get; protected set; }
 
     public GameObject player;
 
-    public World GetWorldInstance()
+    public Level GetLevelInstance()
     {
-        return world;
+        return level;
     }
 
     public bool worldCreated;
@@ -36,14 +34,14 @@ public class WorldGenerator : MonoBehaviour
         if (player != null) { UnityEngine.Debug.LogError("There Should NOT be more than one Player"); }
         player = GameObject.Find("Player");
 
-        if (GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().newWorld) { CreateNewWorld(); }
+        if (GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().newWorld) { CreateNewWorld(0); }
         else 
         {
             LoadSavedWorld(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
         }
     }
 
-    public void CreateNewWorld()
+    public void CreateNewWorld(int levelIndex)
     {
         worldCreated = false;
 
@@ -53,28 +51,24 @@ public class WorldGenerator : MonoBehaviour
         WorldGenerationParameters worldGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<WorldGenerationParameters>();
 
         // Initialize World
-        world = new World(worldGenParams.worldWidth, worldGenParams.worldHeight);
-
-        // Get World Scale
-        float tileScale = worldGenParams.tileScale;
-        world.scale = tileScale;
+        level = new Level(worldGenParams.worldWidth, worldGenParams.worldHeight, worldGenParams.tileScale, levelIndex);
 
         // Create GameObjects (Visual Layer) For Each Tile in World (Data Layer)
-        for (int x = 0; x < world.Width; x++)
+        for (int x = 0; x < level.Width; x++)
         {
-            for (int y = 0; y < world.Height; y++)
+            for (int y = 0; y < level.Height; y++)
             {
                 GameObject tile = new GameObject();
-                Tile tileData = world.GetTileAt(x, y);
+                Tile tileData = level.GetTileAt(x, y);
 
                 tile.name = "Tile." + x + "_" + y;
                 tile.layer = 9;
                 tile.transform.position = 
                     new Vector3(
-                        tileData.tileX * tileScale, 
-                        tileData.tileY * tileScale, 
+                        tileData.tileX * worldGenParams.tileScale, 
+                        tileData.tileY * worldGenParams.tileScale, 
                         0);
-                tile.transform.localScale = new Vector3(tileScale, tileScale);
+                tile.transform.localScale = new Vector3(worldGenParams.tileScale, worldGenParams.tileScale);
                 tile.transform.SetParent(this.transform, true);
 
                 tile.AddComponent<SpriteRenderer>();
@@ -85,7 +79,7 @@ public class WorldGenerator : MonoBehaviour
                 tileData.SetTileTypeChangedCallback((Tile _tile) => { OnTileTypeChanged(_tile, tile); }); // this spooky syntax is a lambda, basically a void function with no name, with input of _tile, that runs the function OnTileTypeChanged
             }
         }
-        world.GenerateRandomTiles(); // Set Each Tile to Random Tile Type
+        level.GenerateRandomTiles(); // Set Each Tile to Random Tile Type
 
         // Make Sure New World is Saved As New and doesn't Overwrite Old World
         saveManager.GetSaveFiles();
@@ -107,65 +101,67 @@ public class WorldGenerator : MonoBehaviour
             }
         }
 
-        // Save Newly Created World Tiles to Disk
-        world.SaveTiles(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
+        // Set Date and Time to ZERO
+        level.day = 0;
+        level.time = GetComponent<DayNightCycle>().dayMorning;
 
-        // Save World Width and Height
-        saveManager.SetWorldWidthHeightSaveData(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName, world.Width, world.Height);
+        // SAVE WORLD DATA
+        level.SaveLevel(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
 
-        // Save World Scale
-        saveManager.SetWorldScaleSaveData(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName, tileScale);
-
-        // Save Inventory (once player loads) So that Game Doesn't BAZINGA when loading if player alt-f4s a new world without saving
-        StartCoroutine(SavePlayerInventoryAfterX(1f));
-        StartCoroutine(SavePlayerDataAfterX(1f));
+        // SAVE PLAYER DATA
+        StartCoroutine(SaveAllPlayerDataAfterX(1f));
 
         worldCreated = true;
     }
 
-    public IEnumerator SavePlayerInventoryAfterX(float x) { yield return new WaitForSeconds(x); player.GetComponent<Inventory>().SaveInventory(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName); }
-
-    public IEnumerator SavePlayerDataAfterX(float x) { yield return new WaitForSeconds(x); player.GetComponent<Player>().SavePlayerData(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName); }
+    public IEnumerator SaveAllPlayerDataAfterX(float x) { yield return new WaitForSeconds(x); player.GetComponent<Player>().SaveAllPlayerData(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName); }
 
     public void LoadSavedWorld(string saveName)
     {
         worldCreated = false;
 
+        #region Load World
+
         // LOAD SAVE FROM DISK
         saveManager.LoadAllDataFromDisk(saveName);
 
-        // LOAD WORLD SIZE
-        int worldWidth = saveManager.loadedData.worldWidth;
-        int worldHeight = saveManager.loadedData.worldHeight;
-        UnityEngine.Debug.Log("Loaded World Size! x: " + worldWidth + " y: " + worldHeight);
+        // LOAD LEVEL INDEX
+        int levelIndex = saveManager.loadedData.playerData.levelIndex;
 
-        world = new World(worldWidth, worldHeight);
+        // LOAD LEVEL SIZE
+        int width = saveManager.loadedData.levelsSaved[levelIndex].width;
+        int height = saveManager.loadedData.levelsSaved[levelIndex].height;
+        float scale = saveManager.loadedData.levelsSaved[levelIndex].scale;
+        UnityEngine.Debug.Log("Loaded World Size! x: " + width + " y: " + height + "    World Scale: " + scale + "    World Level Index: " + levelIndex);
 
-        world.LoadTiles(saveName);
+        // Create Level
+        level = new Level(width, height, scale, levelIndex);
 
-        // LOAD INVENTORY DATA
-        GameObject player = GameObject.Find("Player");
-        player.GetComponent<Inventory>().LoadInventory(saveName);
+        // Load World that Player is/was in
+        level.LoadLevel(saveName, levelIndex); // Loads Tiles, Scale, Width and Height, and More
 
-        // LOAD WORLD SCALE
-        float worldScale = saveManager.loadedData.worldScale;
-        world.scale = worldScale;
+        // LOAD DATE AND TIME
+        GetComponent<DayNightCycle>().LoadDateAndTime();
 
-        for (int x = 0; x < world.Width; x++)
+        #endregion
+
+        #region Create World GameObjects
+
+        for (int x = 0; x < level.Width; x++)
         {
-            for (int y = 0; y < world.Height; y++)
+            for (int y = 0; y < level.Height; y++)
             {
                 GameObject tile = new GameObject();
-                Tile tileData = world.GetTileAt(x, y);;
+                Tile tileData = level.GetTileAt(x, y);;
 
                 tile.name = "Tile." + x + "_" + y;
                 tile.layer = 9;
                 tile.transform.position = 
                     new Vector3(
-                        tileData.tileX * worldScale, 
-                        tileData.tileY * worldScale, 
+                        tileData.tileX * scale, 
+                        tileData.tileY * scale, 
                         0);
-                tile.transform.localScale = new Vector3(worldScale, worldScale);
+                tile.transform.localScale = new Vector3(scale, scale);
                 tile.transform.SetParent(this.transform, true);
 
                 tile.AddComponent<SpriteRenderer>();
@@ -174,20 +170,33 @@ public class WorldGenerator : MonoBehaviour
                 tile_Collider.enabled = false;
                 tileData.SetTileTypeChangedCallback((_tile) => { OnTileTypeChanged(_tile, tile); });
 
-                OnTileTypeChanged(tileData, tile); // CALL CALLBACK DIRECTLY BECAUSE BUGS AND THINGS
+                OnTileTypeChanged(tileData, tile); // CALL CALLBACK DIRECTLY
             }
         }
 
-        // LOAD PLAYER DATA (position)
-        player.GetComponent<Player>().LoadPlayerData(saveName);
+        #endregion
+
+        #region Load Player
+
+        // Get Player To Load To
+        GameObject player = GameObject.Find("Player");
+        // LOAD ALL PLAYER DATA
+        player.GetComponent<Player>().LoadAllPlayerData(saveName);
+
+        #endregion
 
         worldCreated = true;
     }
+
+
 
     public void OnTileTypeChanged(Tile tileData, GameObject tile) // Callback for when Tile Changes so Tile Visuals are updated when Tile Data is updated
     {
         // Layer 9 = Not Solid
         // Layer 8 = Solid
+
+        // Get Sprite Database
+        DataDontDestroyOnLoad data = GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>();
 
         if (tileData.Type == Tile.TileType.Air)
         {
@@ -195,51 +204,63 @@ public class WorldGenerator : MonoBehaviour
             tile.GetComponent<BoxCollider2D>().enabled = false;
             tile.layer = 9;
         }
-        else if(tileData.Type == Tile.TileType.Grass)
+        else if (tileData.Type == Tile.TileType.Grass)
         {
-            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Grass");
+            tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.Grass];
             tile.GetComponent<BoxCollider2D>().enabled = true;
             tile.layer = 8;
         }
-        else if(tileData.Type == Tile.TileType.Dirt)
+        else if (tileData.Type == Tile.TileType.Dirt)
         {
-            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Dirt");
+            tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.Dirt];
             tile.GetComponent<BoxCollider2D>().enabled = true;
             tile.layer = 8;
         }
         else if (tileData.Type == Tile.TileType.Stone)
         {
-            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Stone");
+            tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.Stone];
             tile.GetComponent<BoxCollider2D>().enabled = true;
             tile.layer = 8;
         }
         else if (tileData.Type == Tile.TileType.DarkStone)
         {
-            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("DarkStone");
+            tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.DarkStone];
             tile.GetComponent<BoxCollider2D>().enabled = true;
             tile.layer = 8;
         }
         else if (tileData.Type == Tile.TileType.Log)
         {
-            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Log");
+            tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.Log];
             tile.GetComponent<BoxCollider2D>().enabled = true;
             tile.layer = 8;
         }
         else if (tileData.Type == Tile.TileType.Leaves)
         {
-            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Leaves");
+            tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.Leaves];
             tile.GetComponent<BoxCollider2D>().enabled = false;
             tile.layer = 9;
         }
-        else if(tileData.Type == Tile.TileType.WoodBoards)
+        else if (tileData.Type == Tile.TileType.WoodBoards)
         {
-            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("WoodBoards");
+            tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.WoodBoards];
+            tile.GetComponent<BoxCollider2D>().enabled = true;
+            tile.layer = 8;
+        }
+        else if (tileData.Type == Tile.TileType.Adobe)
+        {
+            tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.Adobe];
+            tile.GetComponent<BoxCollider2D>().enabled = true;
+            tile.layer = 8;
+        }
+        else if (tileData.Type == Tile.TileType.AdobeBricks)
+        {
+            GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.AdobeBricks];
             tile.GetComponent<BoxCollider2D>().enabled = true;
             tile.layer = 8;
         }
         else if (tileData.Type == Tile.TileType.DevTile)
         {
-            tile.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("DevTex"); ;
+            tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.DevTile];
             tile.GetComponent<BoxCollider2D>().enabled = true;
             tile.layer = 8;
         }
@@ -252,17 +273,17 @@ public class WorldGenerator : MonoBehaviour
 
     public GameObject GetTileGameObjectAtWorldCoord(Vector3 coord)
     {
-        int x = (int)Mathf.Round(coord.x / world.scale);
-        int y = (int)Mathf.Round(coord.y / world.scale);
+        int x = (int)Mathf.Round(coord.x / level.Scale);
+        int y = (int)Mathf.Round(coord.y / level.Scale);
 
         return GameObject.Find("Tile." + x + "_" + y);
     }
 
     public Tile GetTileAtWorldCoord(Vector3 coord)
     {
-        int x = (int)Mathf.Round(coord.x / world.scale);
-        int y = (int)Mathf.Round(coord.y / world.scale);
+        int x = (int)Mathf.Round(coord.x / level.Scale);
+        int y = (int)Mathf.Round(coord.y / level.Scale);
 
-        return world.GetTileAt(x, y);
+        return level.GetTileAt(x, y);
     }
 }

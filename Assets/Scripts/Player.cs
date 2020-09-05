@@ -4,8 +4,13 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    // FUCKING FIX THIS SO YOU CAN DELETE THIS. PLEASE.
+    private int width;
+
     public Rigidbody2D rb;
     public Animator anim;
+
+    public int level;
 
     [Range(5f, 25f)]
     public float runSpeed, walkSpeed;
@@ -34,10 +39,13 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 
+        Level level = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().GetLevelInstance();
+
+        width = (int)(level.Width * level.Scale);
+
         if (!playerDataLoaded)
         {
-            World world = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().GetWorldInstance();
-            Vector3 middleTopofWorld = new Vector3(world.Width / world.scale, world.Height * world.scale);
+            Vector3 middleTopofWorld = new Vector3((level.Width / 2) * level.Scale, level.Height * level.Scale);
             UnityEngine.Debug.Log("Player Data Not Loaded! Setting Position to: " + middleTopofWorld);
             transform.position = middleTopofWorld;
             playerDataLoaded = true;
@@ -54,6 +62,16 @@ public class Player : MonoBehaviour
         MultiplyFall(); // Do Physics
 
         Animate(); // Update Visuals
+
+        // Shitty Respawn to Middle of World If Below Certain Y Value or above certain X... yuck!
+
+        if (transform.position.y < -10 || transform.position.x < 0 || transform.position.x > width) 
+        {
+            Level l = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().GetLevelInstance();
+            Vector3 middleTopofWorld = new Vector3((l.Width / 2) * l.Scale, l.Height * l.Scale);
+            UnityEngine.Debug.Log("Player Fell Below Level! Setting Position to: " + middleTopofWorld);
+            transform.position = middleTopofWorld;
+        }
     }
 
     public void GetInput()
@@ -148,25 +166,36 @@ public class Player : MonoBehaviour
 
     #region Player Data Save/Load
 
-    public void SavePlayerData(string saveName)
+    public void SaveAllPlayerData(string saveName)
     {
-        PlayerSaveData playerData = new PlayerSaveData();
+        PlayerSaveData playerDataToSave = new PlayerSaveData();
 
-        playerData.x = transform.position.x;
-        playerData.y = transform.position.y;
+        // Current World Level Player is In
+        playerDataToSave.levelIndex = level;
+
+        // Player Pos
+        playerDataToSave.x = Mathf.Round(transform.position.x * 100) / 100;
+        playerDataToSave.y = Mathf.Round(Mathf.Ceil(transform.position.y) * 100) / 100;
+
+        // Player Inventory
+        GetComponent<Inventory>().SetInventoryToSave(saveName);
+        playerDataToSave.playerInv = GetComponent<Inventory>().slotsToSave;
 
         SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        saveManager.SetPlayerDataSaveData(saveName, playerData);
+        saveManager.SetPlayerDataSaveData(saveName, playerDataToSave);
     }
 
-    public void LoadPlayerData(string saveName)
+    public void LoadAllPlayerData(string saveName)
     {
         SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
         saveManager.LoadAllDataFromDisk(saveName);
 
-        Vector3 loadedPos = new Vector3(saveManager.loadedData.playerData.x, saveManager.loadedData.playerData.y);
+        level = saveManager.loadedData.playerData.levelIndex;
 
+        Vector3 loadedPos = new Vector3(saveManager.loadedData.playerData.x, saveManager.loadedData.playerData.y);
         transform.position = loadedPos;
+
+        GetComponent<Inventory>().LoadInventory(saveName);
 
         playerDataLoaded = true;
     }

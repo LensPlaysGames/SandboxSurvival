@@ -10,6 +10,7 @@ public class Inventory : MonoBehaviour
     public static Inventory instance;
 
     public bool inventoryLoaded = false;
+    public bool spritesLoaded = false;
 
     public int selectedSlotIndex;
     public Slot selectedSlot;
@@ -22,6 +23,7 @@ public class Inventory : MonoBehaviour
 
     public Slot[] slotsToSave;
     private int a;
+    
     
     void Start()
     {
@@ -46,11 +48,8 @@ public class Inventory : MonoBehaviour
             }
         }
 
-        // Initialize sprites Array to Sprite based on list of Tile Types in Tile.cs
-        for (int tileTypeIndex = 0; tileTypeIndex < Enum.GetNames(typeof(Tile.TileType)).Length; tileTypeIndex++)
-        {
-            sprites[tileTypeIndex] = Resources.Load<Sprite>(Enum.GetName(typeof(Tile.TileType), tileTypeIndex));
-        }
+        // Initialize sprites Array to Sprite based on Sprite Database
+        sprites = GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().spriteDB;
 
         if (selectedSlot.slotParent == null)
         {
@@ -86,7 +85,7 @@ public class Inventory : MonoBehaviour
         bool itemDealt = false;
 
         // Notify Player
-        GameObject.Find("UICanvas").GetComponent<UIHandler>().SendNotif("Added One " + tileType.ToString() + " To Inventory", Color.white);
+        GameObject.Find("UICanvas").GetComponent<UIHandler>().SendNotif("+1 " + tileType.ToString(), Color.black, 4.2f);
 
         // Find Slot To Add To
         for (int s1 = 0; s1 < slots.Length; s1++)
@@ -175,7 +174,7 @@ public class Inventory : MonoBehaviour
 
 
 
-    public void SaveInventory(string saveName)
+    public void SetInventoryToSave(string saveName)
     {
         for (int slot = 0; slot < slots.Length; slot++)
         {
@@ -192,9 +191,6 @@ public class Inventory : MonoBehaviour
             }
             else { slotsToSave[slot].spriteName = "Air"; }
         }
-
-        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        saveManager.SetPlayerInvSaveData(saveName, slotsToSave);
     }
 
     public void LoadInventory(string saveName)
@@ -205,14 +201,14 @@ public class Inventory : MonoBehaviour
         for (int slot = 0; slot < slots.Length; slot++)
         {
             // Set Slot Data to Loaded Slot Data
-            slots[slot].isTile = saveManager.loadedData.playerInv[slot].isTile;
-            slots[slot].empty = saveManager.loadedData.playerInv[slot].empty;
-            slots[slot].count = saveManager.loadedData.playerInv[slot].count;
+            slots[slot].isTile = saveManager.loadedData.playerData.playerInv[slot].isTile;
+            slots[slot].empty = saveManager.loadedData.playerData.playerInv[slot].empty;
+            slots[slot].count = saveManager.loadedData.playerData.playerInv[slot].count;
 
-            slots[slot].tileType = saveManager.loadedData.playerInv[slot].tileType;
-            slots[slot].slotParent = GameObject.Find(saveManager.loadedData.playerInv[slot].slotParentName);
-            slots[slot].countText = GameObject.Find(saveManager.loadedData.playerInv[slot].countTextName);
-            slots[slot].sprite = Resources.Load<Sprite>(saveManager.loadedData.playerInv[slot].spriteName);
+            slots[slot].tileType = saveManager.loadedData.playerData.playerInv[slot].tileType;
+            slots[slot].slotParent = GameObject.Find(saveManager.loadedData.playerData.playerInv[slot].slotParentName);
+            slots[slot].countText = GameObject.Find(saveManager.loadedData.playerData.playerInv[slot].countTextName);
+            slots[slot].sprite = GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().spriteDB[(int)Enum.Parse(typeof(Tile.TileType), saveManager.loadedData.playerData.playerInv[slot].spriteName)];
 
             inventoryLoaded = true;
 

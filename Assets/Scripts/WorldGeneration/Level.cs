@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [Serializable]
-public class World
+public class Level
 {
     #region World Generation Characteristics
 
@@ -14,30 +14,16 @@ public class World
 
     #endregion
 
-    #region Singletons
+    public int levelIndex;
 
-    public static World instance;
-    public static SaveManager saveManager;
-
-    void Start()
-    {
-        if (instance != null) { UnityEngine.Debug.LogError("MULTIPLE WORLDS TRYING TO CREATE"); }
-        instance = this;
-
-        if (saveManager != null) { UnityEngine.Debug.LogError("There Should NOT be more than one SaveManager"); }
-        saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        UnityEngine.Debug.Log("Save Manager cached in World.cs as saveManager SaveManager");
-    }
-
-    #endregion
+    public int day, time;
 
     public Tile[,] tiles;
     public Tile[] tilesToSave;
 
-    public float scale;
-
     private int width;
     private int height;
+    private float scale;
 
     #region Accessors
 
@@ -55,19 +41,29 @@ public class World
             return height;
         }
     }
+    public float Scale
+    {
+        get
+        {
+            return scale;
+        }
+    }
 
     #endregion
 
     #region Constructs
 
     // Default Initilializer for serializtion something something grumble grumble
-    public World() : this(270, 135) { } 
+    public Level() : this(270, 135, 1.5f, 0) { } 
 
     // Actual Construct that is called
-    public World(int _width, int _height) // Creates tile at each point within world width and height
+    public Level(int _width, int _height, float _scale, int _levelIndex) // Creates tile at each point within world width and height
     {
+        this.levelIndex = _levelIndex;
+
         this.width = _width;
         this.height = _height;
+        this.scale = _scale;
 
         tiles = new Tile[width, height];
 
@@ -75,7 +71,7 @@ public class World
         {
             for (int y = 0; y < height; y++)
             {
-                tiles[x, y] = new Tile(this, x, y);
+                this.tiles[x, y] = new Tile(this, x, y);
             }
         }
 
@@ -113,10 +109,10 @@ public class World
                 else if (y < (height * undergroundHeightMultiplier))
                 {
                     // Generate Underground
-                    int randInt = UnityEngine.Random.Range(0, 11);
-                    if (randInt == 0) { tiles[x, y].Type = Tile.TileType.DarkStone; }
+                    int randInt = UnityEngine.Random.Range(0, 100);
+                    if (randInt <= 10) { tiles[x, y].Type = Tile.TileType.DarkStone; }
 
-                    // INSERT UNDERGROUND RESOURCES HERE
+                    else if (randInt <= 15) { tiles[x, y].Type = Tile.TileType.Adobe; }
 
                     else { tiles[x, y].Type = Tile.TileType.Stone; } // Default Underground Resource Type
                 }
@@ -142,9 +138,10 @@ public class World
         minTreeHeight = worldGenParams.minTreeHeight;
         maxTreeHeight = worldGenParams.maxTreeHeight;
 
-        for (int x = 0; x < width; x += 3)
+        // Loop through all possible tree spawn locations (Every 3 tiles starting 2 tiles in from sides, 10 tiles below top of world)
+        for (int x = 2; x < (width - 2); x += 3)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < (height - 10); y++)
             {
                 // Tree Chance
                 int randTreeInt = UnityEngine.Random.Range(0, 100);
@@ -187,44 +184,72 @@ public class World
 
     #region Save and Load World
 
-    public void SaveTiles(string saveName) // Loop Through All Tiles in World and Save 2D Tile[,] tiles Array to 1D tilesToSave Array; Get Reference to Save Manager And Save Data To File on Hard Disk
+    public void SaveLevel(string saveName)
     {
+        LevelSaveData levelToSave = new LevelSaveData();
+
+        levelToSave.levelIndex = levelIndex;
+
+        levelToSave.width = width;
+        levelToSave.height = height;
+
+        #region Save Tiles (Set tilesToSave)
+
         int index = 0;
 
         tilesToSave = new Tile[tiles.Length];
 
         for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < height; y++) 
+            for (int y = 0; y < height; y++)
             {
                 tilesToSave[index] = tiles[x, y];
                 index++;
             }
         }
 
-        saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        saveManager.SetTilesSaveData(saveName, tilesToSave);
+        levelToSave.tiles = tilesToSave;
 
+        #endregion
+
+        levelToSave.scale = scale;
+
+        levelToSave.day = day;
+        levelToSave.time = time;
+
+        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        saveManager.SetWorldSaveData(saveName, levelToSave);
     }
 
-    public void LoadTiles(string saveName) // Reset (Data) 2D tiles Array; Get Reference to Save Manager and Load Data From Hard Disk; Loop through all tiles and set Tile (Data) to loadedTile (Data)
+    public void LoadLevel(string saveName, int levelIndex)
     {
-        tiles = new Tile[width, height];
-
-        saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
         saveManager.LoadAllDataFromDisk(saveName);
 
+        LevelSaveData levelSave = saveManager.loadedData.levelsSaved[levelIndex];
+
+        this.levelIndex = levelSave.levelIndex;
+
+        this.width = levelSave.width;
+        this.height = levelSave.height;
+
         int index = 0;
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                tiles[x, y] = saveManager.loadedData.tiles[index];
+                tiles[x, y] = levelSave.tiles[index];
                 index++;
             }
         }
 
+        this.scale = levelSave.scale;
+
+        this.day = levelSave.day;
+        this.time = levelSave.time;
     }
+
 
     #endregion
 

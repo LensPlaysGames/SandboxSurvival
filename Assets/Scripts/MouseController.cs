@@ -6,7 +6,7 @@ public class MouseController : MonoBehaviour
 {
     public GameObject Cursor;
     public GameObject Player;
-    public World world;
+    public Level level;
 
     public bool canSelect;
 
@@ -29,7 +29,7 @@ public class MouseController : MonoBehaviour
     {
         if (GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().worldCreated && !scaleSet)
         {
-            scale = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().GetWorldInstance().scale;
+            scale = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().GetLevelInstance().Scale;
             scaleSet = true;
         }
 
@@ -73,8 +73,8 @@ public class MouseController : MonoBehaviour
         GameObject pauseMenu = GameObject.Find("UICanvas").GetComponent<UIHandler>().pauseMenu;
 
         if (Mathf.Abs(Cursor.transform.position.x - Player.transform.position.x) > 6) { canSelect = false; } // If Too Far from Player Sideways, Can Not Select
-        else if (Cursor.transform.position.y - Player.transform.position.y > 8) { canSelect = false; } // If Above max y, Can Not Select
-        else if (Cursor.transform.position.y - Player.transform.position.y < -4.2) { canSelect = false; } // below min y, Can Not Select
+        else if (Cursor.transform.position.y - Player.transform.position.y > 8) { canSelect = false; } // If Too Far Above Player, Can Not Select
+        else if (Cursor.transform.position.y - Player.transform.position.y < -4.2) { canSelect = false; } // If Too Far below Player, Can Not Select
 
         else if (pauseMenu.activeInHierarchy) { canSelect = false; } // If Player is In Pause Menu
 
@@ -100,7 +100,7 @@ public class MouseController : MonoBehaviour
         {
             selectedTile.tileDestroyTime = tileDestroyParams.grassDestroyTime;
         }
-        else if (selectedTile.Type == Tile.TileType.Stone)
+        else if (selectedTile.Type == Tile.TileType.Stone || selectedTile.Type == Tile.TileType.DarkStone || selectedTile.Type == Tile.TileType.Adobe)
         {
             selectedTile.tileDestroyTime = tileDestroyParams.stoneDestroyTime;
         }
@@ -108,7 +108,7 @@ public class MouseController : MonoBehaviour
         {
             selectedTile.tileDestroyTime = tileDestroyParams.logDestroyTime;
         }
-        else if (selectedTile.Type == Tile.TileType.Log)
+        else if (selectedTile.Type == Tile.TileType.Leaves)
         {
             selectedTile.tileDestroyTime = tileDestroyParams.leavesDestroyTime;
         }
@@ -134,6 +134,8 @@ public class MouseController : MonoBehaviour
 
     IEnumerator BreakTileAfterX(float x) 
     {
+        Tile breakingTile = selectedTile;
+
         while (x >= 0) // REMOVE TIME SINCE LAST FRAME FROM DESTROY TIME EVERY FRAME IF PLAYER IS HOLDING BUTTON STILL
         {
             if (Input.GetMouseButton(0))
@@ -147,38 +149,42 @@ public class MouseController : MonoBehaviour
             }
         }
 
-        if (selectedTile.Type != Tile.TileType.Air) // Protection for player dragging off of block to break
+        if (selectedTile == breakingTile) // Protection for using one coroutine to break anothers block (breaking blocks too fast while holding mouse button and dragging)
         {
-            if (x <= 0f) // IF BLOCK SHOULD BE DESTROYED
+            if (selectedTile.Type != Tile.TileType.Air) // Protection for player dragging off of block to break
             {
-
-                #region Based On Tile Type: Play Particles, Play Sound
-
-                if (selectedTile.Type == Tile.TileType.Grass || selectedTile.Type == Tile.TileType.Dirt)
+                if (x <= 0f) // IF BLOCK SHOULD BE DESTROYED
                 {
-                    GameObject destroyParticles = Instantiate(particlesOnGrassDestroyed, Cursor.transform.position, Quaternion.identity);
-                    GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("dirtCrunch" + Random.Range(1, 4));
-                }
-                else if (selectedTile.Type == Tile.TileType.Stone)
-                {
-                    GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("placedTile");
-                    GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("Hit");
-                }
-                else
-                {
-                    GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("placedTile");
-                }
 
-                #endregion
+                    #region Based On Tile Type: Play Particles, Play Sound
 
-                // Actually add the damned thing to Inventory
-                Player.GetComponent<Inventory>().AddTileToSlot(selectedTile.Type);
-                // Actually Break The Damn Tile
-                selectedTile.Type = Tile.TileType.Air;
+                    if (selectedTile.Type == Tile.TileType.Grass || selectedTile.Type == Tile.TileType.Dirt)
+                    {
+                        GameObject destroyParticles = Instantiate(particlesOnGrassDestroyed, Cursor.transform.position, Quaternion.identity);
+                        GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("dirtCrunch" + Random.Range(1, 4));
+                    }
+                    else if (selectedTile.Type == Tile.TileType.Stone)
+                    {
+                        GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("placedTile");
+                        GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("Hit");
+                    }
+                    else
+                    {
+                        GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("placedTile");
+                    }
 
-                yield break;
+                    #endregion
+
+                    // Actually add the damned thing to Inventory
+                    Player.GetComponent<Inventory>().AddTileToSlot(selectedTile.Type);
+                    // Actually Break The Damn Tile
+                    selectedTile.Type = Tile.TileType.Air;
+
+                    yield break;
+                }
             }
         }
+
 
     }
 

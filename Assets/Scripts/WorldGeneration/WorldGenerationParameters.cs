@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class WorldGenerationParameters : MonoBehaviour
 {
+    [Header("Defaults")]
+    public int defaultWidth;
+    public int defaultHeight;
+    public float defaultScale;
+
     // Store World Generation Values So Everything Can Just Update them From Here When Need Be
-    [Header("World Generation Characteristics")]
+    [Space]
+    [Header("World Generation Characteristics", order = 1)]
     public int worldWidth = 270;
     public int worldHeight = 135;
-    public float tileScale = 2;
+    public float tileScale = 1.5f;
     public float surfaceHeightPercentage = .81f;
     public float undergroundHeightPercentage = .69f;
 

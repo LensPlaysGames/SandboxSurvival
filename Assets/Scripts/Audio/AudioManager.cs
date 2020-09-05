@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class AudioManager : MonoBehaviour
         if (instance != null) { UnityEngine.Debug.LogError("Multiple Audio Managers in Scene!"); }
         else { instance = this; }
 
+        AudioMixer mixer = Resources.Load<AudioMixer>("Audio/AudioMixer");
         foreach (Sound s in sounds)
         {
             s.source = gameObject.AddComponent<AudioSource>();
@@ -23,6 +25,8 @@ public class AudioManager : MonoBehaviour
             s.source.pitch = s.pitch;
 
             s.source.loop = s.loop;
+
+            s.source.outputAudioMixerGroup = mixer.FindMatchingGroups("Sfx")[0];
         }
     }
 

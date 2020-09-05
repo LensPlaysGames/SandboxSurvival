@@ -1,13 +1,17 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class DataDontDestroyOnLoad : MonoBehaviour
 {
-    #region Singleton
-
     public static DataDontDestroyOnLoad instance;
-    
+
+    public string texturePack = "Textures";
+
+    public Sprite[] spriteDB;
+    private bool spriteDBLoaded;
+
     void Start()
     {
         if (instance != null)
@@ -21,11 +25,20 @@ public class DataDontDestroyOnLoad : MonoBehaviour
             DontDestroyOnLoad(this);
         }
 
+        // Sprite Database Initilization
+        if (!spriteDBLoaded)
+        {
+            spriteDB = new Sprite[Enum.GetNames(typeof(Tile.TileType)).Length];
+            for (int tile = 0; tile < Enum.GetNames(typeof(Tile.TileType)).Length; tile++)
+            {
+                spriteDB[tile] = Resources.Load<Sprite>(texturePack + "/" + Enum.GetName(typeof(Tile.TileType), tile));
+            }
+            spriteDBLoaded = true;
+        }
     }
-    #endregion
 
     public bool newWorld;
     public bool playingMusic;
 
-    public string saveName = "Lens";
+    public string saveName = ""; // Default World Save name if Player Names Empty World
 }

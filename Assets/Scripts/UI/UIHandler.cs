@@ -7,7 +7,7 @@ using TMPro;
 
 public class UIHandler : MonoBehaviour
 {
-    public World world;
+    public Level level;
 
     public GameObject pauseMenu, player, inventoryUI, inventoryUIShowHideArrow, notificationBG, notification;
     private Sprite inventoryHideUI, inventoryShowUI;
@@ -17,7 +17,7 @@ public class UIHandler : MonoBehaviour
 
     private bool pauseMenuToggle;
 
-    public float notificationTime = 5f;
+    public float scale;
 
     void Start()
     {
@@ -39,10 +39,14 @@ public class UIHandler : MonoBehaviour
 
         notificationBG = GameObject.Find("--NotificationUI--");
         notification = Resources.Load<GameObject>("Notification");
+
+        SendNotif("You Awake From A Deep Slumber", Color.white, 20f);
     }
 
     void Update()
     {
+        if (scale == 0) { scale = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().GetLevelInstance().Scale; }
+
         if (Input.GetButtonDown("Cancel"))
         {
             TogglePauseMenu();
@@ -79,29 +83,19 @@ public class UIHandler : MonoBehaviour
         string saveName = GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName;
 
         // Save World
-        WorldGenerator worldGenerator = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>();
-        world = worldGenerator.GetWorldInstance();
-        world.SaveTiles(saveName);
+        GameObject worldGenerator = GameObject.Find("WorldGenerator");
+        level = worldGenerator.GetComponent<WorldGenerator>().GetLevelInstance();
 
-        // Save World Width and Height
-        int worldWidth = world.Width;
-        int worldHeight = world.Height;
-        UnityEngine.Debug.Log("World Width: " + worldWidth + " World Height: " + worldHeight);
-        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        saveManager.SetWorldWidthHeightSaveData(saveName, worldWidth, worldHeight);
+        level.day = worldGenerator.GetComponent<DayNightCycle>().GetDate();
+        level.time = worldGenerator.GetComponent<DayNightCycle>().GetTime();
 
-        // Save World Scale
-        float worldScale = world.scale;
-        saveManager.SetWorldScaleSaveData(saveName, worldScale);
+        level.SaveLevel(saveName);
 
-        // Save Inventory
-        player.GetComponent<Inventory>().SaveInventory(saveName);
-
-        // Save Player Data
-        player.GetComponent<Player>().SavePlayerData(saveName);
+        // Save All Player Data
+        player.GetComponent<Player>().SaveAllPlayerData(saveName);
 
         // Notify Player Game Saved
-        SendNotif('\"' + saveName + '\"' + " Saved", Color.green);
+        SendNotif('\"' + saveName + '\"' + " Saved", Color.green, 10f);
     }
     public void ExitGame()
     {
@@ -150,23 +144,23 @@ public class UIHandler : MonoBehaviour
 
     void SetCoordinateUI(float x, float y)
     {
-        coordX.text = Mathf.Round(x / 2).ToString();
-        coordY.text = Mathf.Round(y / 2).ToString();
+        coordX.text = Mathf.Round(x / scale).ToString();
+        coordY.text = Mathf.Round(y / scale).ToString();
     }
 
     #endregion
 
     #region Notifications
 
-    public void SendNotif(string notifText, Color notifColor) { StartCoroutine(SendNotification(notifText, notifColor)); }
+    public void SendNotif(string notifText, Color notifColor, float notifTime) { StartCoroutine(SendNotification(notifText, notifColor, notifTime)); }
 
-    public IEnumerator SendNotification(string notifText, Color notifColor)
+    public IEnumerator SendNotification(string notifText, Color notifColor, float notifTime)
     {
         GameObject notif = Instantiate(notification, notificationBG.transform);
         notif.GetComponentInChildren<TextMeshProUGUI>().text = notifText;
         notif.GetComponentInChildren<TextMeshProUGUI>().color = notifColor;
         notif.GetComponent<Animator>().SetFloat("ShowNotif", 1f);
-        yield return new WaitForSeconds(notificationTime);
+        yield return new WaitForSeconds(notifTime);
         Destroy(notif);
     }
 

@@ -5,7 +5,7 @@ using UnityEngine;
 [Serializable]
 public class Tile
 {
-    public enum TileType 
+    public enum TileType // Sprite Database Length is based on this, along with many other texture stuff... Hope that's okay and stuff
     { 
         Air, 
         Grass, 
@@ -15,6 +15,8 @@ public class Tile
         Log,
         Leaves,
         WoodBoards, 
+        Adobe,
+        AdobeBricks,
         DevTile 
     };
 
@@ -28,7 +30,7 @@ public class Tile
     Action<Tile> tileTypeChangedCallback; // An Action is basically a list of functions under one name  THIS ONE IS GIVEN TO EACH TILE AND CALLED WHEN Type type ACCESSOR IS SET
 
     [NonSerialized]
-    World world; // Get Tile reference to Game World; Can't Serialize Due to creating new World instance upon load
+    Level level; // Get Tile reference to Game World; Can't Serialize Due to creating new World instance upon load
 
     #region Accessors
 
@@ -72,9 +74,9 @@ public class Tile
 
 
 
-    public Tile( World _world, int _x, int _y )
+    public Tile(Level _world, int _x, int _y )
     {
-        this.world = _world;
+        this.level = _world;
         this.x = _x;
         this.y = _y;
     }
