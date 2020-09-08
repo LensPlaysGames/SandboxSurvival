@@ -9,10 +9,11 @@ using TMPro;
 
 public class MenuHandler : MonoBehaviour
 {
-    public GameObject mainMenu, selectSaveMenu, newWorldOptions, optionsMenu;
+    public GameObject mainMenu, selectSaveMenu, newWorldOptions, optionsMenu, loadScreen;
 
-    public WorldGenerationParameters worldGenParams;
+    public LevelGenerationParameters levelGenParams;
     public Slider tileScale, width, height, masterVolume, musicVolume, sfxVolume;
+    public Toggle lockCursorPos, displayCoordinates;
 
     private bool moving, inMainMenu;
 
@@ -36,9 +37,15 @@ public class MenuHandler : MonoBehaviour
             optionsMenu.SetActive(false);
         }
 
+        loadScreen = GameObject.Find("--LoadScreen--");
+        if (loadScreen != null)
+        {
+            loadScreen.transform.Find("Loading").gameObject.SetActive(false);
+        }
+
         #region Initialize Sliders for Advanced World Options
 
-        worldGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<WorldGenerationParameters>();
+        levelGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>();
 
         GameObject container = newWorldOptions.transform.Find("AdvancedWorldOptions").gameObject;
         GameObject containerT = container.transform.Find("--TileScale--").gameObject;
@@ -50,16 +57,18 @@ public class MenuHandler : MonoBehaviour
         GameObject containerH = container.transform.Find("--Height--").gameObject;
         height = containerH.transform.Find("HeightSlider").GetComponent<Slider>();
 
-        tileScale.value = worldGenParams.defaultScale;
-        tileScale.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = worldGenParams.defaultScale.ToString();
-        width.value = worldGenParams.defaultWidth;
-        width.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = worldGenParams.defaultWidth.ToString();
-        height.value = worldGenParams.defaultHeight;
-        height.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = worldGenParams.defaultHeight.ToString();
+        tileScale.value = levelGenParams.defaultScale;
+        tileScale.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = levelGenParams.defaultScale.ToString();
+        width.value = levelGenParams.defaultWidth;
+        width.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = levelGenParams.defaultWidth.ToString();
+        height.value = levelGenParams.defaultHeight;
+        height.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = levelGenParams.defaultHeight.ToString();
 
         #endregion
 
-        #region Initialize Sliders for Options
+        #region Initialize Options Values
+
+        #region Audio
 
         GameObject containerO = optionsMenu.transform.Find("OptionsBackground").gameObject;
         GameObject containerA = containerO.transform.Find("--Audio--").gameObject;
@@ -74,6 +83,19 @@ public class MenuHandler : MonoBehaviour
         musicVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round((Mathf.Pow(1 - (Mathf.Round(PlayerPrefs.GetFloat("Music Volume", -3) * -1) / 80), 5.807f)) * 100) / 100).ToString();
         sfxVolume.value = PlayerPrefs.GetFloat("Sfx Volume", -3);
         sfxVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round((Mathf.Pow(1 - (Mathf.Round(PlayerPrefs.GetFloat("Sfx Volume", -3) * -1) / 80), 5.807f)) * 100) / 100).ToString();
+
+        #endregion
+
+        GameObject containerTog = containerO.transform.Find("--Toggles--").gameObject;
+        lockCursorPos = containerTog.transform.Find("LockCursorPos").GetComponent<Toggle>();
+        int locked = PlayerPrefs.GetInt("LockCursorPos", 0);
+        if (locked != 0) { lockCursorPos.isOn = true; }
+        else if (locked == 0) { lockCursorPos.isOn = false; }
+
+        displayCoordinates = containerTog.transform.Find("DisplayCoordinates").GetComponent<Toggle>();
+        int displayCoords = PlayerPrefs.GetInt("Enabled Coordinates Display", 1);
+        if (displayCoords != 0) { displayCoordinates.isOn = true; }
+        else if (displayCoords == 0) { displayCoordinates.isOn = false; }
 
         #endregion
 
@@ -123,7 +145,7 @@ public class MenuHandler : MonoBehaviour
         selectSaveMenu.SetActive(true);
 
         // Get Reference to Load Save Button Prefab
-        GameObject loadWorldButton = Resources.Load<GameObject>("LoadWorldButton");
+        GameObject loadWorldButton = Resources.Load<GameObject>("Prefabs/LoadWorldButton");
 
         // Find all Save Files in Save Directory
         SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
@@ -173,36 +195,61 @@ public class MenuHandler : MonoBehaviour
         sfxVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round((Mathf.Pow(1 - (Mathf.Round(vol * -1) / 80), 5.807f)) * 100) / 100).ToString();
         GameObject.Find("MusicManager").GetComponent<MusicManager>().UpdateMixerVolumes(); 
     }
+    public void SetLockCursorPos(bool locked)
+    {
+        int lockedIndex = 1;
+        if (locked) { lockedIndex = 1; }
+        else if (!locked) { lockedIndex = 0; }
+        PlayerPrefs.SetInt("LockCursorPos", lockedIndex);
+        lockCursorPos.isOn = locked;
+    }
+    public void SetCoordinatesDisplay(bool enabled)
+    {
+        int enabledInt = 1;
+        if (enabled) { enabledInt = 1; }
+        else if (!enabled) { enabledInt = 0; }
+        PlayerPrefs.SetInt("Enabled Coordinates Display", enabledInt);
+    }
 
     public void SetWorldNameFromInput()
     {
         // Check For Empty World Name, Set To Random Number
-        if (newWorldOptions.transform.Find("WorldNameInput").GetComponent<TMP_InputField>().text == "") { GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName = UnityEngine.Random.Range(0, 1000000).ToString(); }
-        else { GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName = newWorldOptions.transform.Find("WorldNameInput").GetComponent<TMP_InputField>().text; }
+        if (newWorldOptions.transform.Find("WorldNameInput").GetComponent<TMP_InputField>().text == "") { DataDontDestroyOnLoad.instance.saveName = UnityEngine.Random.Range(0, 1000000).ToString(); }
+        else { DataDontDestroyOnLoad.instance.saveName = newWorldOptions.transform.Find("WorldNameInput").GetComponent<TMP_InputField>().text; }
         
     }
 
     public void SetTileScaleFromInput()
     {
-        GameObject.Find("DataDontDestroyOnLoad").GetComponent<WorldGenerationParameters>().tileScale = Mathf.Round(tileScale.value * 10) / 10;
+        GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>().tileScale = Mathf.Round(tileScale.value * 10) / 10;
         tileScale.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round(tileScale.value * 10) / 10).ToString();
     }
 
     public void SetLevelWidthFromInput()
     {
-        GameObject.Find("DataDontDestroyOnLoad").GetComponent<WorldGenerationParameters>().worldWidth = (int)width.value;
+        GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>().worldWidth = (int)width.value;
         width.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = ((int)width.value).ToString();
     }
 
     public void SetLevelHeightFromInput()
     {
-        GameObject.Find("DataDontDestroyOnLoad").GetComponent<WorldGenerationParameters>().worldHeight = (int)height.value;
+        GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>().worldHeight = (int)height.value;
         height.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = ((int)height.value).ToString();
     }
 
     public void StartNewGame()
     {
-        GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().newWorld = true;
+        loadScreen.transform.Find("Loading").gameObject.SetActive(true);
+        DataDontDestroyOnLoad.instance.newWorld = true;
+        SceneManager.LoadScene("SampleScene");
+    }
+
+    // Take in button, Set world to load Name to button Name (which is set from save file that it represents)
+    public void LoadSavedGame(Button button)
+    {
+        loadScreen.transform.Find("Loading").gameObject.SetActive(true);
+        DataDontDestroyOnLoad.instance.saveName = button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
+        DataDontDestroyOnLoad.instance.newWorld = false;
         SceneManager.LoadScene("SampleScene");
     }
 
@@ -243,14 +290,6 @@ public class MenuHandler : MonoBehaviour
             currentMenu.GetComponent<Animator>().Play("Base Layer.OptionsMenuHide");
             StartCoroutine(DisableMenuAfterX(.51f, currentMenu));
         }
-    }
-
-    // Take in button, Set world to load Name to button Name (which is set from save file that it represents)
-    public void LoadSavedGame(Button button)
-    {
-        GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName = button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
-        GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().newWorld = false;
-        SceneManager.LoadScene("SampleScene");
     }
     
     public void QuitGame() { UnityEngine.Debug.Log("Game Shutting Down. Good Night... "); Application.Quit(); }

@@ -9,55 +9,82 @@ public class Player : MonoBehaviour
 
     public Rigidbody2D rb;
     public Animator anim;
+    public Transform grounded;
 
     public int level;
+    public Level l;
 
+    [SerializeField]
     [Range(5f, 25f)]
-    public float runSpeed, walkSpeed;
-    public float totalStamina;
+    private float runSpeed, walkSpeed;
+    [SerializeField] 
+    private float totalStamina;
     public Color darkened, darker;
+    [SerializeField]
     [Range(1f, 20f)]
-    public float defaultJumpForce, lesserJumpForce;
+    private float defaultJumpForce, lesserJumpForce;
+    [SerializeField]
     [Range(2f, 20f)]
-    public float fallMultiplier;
+    private float fallMultiplier;
+    [SerializeField]
     [Range(0f, 18f)]
-    public float minVertSpeed;
+    private float minVertSpeed;
+    [SerializeField]
+    private float maxFallSpeed;
+    [SerializeField]
     [Range(0.01f, 10f)]
-    public float groundedRadius;
-    public LayerMask ground;
+    private float groundedRadius;
+    [SerializeField]
+    private LayerMask ground;
+    [SerializeField]
+    private float staminaRegainTime;
 
+
+
+    private float staminaRegain;
     private Vector3 input;
-    public float speed, jumpForce, stamina;
-
-    public Transform grounded;
-    private Vector2 groundedPoint;
+    private float speed, jumpForce, stamina;
 
     private bool playerDataLoaded;
+
+
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.relativeVelocity.y >= maxFallSpeed)
+        {
+            UnityEngine.Debug.Log("Player Fell Too Hard!");
+            GameObject.Find("UICanvas").GetComponent<UIHandler>().SendNotif("Player Fell! Yeouch!", Color.red, 10f);
+        }
+    }
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 
-        Level level = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().GetLevelInstance();
+        stamina = totalStamina;
 
-        width = (int)(level.Width * level.Scale);
+        l = GameObject.Find("LevelGenerator").GetComponent<LevelGenerator>().GetLevelInstance();
+
+        width = (int)(l.Width * l.Scale);
 
         if (!playerDataLoaded)
         {
-            Vector3 middleTopofWorld = new Vector3((level.Width / 2) * level.Scale, level.Height * level.Scale);
+            Vector3 middleTopofWorld = new Vector3((l.Width / 2) * l.Scale, l.Height * l.Scale);
             UnityEngine.Debug.Log("Player Data Not Loaded! Setting Position to: " + middleTopofWorld);
             transform.position = middleTopofWorld;
             playerDataLoaded = true;
         }
+    }
 
-        stamina = totalStamina;
+    private void Update()
+    {
+        GetInput(); // Get Data
     }
 
     void FixedUpdate()
     {
-        GetInput(); // Get Data
-
         MovePlayer(); // Do Physics
         MultiplyFall(); // Do Physics
 
@@ -67,7 +94,6 @@ public class Player : MonoBehaviour
 
         if (transform.position.y < -10 || transform.position.x < 0 || transform.position.x > width) 
         {
-            Level l = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().GetLevelInstance();
             Vector3 middleTopofWorld = new Vector3((l.Width / 2) * l.Scale, l.Height * l.Scale);
             UnityEngine.Debug.Log("Player Fell Below Level! Setting Position to: " + middleTopofWorld);
             transform.position = middleTopofWorld;
@@ -76,15 +102,25 @@ public class Player : MonoBehaviour
 
     public void GetInput()
     {
+        if (Input.GetButtonDown("CraftMenu"))
+        {
+            // Open Craft Menu
+            GameObject.Find("UICanvas").GetComponent<UIHandler>().CraftMenu();
+        }
+
         input.x = Input.GetAxisRaw("Horizontal");
 
-        // Run/Walk && Stamina
+        #region Run/Walk && Stamina
+
         if (Input.GetKey(KeyCode.LeftShift))
         {
+            staminaRegain = staminaRegainTime;
+
             if (stamina > 0)
             {
                 // Player Sprinting
-                stamina -= Time.deltaTime; speed = runSpeed;
+                stamina -= Time.deltaTime; 
+                speed = runSpeed;
                 jumpForce = lesserJumpForce;
                 GetComponent<SpriteRenderer>().color = darkened;
             }
@@ -99,16 +135,27 @@ public class Player : MonoBehaviour
         else
         {
             // Player Walking
-            if (stamina < totalStamina) { stamina += Time.deltaTime; }
+            if (stamina < totalStamina) 
+            { 
+                if (staminaRegain <= 0)
+                {
+                    stamina += Time.deltaTime;
+                }
+                else
+                {
+                    staminaRegain -= Time.deltaTime;
+                }
+            }
             else if (stamina >= totalStamina) { stamina = totalStamina; }
+
             speed = walkSpeed;
             jumpForce = defaultJumpForce;
             GetComponent<SpriteRenderer>().color = Color.white;
         }
 
-        // Jump
-        groundedPoint = grounded.position;
-        if (Physics2D.OverlapCircle(groundedPoint, groundedRadius, ground)) { if (Input.GetAxisRaw("Jump") != 0) { Jump(); } }
+        #endregion
+
+        if (Physics2D.OverlapCircle(grounded.position, groundedRadius, ground)) { if (Input.GetAxisRaw("Jump") != 0) { Jump(); }}
     }
 
     public void MovePlayer()
@@ -118,7 +165,7 @@ public class Player : MonoBehaviour
 
     public void Jump()
     {
-        rb.velocity = Vector3.zero;
+        rb.velocity = new Vector3(rb.velocity.x, Vector3.zero.y);
         rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
     }
 
@@ -198,16 +245,6 @@ public class Player : MonoBehaviour
         GetComponent<Inventory>().LoadInventory(saveName);
 
         playerDataLoaded = true;
-    }
-
-    #endregion
-
-    #region DEBUG
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(groundedPoint, groundedRadius);
     }
 
     #endregion

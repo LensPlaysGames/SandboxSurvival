@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8460229477713023741}
   - component: {fileID: 8460229477713023738}
   - component: {fileID: 8460229477713023739}
+  - component: {fileID: -4124975555067780777}
   m_Layer: 0
   m_Name: EmptyImagePrefab
   m_TagString: Untagged
@@ -75,3 +76,15 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &-4124975555067780777
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8460229477713023736}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

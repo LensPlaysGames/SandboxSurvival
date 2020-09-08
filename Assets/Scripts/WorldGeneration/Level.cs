@@ -82,12 +82,12 @@ public class Level
 
     #region World Generation
 
-    public void GenerateRandomTiles() // All this does is goes through each tile in world and sets tile type to something
+    public void GenerateLevelTiles() // All this does is goes through each tile in world and sets tile type to something
     {
         // Initialize World Generation Characteristics from Where they Are Set In Inspector (DataDontDestroyOnLoad.WorldGenerationParameters.cs)
-        WorldGenerationParameters worldGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<WorldGenerationParameters>();
-        surfaceHeightMultiplier = worldGenParams.surfaceHeightPercentage;
-        undergroundHeightMultiplier = worldGenParams.undergroundHeightPercentage;
+        LevelGenerationParameters levelGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>();
+        surfaceHeightMultiplier = levelGenParams.surfaceHeightPercentage;
+        undergroundHeightMultiplier = levelGenParams.undergroundHeightPercentage;
 
         for (int x = 0; x < width; x++)
         {
@@ -95,7 +95,7 @@ public class Level
             undergroundHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f);
 
             surfaceHeightMultiplier = Mathf.Clamp(surfaceHeightMultiplier, undergroundHeightMultiplier, .99f);
-            undergroundHeightMultiplier = Mathf.Clamp(undergroundHeightMultiplier, 0.4f, worldGenParams.undergroundHeightPercentage);
+            undergroundHeightMultiplier = Mathf.Clamp(undergroundHeightMultiplier, 0.4f, levelGenParams.undergroundHeightPercentage);
 
             for (int y = 0; y < height; y++)
             {
@@ -132,11 +132,11 @@ public class Level
     public void FindGrassMakeTrees()
     {
         // Initialize Tree Generation Characteristics from Where they Are Set In Inspector (DataDontDestroyOnLoad.WorldGenerationParameters.cs)
-        WorldGenerationParameters worldGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<WorldGenerationParameters>();
-        treeChance = worldGenParams.treeSpawnChance;
-        leafOnTreeHeightMultiplier = worldGenParams.leafHeightOnTree;
-        minTreeHeight = worldGenParams.minTreeHeight;
-        maxTreeHeight = worldGenParams.maxTreeHeight;
+        LevelGenerationParameters levelGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>();
+        treeChance = levelGenParams.treeSpawnChance;
+        leafOnTreeHeightMultiplier = levelGenParams.leafHeightOnTree;
+        minTreeHeight = levelGenParams.minTreeHeight;
+        maxTreeHeight = levelGenParams.maxTreeHeight;
 
         // Loop through all possible tree spawn locations (Every 3 tiles starting 2 tiles in from sides, 10 tiles below top of world)
         for (int x = 2; x < (width - 2); x += 3)

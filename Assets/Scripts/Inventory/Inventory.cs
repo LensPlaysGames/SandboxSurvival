@@ -16,15 +16,22 @@ public class Inventory : MonoBehaviour
     public Slot selectedSlot;
     public GameObject slotSelector;
 
-    public Slot[] slots;
-    public Sprite[] sprites; // THIS HAS TO MATCH Tile.TileType INDEX PERFECTLY. IF LOADING WRONG IMAGE BUT CORRECT DATA IN INVENTORY, THIS IS THE CULPRIT
+    public int maxStackSize = 90;
 
-    public GameObject empty;
+    public Slot mousedOver;
+
+    public Slot[] slots;
+    public Sprite[] tileSprites;
 
     public Slot[] slotsToSave;
     private int a;
-    
-    
+
+    public delegate void UpdateSlot(int slotIndex);
+    public UpdateSlot updateSlotCallback;
+
+    public delegate void UpdateAllSlots();
+    public UpdateAllSlots updateAllSlotsCallback;
+
     void Start()
     {
         if (instance != null)
@@ -42,14 +49,14 @@ public class Inventory : MonoBehaviour
                 slot.countText = GameObject.Find("Slot (" + a + ") Count");
                 slot.empty = true;
                 slot.count = 0;
-                slot.isTile = false;
-                slot.tileType = Tile.TileType.Air;
+                slot.item.itemType = Item.ItemType.Tile;
+                slot.item.tileType = Tile.TileType.Air;
                 slot.sprite = null;
             }
         }
 
-        // Initialize sprites Array to Sprite based on Sprite Database
-        sprites = GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().spriteDB;
+        // Initialize sprites Array from Sprite Database
+        tileSprites = DataDontDestroyOnLoad.instance.spriteDB;
 
         if (selectedSlot.slotParent == null)
         {
@@ -61,128 +68,126 @@ public class Inventory : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) { selectedSlot = slots[0]; slotSelector.transform.position = slots[0].slotParent.transform.position; selectedSlotIndex = 0; }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) { selectedSlot = slots[1]; slotSelector.transform.position = slots[1].slotParent.transform.position; selectedSlotIndex = 1; }
-        if (Input.GetKeyDown(KeyCode.Alpha3)) { selectedSlot = slots[2]; slotSelector.transform.position = slots[2].slotParent.transform.position; selectedSlotIndex = 2; }
-        if (Input.GetKeyDown(KeyCode.Alpha4)) { selectedSlot = slots[3]; slotSelector.transform.position = slots[3].slotParent.transform.position; selectedSlotIndex = 3; }
-        if (Input.GetKeyDown(KeyCode.Alpha5)) { selectedSlot = slots[4]; slotSelector.transform.position = slots[4].slotParent.transform.position; selectedSlotIndex = 4; }
-        if (Input.GetKeyDown(KeyCode.Alpha6)) { selectedSlot = slots[5]; slotSelector.transform.position = slots[5].slotParent.transform.position; selectedSlotIndex = 5; }
-        if (Input.GetKeyDown(KeyCode.Alpha7)) { selectedSlot = slots[6]; slotSelector.transform.position = slots[6].slotParent.transform.position; selectedSlotIndex = 6; }
-        if (Input.GetKeyDown(KeyCode.Alpha8)) { selectedSlot = slots[7]; slotSelector.transform.position = slots[7].slotParent.transform.position; selectedSlotIndex = 7; }
-        if (Input.GetKeyDown(KeyCode.Alpha9)) { selectedSlot = slots[8]; slotSelector.transform.position = slots[8].slotParent.transform.position; selectedSlotIndex = 8; }
-        if (Input.GetKeyDown(KeyCode.Alpha0)) { selectedSlot = slots[9]; slotSelector.transform.position = slots[9].slotParent.transform.position; selectedSlotIndex = 9; }
+        if (Input.GetKeyDown(KeyCode.Alpha1)) { selectedSlotIndex = 0; SetSelectedSlot(selectedSlotIndex); }
+        if (Input.GetKeyDown(KeyCode.Alpha2)) { selectedSlotIndex = 1; SetSelectedSlot(selectedSlotIndex); }
+        if (Input.GetKeyDown(KeyCode.Alpha3)) { selectedSlotIndex = 2; SetSelectedSlot(selectedSlotIndex); }
+        if (Input.GetKeyDown(KeyCode.Alpha4)) { selectedSlotIndex = 3; SetSelectedSlot(selectedSlotIndex); }
+        if (Input.GetKeyDown(KeyCode.Alpha5)) { selectedSlotIndex = 4; SetSelectedSlot(selectedSlotIndex); }
+        if (Input.GetKeyDown(KeyCode.Alpha6)) { selectedSlotIndex = 5; SetSelectedSlot(selectedSlotIndex); }
+        if (Input.GetKeyDown(KeyCode.Alpha7)) { selectedSlotIndex = 6; SetSelectedSlot(selectedSlotIndex); }
+        if (Input.GetKeyDown(KeyCode.Alpha8)) { selectedSlotIndex = 7; SetSelectedSlot(selectedSlotIndex); }
+        if (Input.GetKeyDown(KeyCode.Alpha9)) { selectedSlotIndex = 8; SetSelectedSlot(selectedSlotIndex); }
+        if (Input.GetKeyDown(KeyCode.Alpha0)) { selectedSlotIndex = 9; SetSelectedSlot(selectedSlotIndex); }
+
+        if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex != 9) { selectedSlotIndex += 1; SetSelectedSlot(selectedSlotIndex); }
+        else if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex == 9) { selectedSlotIndex = 0; SetSelectedSlot(selectedSlotIndex); }
+        if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex != 0) { selectedSlotIndex -= 1; SetSelectedSlot(selectedSlotIndex); }
+        else if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex == 0) { selectedSlotIndex = 9; SetSelectedSlot(selectedSlotIndex); }
     }
 
     public void SetSelectedSlot(int slotIndex)
     {
         selectedSlot = slots[slotIndex]; 
-        slotSelector.transform.position = slots[slotIndex].slotParent.transform.position; 
+        slotSelector.transform.position = slots[slotIndex].slotParent.transform.position;
         selectedSlotIndex = slotIndex;
     }
 
-    public void AddTileToSlot(Tile.TileType tileType)
+    public void AddItemToSlot(Item item)
     {
         bool itemDealt = false;
-
-        // Notify Player
-        GameObject.Find("UICanvas").GetComponent<UIHandler>().SendNotif("+1 " + tileType.ToString(), Color.black, 4.2f);
 
         // Find Slot To Add To
         for (int s1 = 0; s1 < slots.Length; s1++)
         {
             for (int s = 0; s < slots.Length; s++)
             {
-                if (tileType == slots[s].tileType)
+                // Not the best but check every slot per slot for a stack of tiles, if it's the same tile, stack, otherwise MAKE NEW STACK
+                if (slots[s].item.tileType == item.tileType)
                 {
-                    // STACK ITEMS
-                    slots[s].count++;
-                    slots[s].isTile = true;
+                    if (slots[s].count < maxStackSize)
+                    {
+                        // STACK ITEMS
+                        slots[s].count++;
+                        slots[s].item = item;
 
-                    itemDealt = true;
+                        itemDealt = true;
 
-                    UpdateSlotUI(s);
-                    break;
+                        updateSlotCallback?.Invoke(s);
+                        break;
+                    }
                 }
             }
             if (itemDealt)
             {
                 break;
             }
-            else if (tileType != slots[s1].tileType)
+            else if (item != slots[s1].item)
             {
                 // MAKE NEW STACK
                 if (slots[s1].empty)
                 {
-                    slots[s1].tileType = tileType;
+                    slots[s1].item = item;
                     slots[s1].empty = false;
                     slots[s1].count = 0;
                     slots[s1].count++;
-                    slots[s1].isTile = true;
 
-                    if (sprites[(int)tileType] != null)
+                    if (item.itemType == Item.ItemType.Tile)
                     {
-                        slots[s1].sprite = sprites[(int)tileType];
+                        if (tileSprites[(int)item.tileType] != null)
+                        {
+                            slots[s1].sprite = tileSprites[(int)item.tileType];
+                        }
+                        else 
+                        { 
+                            UnityEngine.Debug.LogError("Error when trying to AddItemToSlot: Sprite for " + item.tileType.ToString() + " not found in Inventory Sprites Array!"); 
+                        }
                     }
-                    else { UnityEngine.Debug.LogError("Error when trying to AddItemToSlot: Sprite for " + tileType.ToString() + " not found in Inventory Sprites Array!"); }
+                    else if (item.itemType == Item.ItemType.Tool)
+                    {
+                        // Get Appropriate Tool Sprite in Database (has to equal enums or I'll do it another way)
+
+                    }
+                    else if (item.itemType == Item.ItemType.Weapon)
+                    {
+                        // Get Appropriate Weapon Sprite in Database (has to equal enums or I'll do it another way)
+
+                    }
 
                     itemDealt = true;
 
-                    UpdateSlotUI(s1);
+                    updateSlotCallback?.Invoke(s1);
                     break;
                 }
             }
         }
+        if (!itemDealt) { UnityEngine.Debug.LogWarning("Player Inventory Full, Not sure what to do with destroyed Tile"); }
     }
 
-    public void TakeFromSlot(Slot s)
+    public void TakeFromSlot(Slot slot)
     {
-        s.count--;
-        UpdateSlotUI(selectedSlotIndex);
+        slot.count--;
+        updateSlotCallback?.Invoke(selectedSlotIndex);
     }
 
-    void UpdateSlotUI(int slotNum) 
+    public void ClearSlot(Slot slot)
     {
-        // If Image Exists In Slot, Destroy It, We're about to Update it
-        if (slots[slotNum].slotParent.transform.Find("EmptyImagePrefab(Clone)") != null)
-        {
-            Destroy(slots[slotNum].slotParent.transform.Find("EmptyImagePrefab(Clone)").gameObject);
-        }
-
-        // If slot is populated, create image and update text
-        if (slots[slotNum].count != 0)
-        {
-            GameObject item = Instantiate(empty, slots[slotNum].slotParent.transform);
-            item.transform.SetSiblingIndex(item.transform.GetSiblingIndex() - 1);
-            item.GetComponent<Image>().sprite = slots[slotNum].sprite;
-            slots[slotNum].countText.GetComponent<TextMeshProUGUI>().text = slots[slotNum].count.ToString();
-        }
-        else // NO MORE ITEMS IN SLOT, REMOVE ATTRIBUTES
-        {
-            if (slots[slotNum].slotParent.transform.Find("EmptyImagePrefab(Clone)") != null)
-            {
-                Destroy(slots[slotNum].slotParent.transform.Find("EmptyImagePrefab(Clone)").gameObject);
-            }
-
-            slots[slotNum].tileType = Tile.TileType.Air;
-            slots[slotNum].isTile = false;
-            slots[slotNum].empty = true;
-            slots[slotNum].count = 0;
-            slots[slotNum].countText.GetComponent<TextMeshProUGUI>().text = "";
-            slots[slotNum].sprite = null;
-        }
+        slot.empty = true;
+        slot.count = 0;
+        slot.item.itemType = Item.ItemType.Tile;
+        slot.item.tileType = Tile.TileType.Air;
+        slot.sprite = null;
+        updateAllSlotsCallback?.Invoke();
     }
-
-
 
     public void SetInventoryToSave(string saveName)
     {
         for (int slot = 0; slot < slots.Length; slot++)
         {
-            slotsToSave[slot].isTile = slots[slot].isTile;
+            slotsToSave[slot].item.itemType = slots[slot].item.itemType;
             slotsToSave[slot].empty = slots[slot].empty;
             slotsToSave[slot].count = slots[slot].count;
 
-            slotsToSave[slot].tileType = slots[slot].tileType;
+            slotsToSave[slot].item.tileType = slots[slot].item.tileType;
             slotsToSave[slot].slotParentName = slots[slot].slotParent.name;
             slotsToSave[slot].countTextName = slots[slot].countText.name;
             if (slots[slot].sprite != null)
@@ -201,19 +206,19 @@ public class Inventory : MonoBehaviour
         for (int slot = 0; slot < slots.Length; slot++)
         {
             // Set Slot Data to Loaded Slot Data
-            slots[slot].isTile = saveManager.loadedData.playerData.playerInv[slot].isTile;
+            slots[slot].item.itemType = saveManager.loadedData.playerData.playerInv[slot].item.itemType;
             slots[slot].empty = saveManager.loadedData.playerData.playerInv[slot].empty;
             slots[slot].count = saveManager.loadedData.playerData.playerInv[slot].count;
 
-            slots[slot].tileType = saveManager.loadedData.playerData.playerInv[slot].tileType;
+            slots[slot].item.tileType = saveManager.loadedData.playerData.playerInv[slot].item.tileType;
             slots[slot].slotParent = GameObject.Find(saveManager.loadedData.playerData.playerInv[slot].slotParentName);
             slots[slot].countText = GameObject.Find(saveManager.loadedData.playerData.playerInv[slot].countTextName);
-            slots[slot].sprite = GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().spriteDB[(int)Enum.Parse(typeof(Tile.TileType), saveManager.loadedData.playerData.playerInv[slot].spriteName)];
+            slots[slot].sprite = DataDontDestroyOnLoad.instance.spriteDB[(int)Enum.Parse(typeof(Tile.TileType), saveManager.loadedData.playerData.playerInv[slot].spriteName)];
 
             inventoryLoaded = true;
 
             // Update UI (Visual GameObject) to Represent New Data Loaded
-            UpdateSlotUI(slot);
+            updateSlotCallback?.Invoke(slot);
         }
     }
 }

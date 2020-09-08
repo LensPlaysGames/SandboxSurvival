@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class MouseController : MonoBehaviour
 {
+    public Level level;
     public GameObject Cursor;
     public GameObject Player;
-    public Level level;
+
+    public bool lockedToGrid;
 
     public bool canSelect;
 
     Vector3 mousePos;
     Tile selectedTile;
-    Tile.TileType buildTile = Tile.TileType.WoodBoards;
+    Tile.TileType buildTile = Tile.TileType.DevTile;
 
     public float scale;
     bool scaleSet;
@@ -23,13 +25,17 @@ public class MouseController : MonoBehaviour
     {
         Cursor = GameObject.Find("Cursor");
         Player = GameObject.Find("Player");
+
+        int locked = PlayerPrefs.GetInt("LockCursorPos", 0);
+        if (locked != 0) { lockedToGrid = true; }
+        else if (locked == 0) { lockedToGrid = false; }
     }
 
     void Update()
     {
-        if (GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().worldCreated && !scaleSet)
+        if (LevelGenerator.instance.worldCreated && !scaleSet)
         {
-            scale = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().GetLevelInstance().Scale;
+            scale = LevelGenerator.instance.GetLevelInstance().Scale;
             scaleSet = true;
         }
 
@@ -38,7 +44,7 @@ public class MouseController : MonoBehaviour
         mousePos.z = 0f;
 
         // Get Currently Selected Tile
-        if (scale != 0) { selectedTile = WorldGenerator.instance.GetTileAtWorldCoord(mousePos); }
+        if (scale != 0) { selectedTile = LevelGenerator.instance.GetTileAtWorldCoord(mousePos); }
         
 
         if (selectedTile != null)
@@ -56,7 +62,7 @@ public class MouseController : MonoBehaviour
             if (Input.GetMouseButtonUp(1)) 
             {
                 // Check if Item in Selected Slot is a Tile, if so, Build Tile
-                if (Player.GetComponent<Inventory>().selectedSlot.isTile == true) { BuildTile(); }
+                if (Player.GetComponent<Inventory>().selectedSlot.item.itemType == Item.ItemType.Tile) { BuildTile(); }
             }
         }
     }
@@ -64,7 +70,9 @@ public class MouseController : MonoBehaviour
     void SetCursorPos()
     {
         // Set Cursor Position so it follows mouse and stays on grid
-        Vector3 cursorPos = new Vector3(selectedTile.tileX * scale, selectedTile.tileY * scale, 0);
+        Vector3 cursorPos = new Vector3();
+        if (lockedToGrid) { cursorPos = new Vector3(selectedTile.tileX * scale, selectedTile.tileY * scale, 0); }
+        else if (!lockedToGrid) { cursorPos = new Vector3(mousePos.x, mousePos.y, 0); }
         Cursor.transform.position = cursorPos;
     }
 
@@ -90,7 +98,7 @@ public class MouseController : MonoBehaviour
     {
         #region Based on Tile Type: Set Tile Break Time
 
-        WorldGenerationParameters tileDestroyParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<WorldGenerationParameters>();
+        LevelGenerationParameters tileDestroyParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>();
 
         if (selectedTile.Type == Tile.TileType.Dirt)
         {
@@ -112,7 +120,7 @@ public class MouseController : MonoBehaviour
         {
             selectedTile.tileDestroyTime = tileDestroyParams.leavesDestroyTime;
         }
-        else if (selectedTile.Type == Tile.TileType.WoodBoards)
+        else if (selectedTile.Type == Tile.TileType.WoodBoards || selectedTile.Type == Tile.TileType.Chest)
         {
             selectedTile.tileDestroyTime = tileDestroyParams.woodBoardsDestroyTime;
         }
@@ -126,7 +134,6 @@ public class MouseController : MonoBehaviour
 
         if (selectedTile.Type != Tile.TileType.Air) // If tile isn't Air (aka a tile to break and collect) Then Actually try to destroy it
         {
-            // UnityEngine.Debug.Log("Attempting to BreakTileAfterX");
             // Start Breaking Block Until tileDestroyTime <= 0
             StartCoroutine(BreakTileAfterX(selectedTile.tileDestroyTime));
         }
@@ -176,7 +183,10 @@ public class MouseController : MonoBehaviour
                     #endregion
 
                     // Actually add the damned thing to Inventory
-                    Player.GetComponent<Inventory>().AddTileToSlot(selectedTile.Type);
+                    Item itemFromTile = new Item();
+                    itemFromTile.itemType = Item.ItemType.Tile;
+                    itemFromTile.tileType = selectedTile.Type;
+                    Player.GetComponent<Inventory>().AddItemToSlot(itemFromTile);
                     // Actually Break The Damn Tile
                     selectedTile.Type = Tile.TileType.Air;
 
@@ -195,10 +205,10 @@ public class MouseController : MonoBehaviour
         if (selectedTile.Type == Tile.TileType.Air)
         {
             // Check if Selected Slot isTile, if so, place it
-            if (Player.GetComponent<Inventory>().selectedSlot.isTile == true)
+            if (Player.GetComponent<Inventory>().selectedSlot.item.itemType == Item.ItemType.Tile)
             {
                 // Set Player Intended Build Tile to tile that is in the Selected Slot in Inventory
-                buildTile = Player.GetComponent<Inventory>().selectedSlot.tileType;
+                buildTile = Player.GetComponent<Inventory>().selectedSlot.item.tileType;
                 // If slot is not empty
                 if (buildTile != Tile.TileType.Air)
                 {

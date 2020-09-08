@@ -4,14 +4,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WorldGenerator : MonoBehaviour
+public class LevelGenerator : MonoBehaviour
 {
-    public static WorldGenerator instance { get; protected set; }
+    public static LevelGenerator instance { get; protected set; }
     public static SaveManager saveManager;
 
     public Level level { get; protected set; }
 
     public GameObject player;
+
+    public GameObject loadScreen;
 
     public Level GetLevelInstance()
     {
@@ -48,10 +50,10 @@ public class WorldGenerator : MonoBehaviour
         UnityEngine.Debug.Log("Creating World");
 
         // Get World Generation Characteristics
-        WorldGenerationParameters worldGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<WorldGenerationParameters>();
+        LevelGenerationParameters levelGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>();
 
         // Initialize World
-        level = new Level(worldGenParams.worldWidth, worldGenParams.worldHeight, worldGenParams.tileScale, levelIndex);
+        level = new Level(levelGenParams.worldWidth, levelGenParams.worldHeight, levelGenParams.tileScale, levelIndex);
 
         // Create GameObjects (Visual Layer) For Each Tile in World (Data Layer)
         for (int x = 0; x < level.Width; x++)
@@ -65,10 +67,10 @@ public class WorldGenerator : MonoBehaviour
                 tile.layer = 9;
                 tile.transform.position = 
                     new Vector3(
-                        tileData.tileX * worldGenParams.tileScale, 
-                        tileData.tileY * worldGenParams.tileScale, 
+                        tileData.tileX * levelGenParams.tileScale, 
+                        tileData.tileY * levelGenParams.tileScale, 
                         0);
-                tile.transform.localScale = new Vector3(worldGenParams.tileScale, worldGenParams.tileScale);
+                tile.transform.localScale = new Vector3(levelGenParams.tileScale, levelGenParams.tileScale);
                 tile.transform.SetParent(this.transform, true);
 
                 tile.AddComponent<SpriteRenderer>();
@@ -79,7 +81,7 @@ public class WorldGenerator : MonoBehaviour
                 tileData.SetTileTypeChangedCallback((Tile _tile) => { OnTileTypeChanged(_tile, tile); }); // this spooky syntax is a lambda, basically a void function with no name, with input of _tile, that runs the function OnTileTypeChanged
             }
         }
-        level.GenerateRandomTiles(); // Set Each Tile to Random Tile Type
+        level.GenerateLevelTiles(); // Set Each Tile to Random Tile Type
 
         // Make Sure New World is Saved As New and doesn't Overwrite Old World
         saveManager.GetSaveFiles();
@@ -106,12 +108,16 @@ public class WorldGenerator : MonoBehaviour
         level.time = GetComponent<DayNightCycle>().dayMorning;
 
         // SAVE WORLD DATA
+        if (GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName == "") { GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName += UnityEngine.Random.Range(0, 1000000).ToString(); }
         level.SaveLevel(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
 
         // SAVE PLAYER DATA
         StartCoroutine(SaveAllPlayerDataAfterX(1f));
 
         worldCreated = true;
+
+        loadScreen = GameObject.Find("--LoadScreen--");
+        loadScreen.transform.Find("Loading").gameObject.SetActive(false);
     }
 
     public IEnumerator SaveAllPlayerDataAfterX(float x) { yield return new WaitForSeconds(x); player.GetComponent<Player>().SaveAllPlayerData(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName); }
@@ -125,7 +131,7 @@ public class WorldGenerator : MonoBehaviour
         // LOAD SAVE FROM DISK
         saveManager.LoadAllDataFromDisk(saveName);
 
-        // LOAD LEVEL INDEX
+        // LOAD LEVEL INDEX (Last Level Player Was In)
         int levelIndex = saveManager.loadedData.playerData.levelIndex;
 
         // LOAD LEVEL SIZE
@@ -168,9 +174,10 @@ public class WorldGenerator : MonoBehaviour
                 BoxCollider2D tile_Collider = tile.AddComponent<BoxCollider2D>();
                 tile_Collider.size = new Vector3(1, 1);
                 tile_Collider.enabled = false;
+
                 tileData.SetTileTypeChangedCallback((_tile) => { OnTileTypeChanged(_tile, tile); });
 
-                OnTileTypeChanged(tileData, tile); // CALL CALLBACK DIRECTLY
+                OnTileTypeChanged(tileData, tile); // CALL CALLBACK DIRECTLY TO UPDATE VISUALS
             }
         }
 
@@ -186,14 +193,17 @@ public class WorldGenerator : MonoBehaviour
         #endregion
 
         worldCreated = true;
+
+        loadScreen = GameObject.Find("--LoadScreen--");
+        loadScreen.transform.Find("Loading").gameObject.SetActive(false);
     }
 
 
-
+    // Take in Tile.cs Data and Apply it to GameObject (physics, textures, lighting, etc)
     public void OnTileTypeChanged(Tile tileData, GameObject tile) // Callback for when Tile Changes so Tile Visuals are updated when Tile Data is updated
     {
-        // Layer 9 = Not Solid
-        // Layer 8 = Solid
+        // false = Not Solid = Layer 9
+        // true = Solid = Layer 8
 
         // Get Sprite Database
         DataDontDestroyOnLoad data = GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>();
@@ -201,81 +211,86 @@ public class WorldGenerator : MonoBehaviour
         if (tileData.Type == Tile.TileType.Air)
         {
             tile.GetComponent<SpriteRenderer>().sprite = null;
-            tile.GetComponent<BoxCollider2D>().enabled = false;
-            tile.layer = 9;
+            SetTileState(tile, false);
         }
         else if (tileData.Type == Tile.TileType.Grass)
         {
-            tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.Grass];
-            tile.GetComponent<BoxCollider2D>().enabled = true;
-            tile.layer = 8;
+            tile.GetComponent<SpriteRenderer>().sprite = data.spritesDB[(int)Tile.TileType.Grass][UnityEngine.Random.Range(0, 2)];
+            SetTileState(tile, true);
         }
         else if (tileData.Type == Tile.TileType.Dirt)
         {
             tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.Dirt];
-            tile.GetComponent<BoxCollider2D>().enabled = true;
-            tile.layer = 8;
+            SetTileState(tile, true);
         }
         else if (tileData.Type == Tile.TileType.Stone)
         {
             tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.Stone];
-            tile.GetComponent<BoxCollider2D>().enabled = true;
-            tile.layer = 8;
+            SetTileState(tile, true);
         }
         else if (tileData.Type == Tile.TileType.DarkStone)
         {
             tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.DarkStone];
-            tile.GetComponent<BoxCollider2D>().enabled = true;
-            tile.layer = 8;
+            SetTileState(tile, true);
         }
         else if (tileData.Type == Tile.TileType.Log)
         {
             tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.Log];
-            tile.GetComponent<BoxCollider2D>().enabled = true;
-            tile.layer = 8;
+            SetTileState(tile, true);
         }
         else if (tileData.Type == Tile.TileType.Leaves)
         {
             tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.Leaves];
-            tile.GetComponent<BoxCollider2D>().enabled = false;
-            tile.layer = 9;
+            SetTileState(tile, false);
         }
         else if (tileData.Type == Tile.TileType.WoodBoards)
         {
             tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.WoodBoards];
-            tile.GetComponent<BoxCollider2D>().enabled = true;
-            tile.layer = 8;
+            SetTileState(tile, true);
         }
         else if (tileData.Type == Tile.TileType.Adobe)
         {
             tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.Adobe];
-            tile.GetComponent<BoxCollider2D>().enabled = true;
-            tile.layer = 8;
+            SetTileState(tile, true);
         }
         else if (tileData.Type == Tile.TileType.AdobeBricks)
         {
-            GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.AdobeBricks];
-            tile.GetComponent<BoxCollider2D>().enabled = true;
-            tile.layer = 8;
+            tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.AdobeBricks];
+            SetTileState(tile, true);
+        }
+        else if (tileData.Type == Tile.TileType.Chest)
+        {
+            tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.Chest];
+            SetTileState(tile, true);
+            tile.AddComponent<Chest>();
         }
         else if (tileData.Type == Tile.TileType.DevTile)
         {
             tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)Tile.TileType.DevTile];
-            tile.GetComponent<BoxCollider2D>().enabled = true;
-            tile.layer = 8;
+            SetTileState(tile, true);
         }
         else
         {
             UnityEngine.Debug.LogWarning("Unrecognized Tile Type: " + tileData.Type.ToString() + ", Can't Set Tile Data");
         }
-
     }
 
-    public GameObject GetTileGameObjectAtWorldCoord(Vector3 coord)
+    public void SetTileState(GameObject tile, bool solid)
     {
-        int x = (int)Mathf.Round(coord.x / level.Scale);
-        int y = (int)Mathf.Round(coord.y / level.Scale);
+        if (solid)
+        {
+            tile.GetComponent<BoxCollider2D>().enabled = true;
+            tile.layer = 8;
+        }
+        if (!solid)
+        {
+            tile.GetComponent<BoxCollider2D>().enabled = false;
+            tile.layer = 9;
+        }
+    }
 
+    public GameObject GetTileGameObjectAtTileCoord(int x, int y)
+    {
         return GameObject.Find("Tile." + x + "_" + y);
     }
 

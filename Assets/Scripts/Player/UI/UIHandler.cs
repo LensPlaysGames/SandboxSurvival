@@ -9,19 +9,21 @@ public class UIHandler : MonoBehaviour
 {
     public Level level;
 
-    public GameObject pauseMenu, player, inventoryUI, inventoryUIShowHideArrow, notificationBG, notification;
+    public bool coordsEnabled;
+
+    public GameObject pauseMenu, player, inventoryUI, inventoryUIShowHideArrow, craftMenu, notificationBG, notification;
     private Sprite inventoryHideUI, inventoryShowUI;
 
     public TextMeshProUGUI coordX, coordY;
     private Vector3 lastPlayerPos;
 
-    private bool pauseMenuToggle;
+    private bool pauseMenuToggle, craftMenuToggle;
 
     public float scale;
 
     void Start()
     {
-        pauseMenu = GameObject.Find("--PauseUI--");
+        pauseMenu = transform.Find("--PauseUI--").gameObject;
         if (pauseMenu != null)
         {
             pauseMenu.SetActive(false);
@@ -30,34 +32,69 @@ public class UIHandler : MonoBehaviour
         inventoryHideUI = Resources.Load<Sprite>("InventoryUIArrowHide");
         inventoryShowUI = Resources.Load<Sprite>("InventoryUIArrowShow");
 
-        inventoryUI = GameObject.Find("--InventoryUI--");
+        inventoryUI = transform.Find("--InventoryUI--").gameObject;
         inventoryUIShowHideArrow = GameObject.Find("HideArrow");
 
         player = GameObject.Find("Player");
         coordX = GameObject.Find("coordX").GetComponent<TextMeshProUGUI>();
         coordY = GameObject.Find("coordY").GetComponent<TextMeshProUGUI>();
 
-        notificationBG = GameObject.Find("--NotificationUI--");
-        notification = Resources.Load<GameObject>("Notification");
+        notificationBG = transform.Find("--NotificationUI--").gameObject;
+        notification = Resources.Load<GameObject>("Prefabs/Notification");
+
+        craftMenu = transform.Find("--CraftMenu--").gameObject;
+        if (craftMenu != null)
+        {
+            craftMenu.GetComponent<Animator>().SetInteger("CraftMenu", 0);
+        }
+
+        if (PlayerPrefs.GetInt("Enabled Coordinates Display", 1) == 1) 
+        { 
+            coordsEnabled = true;
+            transform.Find("--Coordinates--").gameObject.SetActive(true);
+        }
+        else 
+        { 
+            coordsEnabled = false;
+            transform.Find("--Coordinates--").gameObject.SetActive(false);
+        }
 
         SendNotif("You Awake From A Deep Slumber", Color.white, 20f);
     }
 
     void Update()
     {
-        if (scale == 0) { scale = GameObject.Find("WorldGenerator").GetComponent<WorldGenerator>().GetLevelInstance().Scale; }
+        if (scale == 0) { scale = GameObject.Find("LevelGenerator").GetComponent<LevelGenerator>().GetLevelInstance().Scale; }
 
         if (Input.GetButtonDown("Cancel"))
         {
             TogglePauseMenu();
         }
 
-        if (player.transform.position - lastPlayerPos != Vector3.zero)
+        if (player.transform.position - lastPlayerPos != Vector3.zero && coordsEnabled)
         {
             SetCoordinateUI(player.transform.position.x, player.transform.position.y);
         }
         lastPlayerPos = player.transform.position;
     }
+
+    #region Craft Menu
+
+    public void CraftMenu()
+    {
+        if (!craftMenuToggle)
+        {
+            craftMenu.GetComponent<Animator>().SetInteger("CraftMenu", 1);
+            craftMenuToggle = true;
+        }
+        else if (craftMenuToggle)
+        {
+            craftMenu.GetComponent<Animator>().SetInteger("CraftMenu", 0);
+            craftMenuToggle = false;
+        }
+    }
+
+    #endregion
 
     #region Pause Menu
 
@@ -80,19 +117,23 @@ public class UIHandler : MonoBehaviour
 
     public void SaveGame()
     {
-        string saveName = GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName;
+        GameObject.Find("--LoadScreen--").transform.Find("Loading").gameObject.SetActive(true);
+
+        string saveName = DataDontDestroyOnLoad.instance.saveName;
 
         // Save World
-        GameObject worldGenerator = GameObject.Find("WorldGenerator");
-        level = worldGenerator.GetComponent<WorldGenerator>().GetLevelInstance();
+        GameObject levelGenerator = GameObject.Find("LevelGenerator");
+        level = levelGenerator.GetComponent<LevelGenerator>().GetLevelInstance();
 
-        level.day = worldGenerator.GetComponent<DayNightCycle>().GetDate();
-        level.time = worldGenerator.GetComponent<DayNightCycle>().GetTime();
+        level.day = levelGenerator.GetComponent<DayNightCycle>().GetDate();
+        level.time = levelGenerator.GetComponent<DayNightCycle>().GetTime();
 
         level.SaveLevel(saveName);
 
         // Save All Player Data
         player.GetComponent<Player>().SaveAllPlayerData(saveName);
+
+        GameObject.Find("--LoadScreen--").transform.Find("Loading").gameObject.SetActive(false);
 
         // Notify Player Game Saved
         SendNotif('\"' + saveName + '\"' + " Saved", Color.green, 10f);

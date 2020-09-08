@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WorldGenerationParameters : MonoBehaviour
+public class LevelGenerationParameters : MonoBehaviour
 {
     [Header("Defaults")]
     public int defaultWidth;

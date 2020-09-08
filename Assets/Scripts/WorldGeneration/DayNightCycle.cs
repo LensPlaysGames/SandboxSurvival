@@ -28,7 +28,7 @@ public class DayNightCycle : MonoBehaviour
         sun = GameObject.Find("GlobalLight").GetComponent<Light2D>();
 
         // Set Sun Position based on World Size (Middle x, 100 Tiles over Level Top
-        Level level = GetComponent<WorldGenerator>().GetLevelInstance();
+        Level level = GetComponent<LevelGenerator>().GetLevelInstance();
         sun.transform.position = new Vector3((level.Width / 2) * level.Scale, (level.Height * level.Scale));
 
         isRunning = true;
@@ -40,16 +40,8 @@ public class DayNightCycle : MonoBehaviour
             day = 0;
         }
 
-        if (isDay)
-        {
-            sun.intensity = dayBrightness;
-            sun.color = dayColor;
-        }
-        else if (!isDay)
-        {
-            sun.intensity = nightBrightness;
-            sun.color = nightColor;
-        }
+        if (isDay) { sun.intensity = dayBrightness; sun.color = dayColor; }
+        else { sun.intensity = nightBrightness; sun.color = nightColor; }
     }
 
     void Update()
@@ -64,18 +56,20 @@ public class DayNightCycle : MonoBehaviour
             {
                 if (!isDay)
                 {
-                    UnityEngine.Debug.Log("It is Day now! Good Morning!");
                     StartCoroutine(SmoothLightingToDay());
                     isDay = true;
+
+                    GameObject.Find("UICanvas").GetComponent<UIHandler>().SendNotif("Dew Collects as the Morning Fog rolls in...", Color.black, 20f);
                 }
             }
             else if (currentTime >= dayNight && currentTime < dayLength) // If It's Night (After dayNight)
             {
                 if (isDay)
                 {
-                    UnityEngine.Debug.Log("It is Night now! Get some Rest!");
                     StartCoroutine(SmoothLightingToNight());
                     isDay = false;
+
+                    GameObject.Find("UICanvas").GetComponent<UIHandler>().SendNotif("Darkness Awaits! Beware...", Color.black, 20f);
                 }
             }
             else if (currentTime >= dayLength) // It's A Fresh New Day

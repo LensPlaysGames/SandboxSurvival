@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.UI;
 
 [Serializable]
 public class Slot
@@ -15,9 +14,7 @@ public class Slot
     public bool empty;
     public int count;
 
-    public bool isTile;
-
-    public Tile.TileType tileType;
+    public Item item;
 
     public string slotParentName;
     public string countTextName;

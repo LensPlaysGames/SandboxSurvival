@@ -17,6 +17,7 @@ public class Tile
         WoodBoards, 
         Adobe,
         AdobeBricks,
+        Chest,
         DevTile 
     };
 
@@ -25,6 +26,8 @@ public class Tile
     int y;
 
     public float tileDestroyTime;
+
+    public float light;
 
     [NonSerialized]
     Action<Tile> tileTypeChangedCallback; // An Action is basically a list of functions under one name  THIS ONE IS GIVEN TO EACH TILE AND CALLED WHEN Type type ACCESSOR IS SET
