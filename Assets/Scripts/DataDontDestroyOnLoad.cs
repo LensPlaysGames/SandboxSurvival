@@ -30,6 +30,8 @@ public class DataDontDestroyOnLoad : MonoBehaviour
         // Sprite Database Initilization
         if (!spriteDBLoaded)
         {
+            spritesDB = new Sprite[Enum.GetNames(typeof(Tile.TileType)).Length][];
+
             for (int s = 0; s < Enum.GetNames(typeof(Tile.TileType)).Length; s++)
             {
                 spritesDB[s] = new Sprite[2];
