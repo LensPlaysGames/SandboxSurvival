@@ -13,13 +13,24 @@ public class MusicManager : MonoBehaviour
 
     public Sound[] tracks;
 
+    void Awake()
+    {
+        if (instance != null) 
+        { 
+            UnityEngine.Debug.LogError("Multiple Music Managers in Scene! Destroying: " + this.name); 
+            Destroy(this); 
+        }
+        else 
+        { 
+            instance = this; 
+            GlobalReferences.musicManager = instance; 
+            DontDestroyOnLoad(instance); 
+        }
+    }
+
     void Start()
     {
-        if (instance != null) { UnityEngine.Debug.LogError("Multiple Music Managers in Scene! Destroying: " + this.name); Destroy(this); }
-        else { instance = this; DontDestroyOnLoad(instance); }
-
-        if (dataDontDestroyOnLoad != null) { UnityEngine.Debug.LogError("Multiple DataDontDestroyOnLoad in Scene!"); }
-        else { dataDontDestroyOnLoad = GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>(); }
+        dataDontDestroyOnLoad = GlobalReferences.DDDOL;
 
         mixer = Resources.Load<AudioMixer>("Audio/AudioMixer");
 

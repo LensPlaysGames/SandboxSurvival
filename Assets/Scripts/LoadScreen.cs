@@ -8,7 +8,16 @@ public class LoadScreen : MonoBehaviour
 
     void Start()
     {
-        if(instance != null) { UnityEngine.Debug.Log("Multiple Loading Scenes, Destroying Extra"); Destroy(gameObject); }
-        else { instance = this; DontDestroyOnLoad(gameObject); }
+        if(instance != null) 
+        { 
+            UnityEngine.Debug.Log("Multiple Loading Scenes, Destroying Extra"); 
+            Destroy(gameObject); 
+        }
+        else 
+        { 
+            instance = this;
+            GlobalReferences.loadScreen = instance.gameObject;
+            DontDestroyOnLoad(gameObject); 
+        }
     }
 }

@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    // FUCKING FIX THIS SO YOU CAN DELETE THIS. PLEASE.
-    private int width;
-
     public Rigidbody2D rb;
     public Animator anim;
     public Transform grounded;
 
     public int level;
-    public Level l;
 
     [SerializeField]
     [Range(5f, 25f)]
@@ -47,6 +43,12 @@ public class Player : MonoBehaviour
 
     private bool playerDataLoaded;
 
+    void Awake()
+    {
+        GameReferences.playerScript = this;
+        GameReferences.player = this.gameObject;
+    }
+
 
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -65,12 +67,9 @@ public class Player : MonoBehaviour
 
         stamina = totalStamina;
 
-        l = GameObject.Find("LevelGenerator").GetComponent<LevelGenerator>().GetLevelInstance();
-
-        width = (int)(l.Width * l.Scale);
-
         if (!playerDataLoaded)
         {
+            Level l = GameReferences.levelGenerator.GetLevelInstance();
             Vector3 middleTopofWorld = new Vector3((l.Width / 2) * l.Scale, l.Height * l.Scale);
             UnityEngine.Debug.Log("Player Data Not Loaded! Setting Position to: " + middleTopofWorld);
             transform.position = middleTopofWorld;
@@ -92,8 +91,9 @@ public class Player : MonoBehaviour
 
         // Shitty Respawn to Middle of World If Below Certain Y Value or above certain X... yuck!
 
-        if (transform.position.y < -10 || transform.position.x < 0 || transform.position.x > width) 
+        if (transform.position.y < -10 || transform.position.x < 0 || transform.position.x > GameReferences.levelGenerator.GetLevelInstance().Width * GameReferences.levelGenerator.GetLevelInstance().Scale) 
         {
+            Level l = GameReferences.levelGenerator.GetLevelInstance();
             Vector3 middleTopofWorld = new Vector3((l.Width / 2) * l.Scale, l.Height * l.Scale);
             UnityEngine.Debug.Log("Player Fell Below Level! Setting Position to: " + middleTopofWorld);
             transform.position = middleTopofWorld;

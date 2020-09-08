@@ -12,8 +12,8 @@ public class AudioManager : MonoBehaviour
 
     void Start()
     {
-        if (instance != null) { UnityEngine.Debug.LogError("Multiple Audio Managers in Scene!"); }
-        else { instance = this; }
+        if (instance != null) { UnityEngine.Debug.LogError("Multiple Audio Managers in Scene!"); Destroy(this.gameObject); }
+        else { instance = this; GameReferences.audioManager = instance; }
 
         AudioMixer mixer = Resources.Load<AudioMixer>("Audio/AudioMixer");
         foreach (Sound s in sounds)

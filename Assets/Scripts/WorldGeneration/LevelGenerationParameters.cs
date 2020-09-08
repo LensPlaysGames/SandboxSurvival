@@ -4,6 +4,18 @@ using UnityEngine;
 
 public class LevelGenerationParameters : MonoBehaviour
 {
+    public static LevelGenerationParameters instance;
+
+    void Awake()
+    {
+        if (instance != null) { UnityEngine.Debug.LogError("Multple Level Generation Parameters!!"); Destroy(this.gameObject); }
+        else
+        {
+            instance = this;
+            GlobalReferences.levelGenParams = instance;
+        }
+    }
+
     [Header("Defaults")]
     public int defaultWidth;
     public int defaultHeight;

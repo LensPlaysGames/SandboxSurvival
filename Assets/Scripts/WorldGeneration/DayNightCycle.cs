@@ -5,15 +5,21 @@ using UnityEngine.Experimental.Rendering.Universal;
 
 public class DayNightCycle : MonoBehaviour
 {
+    public static DayNightCycle instance;
+
     public bool isRunning;
     public bool isDay;
 
-    public Color nightColor, dayColor;
-    public float dayBrightness, nightBrightness;
-    public int lightingChangeDuration = 1; // Seconds It Takes for Lighting To Lerp Between Brightness Values
-
-    public int dayLength, dayMorning, dayNight;
-    public float cycleSpeed = 1;
+    [SerializeField]
+    private Color nightColor, dayColor;
+    [SerializeField]
+    private float dayBrightness, nightBrightness;
+    [SerializeField]
+    private int lightingChangeDuration = 1; // Seconds It Takes for Lighting To Lerp Between Brightness Values
+    [SerializeField]
+    private int dayLength, dayMorning, dayNight;
+    [SerializeField]
+    private float cycleSpeed = 1;
 
     [Space]
     public Light2D sun;
@@ -23,13 +29,57 @@ public class DayNightCycle : MonoBehaviour
     private Vector3 sunPos;
     private bool loaded;
 
+    private string[] newDayNotifText = new string[] 
+    {
+        "A New Day! Full of Possibilites :?",
+        "Midnight Comes and Goes, Dark as Night...",
+        "Mark Another Tally... It's a New Day."
+    };
+    private string[] nightNotifText = new string[]
+    {
+        "Darkness Awaits! Beware...",
+        "Night Approaches... Watch Your Step!",
+        "All That Slumbers Doesn't Do So At Night..."
+    };
+    private string[] morningNotifText = new string[]
+    {
+        "Dew Collects as the Morning Fog rolls in...",
+        " *yawn* Why Did We Normalize Early Mornings ;/",
+        "The Sun Rises Over the Horizon..."
+    };
+
+    #region Accessors
+
+    public int MorningTime
+    {
+        get { return dayMorning; } 
+    }
+
+    #endregion
+
+    void Awake()
+    {
+        if (instance != null)
+        {
+            UnityEngine.Debug.LogError("MULTIPLE DayNightCycles IN SCENE. Destroying " + this.name);
+            Destroy(this);
+        }
+        else
+        {
+            instance = this;
+            GameReferences.dayNightCycle = instance;
+        }
+    }
+
     void Start()
     {
         sun = GameObject.Find("GlobalLight").GetComponent<Light2D>();
+        GameReferences.sunLight = sun;
 
-        // Set Sun Position based on World Size (Middle x, 100 Tiles over Level Top
-        Level level = GetComponent<LevelGenerator>().GetLevelInstance();
+        // Set Sun Position based on World Size (Middle x, Top of World) and Scale
+        Level level = GameReferences.levelGenerator.GetLevelInstance();
         sun.transform.position = new Vector3((level.Width / 2) * level.Scale, (level.Height * level.Scale));
+        sun.transform.localScale = new Vector3(level.Scale, level.Scale, 1);
 
         isRunning = true;
         StartCoroutine(TimeOfDayClock());
@@ -59,7 +109,10 @@ public class DayNightCycle : MonoBehaviour
                     StartCoroutine(SmoothLightingToDay());
                     isDay = true;
 
-                    GameObject.Find("UICanvas").GetComponent<UIHandler>().SendNotif("Dew Collects as the Morning Fog rolls in...", Color.black, 20f);
+                    UnityEngine.Debug.Log(morningNotifText.Length);
+                    string dayNotif = morningNotifText[UnityEngine.Random.Range(0, morningNotifText.Length)];
+
+                    GameReferences.uIHandler.SendNotif(dayNotif, Color.black, 20f);
                 }
             }
             else if (currentTime >= dayNight && currentTime < dayLength) // If It's Night (After dayNight)
@@ -69,7 +122,10 @@ public class DayNightCycle : MonoBehaviour
                     StartCoroutine(SmoothLightingToNight());
                     isDay = false;
 
-                    GameObject.Find("UICanvas").GetComponent<UIHandler>().SendNotif("Darkness Awaits! Beware...", Color.black, 20f);
+                    UnityEngine.Debug.Log(nightNotifText.Length);
+                    string nightNotif = nightNotifText[UnityEngine.Random.Range(0, nightNotifText.Length)];
+
+                    GameReferences.uIHandler.SendNotif(nightNotif, Color.black, 20f);
                 }
             }
             else if (currentTime >= dayLength) // It's A Fresh New Day
@@ -77,7 +133,10 @@ public class DayNightCycle : MonoBehaviour
                 currentTime = 0;
                 day++;
 
-                GameObject.Find("UICanvas").GetComponent<UIHandler>().SendNotif("A New Day! Full of possibilites :?", Color.black, 20f);
+                UnityEngine.Debug.Log(newDayNotifText.Length);
+                string newDayNotif = newDayNotifText[UnityEngine.Random.Range(0, newDayNotifText.Length)];
+
+                GameReferences.uIHandler.SendNotif(newDayNotif, Color.black, 20f);
             }
         }
     }

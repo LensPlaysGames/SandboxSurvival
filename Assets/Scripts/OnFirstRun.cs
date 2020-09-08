@@ -10,11 +10,23 @@ public class OnFirstRun : MonoBehaviour
     public int firstRun = 0;
     public int runs;
 
+    void Awake()
+    {
+        if (instance != null) 
+        { 
+            UnityEngine.Debug.LogError("Multiple ONFIRSTRUNs in Game. Destroying " + this.name); 
+            Destroy(this); 
+        }
+        else 
+        { 
+            instance = this;
+            GlobalReferences.firstRun = instance;
+            DontDestroyOnLoad(this); 
+        }
+    }
+
     void Start()
     {
-        if (instance != null) { UnityEngine.Debug.LogError("Multiple ONFIRSTRUNs in Game. Destroying " + this.name); Destroy(this); }
-        else { instance = this; DontDestroyOnLoad(this); }
-
         firstRun = PlayerPrefs.GetInt("FirstRun");
         runs = PlayerPrefs.GetInt("Runs");
 

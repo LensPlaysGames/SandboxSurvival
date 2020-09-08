@@ -3,8 +3,8 @@
 public class HeldItem : MonoBehaviour
 {
     public static HeldItem instance;
-    public static Inventory inventory;
-    public static InventoryUI invUI;
+    public Inventory inventory;
+    public InventoryUI invUI;
 
     public int heldSlotIndex;
     public int mousedOverIndex;
@@ -14,8 +14,8 @@ public class HeldItem : MonoBehaviour
 
     void Start()
     {
-        inventory = GameObject.Find("Player").GetComponent<Inventory>();
-        invUI = GameObject.Find("UICanvas").transform.Find("--InventoryUI--").GetComponent<InventoryUI>(); ;
+        inventory = GameReferences.playerInv;
+        invUI = GameReferences.playerInvUI;
     }
 
     void FixedUpdate()

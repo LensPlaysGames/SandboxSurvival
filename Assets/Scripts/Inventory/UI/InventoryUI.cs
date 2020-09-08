@@ -8,20 +8,37 @@ using TMPro;
 public class InventoryUI : MonoBehaviour
 {
     public static InventoryUI instance;
-    public static Inventory inventory;
 
-    public Slot mousedOver;
+    [SerializeField]
+    private Inventory inventory;
+    [SerializeField]
+    private GameObject selector;
 
     private GameObject empty;
 
+    void Awake()
+    {
+        if (instance != null) { UnityEngine.Debug.LogError("Multiple Inventory UIs!!! What the heck is going on???"); }
+        instance = this;
+        GameReferences.playerInvUI = instance;
+    }
+
     void Start()
     {
-        inventory = GameObject.Find("Player").GetComponent<Inventory>();
-        // inventory = Inventory.instance; // THIS DOESN"T FUCKING WORK BUT IT SHOULD
+        // Prefab for UI image
+        empty = Resources.Load<GameObject>("Prefabs/EmptyImagePrefab");
+
+        inventory = GameReferences.playerInv;
+
+        // Assign Event Listeners from Inventory Script on Player
         inventory.updateSlotCallback += UpdateSlotUI;
         inventory.updateAllSlotsCallback += UpdateSlotsUI;
+        inventory.updateSelectorUI += MoveSelector;
+    }
 
-        empty = Resources.Load<GameObject>("Prefabs/EmptyImagePrefab");
+    void MoveSelector(int slotIndex)
+    {
+        selector.transform.position = inventory.slots[slotIndex].slotParent.transform.position;
     }
 
     void UpdateSlotUI(int slotNum)

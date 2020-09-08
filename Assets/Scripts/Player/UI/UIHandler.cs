@@ -7,6 +7,8 @@ using TMPro;
 
 public class UIHandler : MonoBehaviour
 {
+    public static UIHandler instance;
+
     public Level level;
 
     public bool coordsEnabled;
@@ -20,6 +22,13 @@ public class UIHandler : MonoBehaviour
     private bool pauseMenuToggle, craftMenuToggle;
 
     public float scale;
+
+    void Awake()
+    {
+        if (instance != null) { UnityEngine.Debug.LogError("There Should NOT be more than one UIHandler"); Destroy(this.gameObject); return; }
+        instance = this;
+        GameReferences.uIHandler = this;
+    }
 
     void Start()
     {
@@ -117,7 +126,7 @@ public class UIHandler : MonoBehaviour
 
     public void SaveGame()
     {
-        GameObject.Find("--LoadScreen--").transform.Find("Loading").gameObject.SetActive(true);
+        GlobalReferences.loadScreen.transform.Find("Loading").gameObject.SetActive(true);
 
         string saveName = DataDontDestroyOnLoad.instance.saveName;
 
@@ -133,10 +142,10 @@ public class UIHandler : MonoBehaviour
         // Save All Player Data
         player.GetComponent<Player>().SaveAllPlayerData(saveName);
 
-        GameObject.Find("--LoadScreen--").transform.Find("Loading").gameObject.SetActive(false);
-
         // Notify Player Game Saved
         SendNotif('\"' + saveName + '\"' + " Saved", Color.green, 10f);
+
+        GlobalReferences.loadScreen.transform.Find("Loading").gameObject.SetActive(false);
     }
     public void ExitGame()
     {

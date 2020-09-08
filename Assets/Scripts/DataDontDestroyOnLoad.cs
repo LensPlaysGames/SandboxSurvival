@@ -14,7 +14,7 @@ public class DataDontDestroyOnLoad : MonoBehaviour
     public Sprite[] spriteDB;
     private bool spriteDBLoaded;
 
-    void Start()
+    void Awake()
     {
         if (instance != null)
         {
@@ -24,9 +24,13 @@ public class DataDontDestroyOnLoad : MonoBehaviour
         else
         {
             instance = this;
+            GlobalReferences.DDDOL = instance;
             DontDestroyOnLoad(this);
         }
+    }
 
+    void Start()
+    {
         // Sprite Database Initilization
         if (!spriteDBLoaded)
         {

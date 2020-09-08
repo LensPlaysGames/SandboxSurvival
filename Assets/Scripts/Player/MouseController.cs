@@ -168,16 +168,16 @@ public class MouseController : MonoBehaviour
                     if (selectedTile.Type == Tile.TileType.Grass || selectedTile.Type == Tile.TileType.Dirt)
                     {
                         GameObject destroyParticles = Instantiate(particlesOnGrassDestroyed, Cursor.transform.position, Quaternion.identity);
-                        GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("dirtCrunch" + Random.Range(1, 4));
+                        GameReferences.audioManager.PlaySound("dirtCrunch" + Random.Range(1, 4));
                     }
                     else if (selectedTile.Type == Tile.TileType.Stone)
                     {
-                        GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("placedTile");
-                        GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("Hit");
+                        GameReferences.audioManager.PlaySound("placedTile");
+                        GameReferences.audioManager.PlaySound("Hit");
                     }
                     else
                     {
-                        GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("placedTile");
+                        GameReferences.audioManager.PlaySound("placedTile");
                     }
 
                     #endregion
@@ -213,7 +213,7 @@ public class MouseController : MonoBehaviour
                 if (buildTile != Tile.TileType.Air)
                 {
                     // Play Placed Tile Sound (could be based on tile type in future)
-                    GameObject.Find("AudioManager").GetComponent<AudioManager>().PlaySound("placedTile");
+                    GameReferences.audioManager.PlaySound("placedTile");
                     // Remove Tile Placed From Slot Selected
                     Player.GetComponent<Inventory>().TakeFromSlot(Player.GetComponent<Inventory>().selectedSlot);
                     // Set Tile To The Intended Build Tile

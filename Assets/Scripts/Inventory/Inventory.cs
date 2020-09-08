@@ -14,11 +14,8 @@ public class Inventory : MonoBehaviour
 
     public int selectedSlotIndex;
     public Slot selectedSlot;
-    public GameObject slotSelector;
 
     public int maxStackSize = 90;
-
-    public Slot mousedOver;
 
     public Slot[] slots;
     public Sprite[] tileSprites;
@@ -26,26 +23,34 @@ public class Inventory : MonoBehaviour
     public Slot[] slotsToSave;
     private int a;
 
+    public delegate void UpdateSelector(int slotNum);
+    public UpdateSelector updateSelectorUI;
+
     public delegate void UpdateSlot(int slotIndex);
     public UpdateSlot updateSlotCallback;
 
     public delegate void UpdateAllSlots();
     public UpdateAllSlots updateAllSlotsCallback;
 
-    void Start()
+    void Awake()
     {
         if (instance != null)
         {
             UnityEngine.Debug.LogError("Multiple Inventories attempting to Initialize");
         }
-        else { instance = this; }
+        instance = this;
+        GameReferences.playerInv = instance;
+    }
 
+    void Start()
+    {
+        // Initialize Inventory if Not Loaded from Save
         if (!inventoryLoaded)
         {
             foreach (Slot slot in slots)
             {
                 a++;
-                slot.slotParent = GameObject.Find("Slot (" + a + ")");
+                slot.slotParent = GameReferences.playerInvUI.transform.Find("InventoryBackground").transform.Find("Slot (" + a + ")").gameObject;
                 slot.countText = GameObject.Find("Slot (" + a + ") Count");
                 slot.empty = true;
                 slot.count = 0;
@@ -58,38 +63,39 @@ public class Inventory : MonoBehaviour
         // Initialize sprites Array from Sprite Database
         tileSprites = DataDontDestroyOnLoad.instance.spriteDB;
 
+        // Set Selected Slot to 0 if Null
         if (selectedSlot.slotParent == null)
         {
-            selectedSlot = slots[0]; 
-            slotSelector.transform.position = slots[0].slotParent.transform.position;
+            selectedSlot = slots[0];
+            updateSelectorUI?.Invoke(0);
         }
 
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) { selectedSlotIndex = 0; SetSelectedSlot(selectedSlotIndex); }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) { selectedSlotIndex = 1; SetSelectedSlot(selectedSlotIndex); }
-        if (Input.GetKeyDown(KeyCode.Alpha3)) { selectedSlotIndex = 2; SetSelectedSlot(selectedSlotIndex); }
-        if (Input.GetKeyDown(KeyCode.Alpha4)) { selectedSlotIndex = 3; SetSelectedSlot(selectedSlotIndex); }
-        if (Input.GetKeyDown(KeyCode.Alpha5)) { selectedSlotIndex = 4; SetSelectedSlot(selectedSlotIndex); }
-        if (Input.GetKeyDown(KeyCode.Alpha6)) { selectedSlotIndex = 5; SetSelectedSlot(selectedSlotIndex); }
-        if (Input.GetKeyDown(KeyCode.Alpha7)) { selectedSlotIndex = 6; SetSelectedSlot(selectedSlotIndex); }
-        if (Input.GetKeyDown(KeyCode.Alpha8)) { selectedSlotIndex = 7; SetSelectedSlot(selectedSlotIndex); }
-        if (Input.GetKeyDown(KeyCode.Alpha9)) { selectedSlotIndex = 8; SetSelectedSlot(selectedSlotIndex); }
-        if (Input.GetKeyDown(KeyCode.Alpha0)) { selectedSlotIndex = 9; SetSelectedSlot(selectedSlotIndex); }
+        if (Input.GetKeyDown(KeyCode.Alpha1)) { SetSelectedSlot(0); }
+        if (Input.GetKeyDown(KeyCode.Alpha2)) { SetSelectedSlot(1); }
+        if (Input.GetKeyDown(KeyCode.Alpha3)) { SetSelectedSlot(2); }
+        if (Input.GetKeyDown(KeyCode.Alpha4)) { SetSelectedSlot(3); }
+        if (Input.GetKeyDown(KeyCode.Alpha5)) { SetSelectedSlot(4); }
+        if (Input.GetKeyDown(KeyCode.Alpha6)) { SetSelectedSlot(5); }
+        if (Input.GetKeyDown(KeyCode.Alpha7)) { SetSelectedSlot(6); }
+        if (Input.GetKeyDown(KeyCode.Alpha8)) { SetSelectedSlot(7); }
+        if (Input.GetKeyDown(KeyCode.Alpha9)) { SetSelectedSlot(8); }
+        if (Input.GetKeyDown(KeyCode.Alpha0)) { SetSelectedSlot(9); }
 
-        if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex != 9) { selectedSlotIndex += 1; SetSelectedSlot(selectedSlotIndex); }
-        else if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex == 9) { selectedSlotIndex = 0; SetSelectedSlot(selectedSlotIndex); }
-        if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex != 0) { selectedSlotIndex -= 1; SetSelectedSlot(selectedSlotIndex); }
-        else if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex == 0) { selectedSlotIndex = 9; SetSelectedSlot(selectedSlotIndex); }
+        if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex != 9) { SetSelectedSlot(selectedSlotIndex + 1); }
+        else if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex == 9) { SetSelectedSlot(0); }
+        if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex != 0) { SetSelectedSlot(selectedSlotIndex - 1); }
+        else if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex == 0) { SetSelectedSlot(9); }
     }
 
     public void SetSelectedSlot(int slotIndex)
     {
-        selectedSlot = slots[slotIndex]; 
-        slotSelector.transform.position = slots[slotIndex].slotParent.transform.position;
         selectedSlotIndex = slotIndex;
+        selectedSlot = slots[slotIndex];
+        updateSelectorUI?.Invoke(slotIndex);
     }
 
     public void AddItemToSlot(Item item)
@@ -179,6 +185,8 @@ public class Inventory : MonoBehaviour
         updateAllSlotsCallback?.Invoke();
     }
 
+
+
     public void SetInventoryToSave(string saveName)
     {
         for (int slot = 0; slot < slots.Length; slot++)
@@ -200,7 +208,7 @@ public class Inventory : MonoBehaviour
 
     public void LoadInventory(string saveName)
     {
-        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        SaveManager saveManager = GlobalReferences.saveManager;
         saveManager.LoadAllDataFromDisk(saveName);
 
         for (int slot = 0; slot < slots.Length; slot++)

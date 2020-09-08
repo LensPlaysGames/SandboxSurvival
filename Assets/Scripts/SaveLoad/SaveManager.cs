@@ -9,22 +9,28 @@ using UnityEngine.SceneManagement;
 
 public class SaveManager : MonoBehaviour
 {
-
-    #region Singleton
-
     public static SaveManager instance;
 
-    void Start()
+    void Awake()
     {
-        if (instance != null) { UnityEngine.Debug.LogError("MULTIPLE SaveManagers IN SCENE. Destroying " + this.name); Destroy(this); }
-        else { instance = this; DontDestroyOnLoad(instance); }
+        if (instance != null) 
+        { 
+            UnityEngine.Debug.LogError("MULTIPLE SaveManagers IN SCENE. Destroying " + this.name); 
+            Destroy(this); 
+        }
+        else 
+        { 
+            instance = this;
+            GlobalReferences.saveManager = instance;
+            DontDestroyOnLoad(instance); 
+        }
     }
 
-    #endregion
+
 
     public AllData dataToSave;
     public AllData loadedData;
-
+    
     public void SetWorldSaveData(string name, LevelSaveData SAVETHISLEVEL)
     {
         UnityEngine.Debug.Log("Setting World Data to Save");
@@ -37,6 +43,7 @@ public class SaveManager : MonoBehaviour
         dataToSave.playerData = playerData;
         SaveAllDataToDisk(name, dataToSave);
     }
+
 
 
     public void SaveAllDataToDisk(string name, AllData data)
@@ -94,6 +101,8 @@ public class SaveManager : MonoBehaviour
             SceneManager.LoadScene("Menu");
         }
     }
+
+
 
     // Initialize All Save Files to Reference
     public string[] worldSaves;

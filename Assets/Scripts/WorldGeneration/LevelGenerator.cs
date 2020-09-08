@@ -29,17 +29,16 @@ public class LevelGenerator : MonoBehaviour
             UnityEngine.Debug.LogError("There Should NOT be more than one WorldGenerator");
         }
         instance = this;
+        GameReferences.levelGenerator = instance;
 
-        if (saveManager != null) { UnityEngine.Debug.LogError("There Should NOT be more than one SaveManager"); }
-        saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        saveManager = GlobalReferences.saveManager;
 
-        if (player != null) { UnityEngine.Debug.LogError("There Should NOT be more than one Player"); }
-        player = GameObject.Find("Player");
+        player = GameReferences.player;
 
-        if (GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().newWorld) { CreateNewWorld(0); }
+        if (GlobalReferences.DDDOL.newWorld) { CreateNewWorld(0); }
         else 
         {
-            LoadSavedWorld(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
+            LoadSavedWorld(GlobalReferences.DDDOL.saveName);
         }
     }
 
@@ -50,7 +49,7 @@ public class LevelGenerator : MonoBehaviour
         UnityEngine.Debug.Log("Creating World");
 
         // Get World Generation Characteristics
-        LevelGenerationParameters levelGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>();
+        LevelGenerationParameters levelGenParams = GlobalReferences.levelGenParams;
 
         // Initialize World
         level = new Level(levelGenParams.worldWidth, levelGenParams.worldHeight, levelGenParams.tileScale, levelIndex);
@@ -94,22 +93,22 @@ public class LevelGenerator : MonoBehaviour
             if (index > 0) { saveName = saveName.Substring(0, index); }
 
             // 1.) If that save name exists on the disk already, 
-            if (GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName == saveName)
+            if (GlobalReferences.DDDOL.saveName == saveName)
             {
                 // 2.) Add Random Number Between 0 and 1000000 and append to intended save name
                 // This is assuming that the player won't get unlucky AND name new worlds the same everytime... Should probably add exception handling eventually grumble grumble
                 UnityEngine.Debug.Log("World " + saveName + " was found when trying to create new world, setting new world name");
-                GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName += UnityEngine.Random.Range(0, 1000000).ToString();
+                GlobalReferences.DDDOL.saveName += UnityEngine.Random.Range(0, 1000000).ToString();
             }
         }
 
         // Set Date and Time to ZERO
         level.day = 0;
-        level.time = GetComponent<DayNightCycle>().dayMorning;
+        level.time = GameReferences.dayNightCycle.MorningTime;
 
         // SAVE WORLD DATA
-        if (GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName == "") { GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName += UnityEngine.Random.Range(0, 1000000).ToString(); }
-        level.SaveLevel(GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>().saveName);
+        if (GlobalReferences.DDDOL.saveName == "") { GlobalReferences.DDDOL.saveName += UnityEngine.Random.Range(0, 1000000).ToString(); }
+        level.SaveLevel(GlobalReferences.DDDOL.saveName);
 
         // SAVE PLAYER DATA
         StartCoroutine(SaveAllPlayerDataAfterX(1f));
@@ -194,7 +193,7 @@ public class LevelGenerator : MonoBehaviour
 
         worldCreated = true;
 
-        loadScreen = GameObject.Find("--LoadScreen--");
+        loadScreen = GlobalReferences.loadScreen;
         loadScreen.transform.Find("Loading").gameObject.SetActive(false);
     }
 
@@ -206,7 +205,7 @@ public class LevelGenerator : MonoBehaviour
         // true = Solid = Layer 8
 
         // Get Sprite Database
-        DataDontDestroyOnLoad data = GameObject.Find("DataDontDestroyOnLoad").GetComponent<DataDontDestroyOnLoad>();
+        DataDontDestroyOnLoad data = GlobalReferences.DDDOL;
 
         if (tileData.Type == Tile.TileType.Air)
         {

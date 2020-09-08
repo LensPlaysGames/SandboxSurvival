@@ -9,6 +9,8 @@ using TMPro;
 
 public class MenuHandler : MonoBehaviour
 {
+    public static MenuHandler instance;
+
     public GameObject mainMenu, selectSaveMenu, newWorldOptions, optionsMenu, loadScreen;
 
     public LevelGenerationParameters levelGenParams;
@@ -17,27 +19,43 @@ public class MenuHandler : MonoBehaviour
 
     private bool moving, inMainMenu;
 
+    void Awake()
+    {
+        if (instance != null) 
+        { 
+            UnityEngine.Debug.LogError("MULTIPLE MENUHANDLERS. ABORTING THIS ONE BECAUSE ITS A ROTTEN ROTTEN CHILD");
+            Destroy(this);
+        }
+        else
+        {
+            instance = this;
+            GlobalReferences.menuHandler = instance;
+        }
+    }
+
     void Start()
     {
         inMainMenu = true;
-        mainMenu = GameObject.Find("--MainMenu--");
-        selectSaveMenu = GameObject.Find("--SelectSaveToLoad--"); 
+        mainMenu = transform.Find("--MainMenu--").gameObject;
+
+        selectSaveMenu = transform.Find("--SelectSaveToLoad--").gameObject;
         if (selectSaveMenu != null)
         {
             selectSaveMenu.SetActive(false);
         }
-        newWorldOptions = GameObject.Find("--NewWorldOptions--");
+        newWorldOptions = transform.Find("--NewWorldOptions--").gameObject;
         if (newWorldOptions != null)
         {
             newWorldOptions.SetActive(false);
         }
-        optionsMenu = GameObject.Find("--Options--");
+        optionsMenu = transform.Find("--Options--").gameObject;
         if (optionsMenu != null)
         {
             optionsMenu.SetActive(false);
         }
 
         loadScreen = GameObject.Find("--LoadScreen--");
+        GlobalReferences.loadScreen = loadScreen;
         if (loadScreen != null)
         {
             loadScreen.transform.Find("Loading").gameObject.SetActive(false);
@@ -148,7 +166,7 @@ public class MenuHandler : MonoBehaviour
         GameObject loadWorldButton = Resources.Load<GameObject>("Prefabs/LoadWorldButton");
 
         // Find all Save Files in Save Directory
-        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        SaveManager saveManager = GlobalReferences.saveManager;
         saveManager.GetSaveFiles();
 
         // For Every Save File found, Create Button and Give it Correct Name
