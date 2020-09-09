@@ -21,7 +21,7 @@ public class Inventory : MonoBehaviour
     public Sprite[] tileSprites;
 
     public Slot[] slotsToSave;
-    private int a;
+    private int a = 0;
 
     public delegate void UpdateSelector(int slotNum);
     public UpdateSelector updateSelectorUI;
@@ -47,6 +47,7 @@ public class Inventory : MonoBehaviour
         // Initialize Inventory if Not Loaded from Save
         if (!inventoryLoaded)
         {
+            a = 0;
             foreach (Slot slot in slots)
             {
                 a++;

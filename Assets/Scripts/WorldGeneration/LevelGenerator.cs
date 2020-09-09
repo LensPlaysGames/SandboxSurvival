@@ -22,6 +22,9 @@ public class LevelGenerator : MonoBehaviour
 
     public bool worldCreated;
 
+    [SerializeField]
+    private Material tileMat;
+
     void Start()
     {
         if (instance != null)
@@ -72,7 +75,8 @@ public class LevelGenerator : MonoBehaviour
                 tile.transform.localScale = new Vector3(levelGenParams.tileScale, levelGenParams.tileScale);
                 tile.transform.SetParent(this.transform, true);
 
-                tile.AddComponent<SpriteRenderer>();
+                SpriteRenderer tile_SpriteRenderer = tile.AddComponent<SpriteRenderer>();
+                tile_SpriteRenderer.material = tileMat;
                 BoxCollider2D tile_Collider = tile.AddComponent<BoxCollider2D>();
                 tile_Collider.size = new Vector3(1, 1);
                 tile_Collider.enabled = false;
@@ -169,7 +173,8 @@ public class LevelGenerator : MonoBehaviour
                 tile.transform.localScale = new Vector3(scale, scale);
                 tile.transform.SetParent(this.transform, true);
 
-                tile.AddComponent<SpriteRenderer>();
+                SpriteRenderer tile_SpriteRenderer = tile.AddComponent<SpriteRenderer>();
+                tile_SpriteRenderer.material = tileMat;
                 BoxCollider2D tile_Collider = tile.AddComponent<BoxCollider2D>();
                 tile_Collider.size = new Vector3(1, 1);
                 tile_Collider.enabled = false;

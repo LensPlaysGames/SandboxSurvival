@@ -109,7 +109,6 @@ public class DayNightCycle : MonoBehaviour
                     StartCoroutine(SmoothLightingToDay());
                     isDay = true;
 
-                    UnityEngine.Debug.Log(morningNotifText.Length);
                     string dayNotif = morningNotifText[UnityEngine.Random.Range(0, morningNotifText.Length)];
 
                     GameReferences.uIHandler.SendNotif(dayNotif, Color.black, 20f);
@@ -122,7 +121,6 @@ public class DayNightCycle : MonoBehaviour
                     StartCoroutine(SmoothLightingToNight());
                     isDay = false;
 
-                    UnityEngine.Debug.Log(nightNotifText.Length);
                     string nightNotif = nightNotifText[UnityEngine.Random.Range(0, nightNotifText.Length)];
 
                     GameReferences.uIHandler.SendNotif(nightNotif, Color.black, 20f);
@@ -133,7 +131,6 @@ public class DayNightCycle : MonoBehaviour
                 currentTime = 0;
                 day++;
 
-                UnityEngine.Debug.Log(newDayNotifText.Length);
                 string newDayNotif = newDayNotifText[UnityEngine.Random.Range(0, newDayNotifText.Length)];
 
                 GameReferences.uIHandler.SendNotif(newDayNotif, Color.black, 20f);

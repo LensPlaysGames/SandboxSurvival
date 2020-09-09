@@ -4829,7 +4829,7 @@ Canvas:
   m_GameObject: {fileID: 1048984284}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 963194227}
   m_PlaneDistance: 10
   m_PixelPerfect: 1
@@ -4839,7 +4839,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: -170421705
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!224 &1048984288
 RectTransform:
@@ -5181,6 +5181,7 @@ MonoBehaviour:
   player: {fileID: 0}
   loadScreen: {fileID: 0}
   worldCreated: 0
+  tileMat: {fileID: 2100000, guid: a9b72436856a22947b8cf19ecad8ba1b, type: 2}
 --- !u!4 &1111209387
 Transform:
   m_ObjectHideFlags: 0
@@ -5522,7 +5523,7 @@ MonoBehaviour:
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 1
+  m_fontSizeMin: 0.01
   m_fontSizeMax: 144
   m_fontStyle: 0
   m_HorizontalAlignment: 2
@@ -8137,11 +8138,6 @@ MonoBehaviour:
   anim: {fileID: 0}
   grounded: {fileID: 1861597773}
   level: 0
-  l:
-    levelIndex: 0
-    day: 0
-    time: 0
-    tilesToSave: []
   runSpeed: 18
   walkSpeed: 10
   totalStamina: 4

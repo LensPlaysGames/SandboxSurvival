@@ -43,33 +43,40 @@ public class InventoryUI : MonoBehaviour
 
     void UpdateSlotUI(int slotNum)
     {
+        Slot slot = inventory.slots[slotNum];
+
         // If Image Exists In Slot, Destroy It, We're about to Update it
-        if (inventory.slots[slotNum].slotParent.transform.Find("EmptyImagePrefab(Clone)") != null)
+        if (slot.slotParent.transform.Find("EmptyImagePrefab(Clone)") != null)
         {
-            Destroy(inventory.slots[slotNum].slotParent.transform.Find("EmptyImagePrefab(Clone)").gameObject);
+            Destroy(slot.slotParent.transform.Find("EmptyImagePrefab(Clone)").gameObject);
         }
 
         // If slot is populated, Update text
-        if (inventory.slots[slotNum].count != 0)
+        if (slot.count != 0)
         {
-            GameObject item = Instantiate(empty, inventory.slots[slotNum].slotParent.transform);
-            item.transform.SetSiblingIndex(item.transform.GetSiblingIndex() - 1);
-            item.GetComponent<Image>().sprite = inventory.slots[slotNum].sprite;
-            inventory.slots[slotNum].countText.GetComponent<TextMeshProUGUI>().text = inventory.slots[slotNum].count.ToString();
+            GameObject item = Instantiate(empty, slot.slotParent.transform);
+            item.transform.SetSiblingIndex(0);
+            item.GetComponent<Image>().sprite = slot.sprite;
+            slot.countText.GetComponent<TextMeshProUGUI>().text = slot.count.ToString();
+            slot.countText.transform.localPosition = Vector3.zero;
+
+            UnityEngine.Debug.Log("Slot Count:  " + slot.count);
+            UnityEngine.Debug.Log("Slot Count From Text:  " + slot.countText.GetComponent<TextMeshProUGUI>().text);
+            UnityEngine.Debug.Log("Text Position:  " + "x:  " + slot.countText.GetComponent<TextMeshProUGUI>().transform.position.x + "    y:    " + slot.countText.GetComponent<TextMeshProUGUI>().transform.position.y);
         }
         else // NO MORE ITEMS IN SLOT, REMOVE ATTRIBUTES
         {
-            if (inventory.slots[slotNum].slotParent.transform.Find("EmptyImagePrefab(Clone)") != null)
+            if (slot.slotParent.transform.Find("EmptyImagePrefab(Clone)") != null)
             {
-                Destroy(inventory.slots[slotNum].slotParent.transform.Find("EmptyImagePrefab(Clone)").gameObject);
+                Destroy(slot.slotParent.transform.Find("EmptyImagePrefab(Clone)").gameObject);
             }
 
-            inventory.slots[slotNum].item.tileType = Tile.TileType.Air;
-            inventory.slots[slotNum].item.itemType = Item.ItemType.Tile;
-            inventory.slots[slotNum].empty = true;
-            inventory.slots[slotNum].count = 0;
-            inventory.slots[slotNum].countText.GetComponent<TextMeshProUGUI>().text = "";
-            inventory.slots[slotNum].sprite = null;
+            slot.item.tileType = Tile.TileType.Air;
+            slot.item.itemType = Item.ItemType.Tile;
+            slot.empty = true;
+            slot.count = 0;
+            slot.countText.GetComponent<TextMeshProUGUI>().text = "";
+            slot.sprite = null;
         }
     }
 
