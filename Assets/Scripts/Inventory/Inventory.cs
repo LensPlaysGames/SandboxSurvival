@@ -72,7 +72,6 @@ public class Inventory : MonoBehaviour
             selectedSlot = slots[0];
             updateSelectorUI?.Invoke(0);
         }
-
     }
 
     void Update()
@@ -88,10 +87,10 @@ public class Inventory : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha9)) { SetSelectedSlot(8); }
         if (Input.GetKeyDown(KeyCode.Alpha0)) { SetSelectedSlot(9); }
 
-        if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex != 9) { SetSelectedSlot(selectedSlotIndex - 1); }
-        else if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex == 9) { SetSelectedSlot(0); }
-        if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex != 0) { SetSelectedSlot(selectedSlotIndex + 1); }
-        else if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex == 0) { SetSelectedSlot(9); }
+        if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex != 0) { SetSelectedSlot(selectedSlotIndex - 1); }
+        else if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex == 0) { SetSelectedSlot(9); }
+        if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex != 9) { SetSelectedSlot(selectedSlotIndex + 1); }
+        else if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex == 9) { SetSelectedSlot(0); }
     }
 
     public void SetSelectedSlot(int slotIndex)
@@ -170,8 +169,6 @@ public class Inventory : MonoBehaviour
         updateAllSlotsCallback?.Invoke();
     }
 
-    // Remove slotParentName and countTextName Because This Will Be Done By The InventoryUI Script itself
-
     public void SetInventoryToSave(string saveName)
     {
         for (int slot = 0; slot < slots.Length; slot++)
@@ -182,8 +179,6 @@ public class Inventory : MonoBehaviour
             slotsToSave[slot].count = slots[slot].count;
         }
     }
-
-    // Remove slotParent and countText Because This Will Be Done By The InventoryUI Script itself
 
     public void LoadInventory(string saveName)
     {

@@ -7,7 +7,39 @@ using TMPro;
 
 public class UIHandler : MonoBehaviour
 {
+    private InputManager inputManager;
+
+    #region Singleton/Init
+
     public static UIHandler instance;
+
+    void Awake()
+    {
+        if (instance != null)
+        {
+            UnityEngine.Debug.LogError("There Should NOT be more than one UIHandler");
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            instance = this;
+            GameReferences.uIHandler = this;
+        }
+
+        inputManager = new InputManager();
+    }
+
+    void OnEnable()
+    {
+        inputManager.PlayerUI.Enable();
+    }
+
+    void OnDisable()
+    {
+        inputManager.PlayerUI.Disable();
+    }
+
+    #endregion
 
     public Level level;
 
@@ -23,21 +55,8 @@ public class UIHandler : MonoBehaviour
 
     public float scale;
 
-    void Awake()
-    {
-        if (instance != null) { UnityEngine.Debug.LogError("There Should NOT be more than one UIHandler"); Destroy(this.gameObject); return; }
-        instance = this;
-        GameReferences.uIHandler = this;
-    }
-
     void Start()
     {
-        pauseMenu = transform.Find("--PauseUI--").gameObject;
-        if (pauseMenu != null)
-        {
-            pauseMenu.SetActive(false);
-        }
-
         inventoryHideUI = Resources.Load<Sprite>("InventoryUIArrowHide");
         inventoryShowUI = Resources.Load<Sprite>("InventoryUIArrowShow");
 
@@ -51,11 +70,21 @@ public class UIHandler : MonoBehaviour
         notificationBG = transform.Find("--NotificationUI--").gameObject;
         notification = Resources.Load<GameObject>("Prefabs/Notification");
 
+
+
+        pauseMenu = transform.Find("--PauseUI--").gameObject;
+        if (pauseMenu != null)
+        {
+            pauseMenu.SetActive(false);
+        }
+
         craftMenu = transform.Find("--CraftMenu--").gameObject;
         if (craftMenu != null)
         {
             craftMenu.GetComponent<Animator>().SetInteger("CraftMenu", 0);
         }
+
+
 
         if (PlayerPrefs.GetInt("Enabled Coordinates Display", 1) == 1) 
         { 
@@ -68,17 +97,31 @@ public class UIHandler : MonoBehaviour
             transform.Find("--Coordinates--").gameObject.SetActive(false);
         }
 
-        SendNotif("You Awake From A Deep Slumber", Color.white, 20f);
+
+
+        SendNotif("You Awake From A Deep Slumber", 20f, Color.white);
     }
 
     void Update()
     {
         if (scale == 0) { scale = GameObject.Find("LevelGenerator").GetComponent<LevelGenerator>().GetLevelInstance().Scale; }
 
-        if (Input.GetButtonDown("Cancel"))
+        #region Player Input
+
+        if (inputManager.PlayerUI.EscapeMenu.triggered)
         {
             TogglePauseMenu();
         }
+        if (inputManager.PlayerUI.CraftMenu.triggered)
+        {
+            CraftMenu();
+        }
+        if (inputManager.PlayerUI.Inventory.triggered)
+        {
+            PressShowHideUIButton();
+        }
+
+        #endregion
 
         if (player.transform.position - lastPlayerPos != Vector3.zero && coordsEnabled)
         {
@@ -86,6 +129,8 @@ public class UIHandler : MonoBehaviour
         }
         lastPlayerPos = player.transform.position;
     }
+
+    // BELOW LIES stuff I should move into seperate scripts but, uh... ohwell
 
     #region Craft Menu
 
@@ -143,7 +188,7 @@ public class UIHandler : MonoBehaviour
         player.GetComponent<Player>().SaveAllPlayerData(saveName);
 
         // Notify Player Game Saved
-        SendNotif('\"' + saveName + '\"' + " Saved", Color.green, 10f);
+        SendNotif('\"' + saveName + '\"' + " Saved", 10f, Color.green);
 
         GlobalReferences.loadScreen.transform.Find("Loading").gameObject.SetActive(false);
     }
@@ -202,9 +247,9 @@ public class UIHandler : MonoBehaviour
 
     #region Notifications
 
-    public void SendNotif(string notifText, Color notifColor, float notifTime) { StartCoroutine(SendNotification(notifText, notifColor, notifTime)); }
+    public void SendNotif(string notifText, float notifTime, Color notifColor) { StartCoroutine(SendNotification(notifText, notifTime, notifColor)); }
 
-    public IEnumerator SendNotification(string notifText, Color notifColor, float notifTime)
+    public IEnumerator SendNotification(string notifText, float notifTime, Color notifColor)
     {
         GameObject notif = Instantiate(notification, notificationBG.transform);
         notif.GetComponentInChildren<TextMeshProUGUI>().text = notifText;

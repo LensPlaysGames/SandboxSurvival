@@ -111,7 +111,7 @@ public class DayNightCycle : MonoBehaviour
 
                     string dayNotif = morningNotifText[UnityEngine.Random.Range(0, morningNotifText.Length)];
 
-                    GameReferences.uIHandler.SendNotif(dayNotif, Color.black, 20f);
+                    GameReferences.uIHandler.SendNotif(dayNotif, 20f, Color.black);
                 }
             }
             else if (currentTime >= dayNight && currentTime < dayLength) // If It's Night (After dayNight)
@@ -123,7 +123,7 @@ public class DayNightCycle : MonoBehaviour
 
                     string nightNotif = nightNotifText[UnityEngine.Random.Range(0, nightNotifText.Length)];
 
-                    GameReferences.uIHandler.SendNotif(nightNotif, Color.black, 20f);
+                    GameReferences.uIHandler.SendNotif(nightNotif, 20f, Color.black);
                 }
             }
             else if (currentTime >= dayLength) // It's A Fresh New Day
@@ -133,7 +133,7 @@ public class DayNightCycle : MonoBehaviour
 
                 string newDayNotif = newDayNotifText[UnityEngine.Random.Range(0, newDayNotifText.Length)];
 
-                GameReferences.uIHandler.SendNotif(newDayNotif, Color.black, 20f);
+                GameReferences.uIHandler.SendNotif(newDayNotif, 20f, Color.black);
             }
         }
     }

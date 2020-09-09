@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class MouseController : MonoBehaviour
 {
-    public Level level;
     public GameObject Cursor;
     public GameObject Player;
 
@@ -46,7 +45,7 @@ public class MouseController : MonoBehaviour
         // Get Currently Selected Tile
         if (scale != 0) { selectedTile = LevelGenerator.instance.GetTileAtWorldCoord(mousePos); }
         
-
+        // If Tile is Selected, Set Cursor Pos
         if (selectedTile != null)
         {
             SetCursorPos();

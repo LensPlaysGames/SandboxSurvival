@@ -10,6 +10,8 @@ public class OnFirstRun : MonoBehaviour
     public int firstRun = 0;
     public int runs;
 
+    private InputManager inputManager;
+
     void Awake()
     {
         if (instance != null) 
@@ -23,6 +25,18 @@ public class OnFirstRun : MonoBehaviour
             GlobalReferences.firstRun = instance;
             DontDestroyOnLoad(this); 
         }
+
+        inputManager = new InputManager();
+    }
+
+    void OnEnable()
+    {
+        inputManager.Debug.Enable();
+    }
+
+    void OnDisable()
+    {
+        inputManager.Debug.Disable();
     }
 
     void Start()
@@ -49,7 +63,7 @@ public class OnFirstRun : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetButtonDown("Debug_Reset"))
+        if (inputManager.Debug.DebugReset.triggered)
         {
             UnityEngine.Debug.Log("Debug_Reset");
             PlayerPrefs.DeleteAll();

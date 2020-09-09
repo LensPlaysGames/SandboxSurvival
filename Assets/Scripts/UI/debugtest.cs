@@ -9,14 +9,25 @@ public class debugtest : MonoBehaviour
 
     private bool toggle;
 
+    private InputManager inputManager;
+
+    void Awake()
+    {
+        inputManager = new InputManager();
+    }
+
     void OnEnable()
     {
         Application.logMessageReceived += Log;
+
+        inputManager.Debug.Enable();
     }
 
     void OnDisable()
     {
         Application.logMessageReceived -= Log;
+
+        inputManager.Debug.Disable();
     }
 
     public void Log(string logString, string stackTrace, LogType type)
@@ -43,7 +54,7 @@ public class debugtest : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetButtonDown("Debug Log"))
+        if (inputManager.Debug.DebugLog.triggered)
         {
             toggle = !toggle;
         }

@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
+    public InputManager inputManager;
+
     public Rigidbody2D rb;
     public Animator anim;
     public Transform grounded;
@@ -35,8 +38,6 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float staminaRegainTime;
 
-
-
     private float staminaRegain;
     private Vector3 input;
     private float speed, jumpForce, stamina;
@@ -45,18 +46,28 @@ public class Player : MonoBehaviour
 
     void Awake()
     {
+        inputManager = new InputManager();
+
         GameReferences.playerScript = this;
         GameReferences.player = this.gameObject;
     }
 
+    void OnEnable()
+    {
+        inputManager.Player.Enable();
+    }
 
+    void OnDisable()
+    {
+        inputManager.Player.Disable();
+    }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.relativeVelocity.y >= maxFallSpeed)
         {
             UnityEngine.Debug.Log("Player Fell Too Hard!");
-            GameObject.Find("UICanvas").GetComponent<UIHandler>().SendNotif("Player Fell! Yeouch!", Color.red, 10f);
+            GameReferences.uIHandler.SendNotif("Player Fell! Yeouch!", 10f, Color.red);
         }
     }
 
@@ -102,13 +113,7 @@ public class Player : MonoBehaviour
 
     public void GetInput()
     {
-        if (Input.GetButtonDown("CraftMenu"))
-        {
-            // Open Craft Menu
-            GameObject.Find("UICanvas").GetComponent<UIHandler>().CraftMenu();
-        }
-
-        input.x = Input.GetAxisRaw("Horizontal");
+        input.x = inputManager.Player.Movement.ReadValue<float>();
 
         #region Run/Walk && Stamina
 
@@ -155,7 +160,7 @@ public class Player : MonoBehaviour
 
         #endregion
 
-        if (Physics2D.OverlapCircle(grounded.position, groundedRadius, ground)) { if (Input.GetAxisRaw("Jump") != 0) { Jump(); }}
+        if (Physics2D.OverlapCircle(grounded.position, groundedRadius, ground)) { if (inputManager.Player.Jump.triggered) { Jump(); }}
     }
 
     public void MovePlayer()
