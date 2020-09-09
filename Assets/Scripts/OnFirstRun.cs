@@ -17,7 +17,7 @@ public class OnFirstRun : MonoBehaviour
         if (instance != null) 
         { 
             UnityEngine.Debug.LogError("Multiple ONFIRSTRUNs in Game. Destroying " + this.name); 
-            Destroy(this); 
+            Destroy(this.gameObject); 
         }
         else 
         { 

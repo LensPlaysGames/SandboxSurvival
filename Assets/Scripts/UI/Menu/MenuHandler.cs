@@ -63,7 +63,7 @@ public class MenuHandler : MonoBehaviour
 
         #region Initialize Sliders for Advanced World Options
 
-        levelGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>();
+        levelGenParams = GlobalReferences.levelGenParams;
 
         GameObject container = newWorldOptions.transform.Find("AdvancedWorldOptions").gameObject;
         GameObject containerT = container.transform.Find("--TileScale--").gameObject;
@@ -76,11 +76,15 @@ public class MenuHandler : MonoBehaviour
         height = containerH.transform.Find("HeightSlider").GetComponent<Slider>();
 
         tileScale.value = levelGenParams.defaultScale;
-        tileScale.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = levelGenParams.defaultScale.ToString();
+        tileScale.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = tileScale.value.ToString();
         width.value = levelGenParams.defaultWidth;
-        width.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = levelGenParams.defaultWidth.ToString();
+        width.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = width.value.ToString();
         height.value = levelGenParams.defaultHeight;
-        height.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = levelGenParams.defaultHeight.ToString();
+        height.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = height.value.ToString();
+
+        levelGenParams.tileScale = levelGenParams.defaultScale;
+        levelGenParams.worldWidth = levelGenParams.defaultWidth;
+        levelGenParams.worldHeight = levelGenParams.defaultHeight;
 
         #endregion
 

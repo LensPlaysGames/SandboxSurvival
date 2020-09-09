@@ -117,7 +117,7 @@ public class Player : MonoBehaviour
 
         #region Run/Walk && Stamina
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (inputManager.Player.Sprint.ReadValue<float>() != 0)
         {
             staminaRegain = staminaRegainTime;
 

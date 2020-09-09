@@ -209,7 +209,6 @@ public class LevelGenerator : MonoBehaviour
         // false = Not Solid = Layer 9
         // true = Solid = Layer 8
 
-        // Get Sprite Database
         DataDontDestroyOnLoad data = GlobalReferences.DDDOL;
 
         if (tileData.Type == Tile.TileType.Air)

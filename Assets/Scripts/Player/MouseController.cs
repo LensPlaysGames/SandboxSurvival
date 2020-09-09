@@ -43,7 +43,7 @@ public class MouseController : MonoBehaviour
         mousePos.z = 0f;
 
         // Get Currently Selected Tile
-        if (scale != 0) { selectedTile = LevelGenerator.instance.GetTileAtWorldCoord(mousePos); }
+        if (scaleSet) { selectedTile = LevelGenerator.instance.GetTileAtWorldCoord(mousePos); }
         
         // If Tile is Selected, Set Cursor Pos
         if (selectedTile != null)

@@ -85,7 +85,7 @@ public class Level
     public void GenerateLevelTiles() // All this does is goes through each tile in world and sets tile type to something
     {
         // Initialize World Generation Characteristics from Where they Are Set In Inspector (DataDontDestroyOnLoad.WorldGenerationParameters.cs)
-        LevelGenerationParameters levelGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>();
+        LevelGenerationParameters levelGenParams = GlobalReferences.levelGenParams;
         surfaceHeightMultiplier = levelGenParams.surfaceHeightPercentage;
         undergroundHeightMultiplier = levelGenParams.undergroundHeightPercentage;
 
@@ -255,7 +255,7 @@ public class Level
 
     public Tile GetTileAt(int _x, int _y) // Get Tile Data At Certain X and Y in (Data) 2D tiles Array
     {
-        if (_x > width || _x < 0 || _y > width || _y < 0)
+        if (_x > width || _x < 0 || _y > height || _y < 0)
         {
             UnityEngine.Debug.LogError("Tile (" + _x + "," + _y + ") is out of World");
             return null;
