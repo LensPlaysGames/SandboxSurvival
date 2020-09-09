@@ -7,6 +7,8 @@ public class debugtest : MonoBehaviour
     private string output;
     private string stack;
 
+    private bool toggle;
+
     void OnEnable()
     {
         Application.logMessageReceived += Log;
@@ -32,7 +34,18 @@ public class debugtest : MonoBehaviour
     {
         //if (!Application.isEditor) //Do not display in editor ( or you can use the UNITY_EDITOR macro to also disable the rest)
         {
-            myLog = GUI.TextArea(new Rect(10, 10, Screen.width - 10, Screen.height - 480), myLog);
+            if (toggle)
+            {
+                myLog = GUI.TextArea(new Rect(10, 10, Screen.width - 10, Screen.height - 480), myLog);
+            }
+        }
+    }
+
+    void Update()
+    {
+        if (Input.GetButtonDown("Debug Log"))
+        {
+            toggle = !toggle;
         }
     }
     //#endif

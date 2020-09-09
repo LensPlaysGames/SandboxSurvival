@@ -11,7 +11,7 @@ public class GameReferences : MonoBehaviour
 
     public static UIHandler uIHandler;
     public static InventoryUI playerInvUI;
-    
+
     public static AudioManager audioManager;
 
     public static DayNightCycle dayNightCycle;

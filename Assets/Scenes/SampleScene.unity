@@ -156,9 +156,9 @@ RectTransform:
   m_Father: {fileID: 545300410}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -157.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -157.5}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &25520746
@@ -519,9 +519,9 @@ RectTransform:
   m_Father: {fileID: 545300410}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -252.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -252.5}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &92608640
@@ -768,6 +768,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventory: {fileID: 0}
   selector: {fileID: 1115309246}
+  inventorySlotParents: []
+  inventorySlotCountTexts: []
+  tileSprites: []
 --- !u!1 &128131607
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,7 +784,7 @@ GameObject:
   - component: {fileID: 128131609}
   m_Layer: 5
   m_Name: Slot (4) Count
-  m_TagString: Untagged
+  m_TagString: PlayerInvCountText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1512,9 +1515,9 @@ RectTransform:
   m_Father: {fileID: 545300410}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -537.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -537.5}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &320935163
@@ -1935,7 +1938,7 @@ GameObject:
   - component: {fileID: 421310277}
   - component: {fileID: 421310276}
   m_Layer: 5
-  m_Name: CountTextPanel (4)
+  m_Name: CountTextPanel (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3199,7 +3202,7 @@ GameObject:
   - component: {fileID: 716299101}
   m_Layer: 5
   m_Name: Slot (6) Count
-  m_TagString: Untagged
+  m_TagString: PlayerInvCountText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3332,7 +3335,7 @@ GameObject:
   - component: {fileID: 727135274}
   - component: {fileID: 727135273}
   m_Layer: 5
-  m_Name: CountTextPanel (2)
+  m_Name: CountTextPanel (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4277,7 +4280,7 @@ GameObject:
   - component: {fileID: 969268506}
   - component: {fileID: 969268505}
   m_Layer: 5
-  m_Name: CountTextPanel (6)
+  m_Name: CountTextPanel (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4374,9 +4377,9 @@ RectTransform:
   m_Father: {fileID: 545300410}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -632.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -632.5}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &977513885
@@ -4564,7 +4567,7 @@ GameObject:
   - component: {fileID: 1000037525}
   m_Layer: 5
   m_Name: Slot (9) Count
-  m_TagString: Untagged
+  m_TagString: PlayerInvCountText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4718,9 +4721,9 @@ RectTransform:
   m_Father: {fileID: 545300410}
   m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -917.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -917.5}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1019959447
@@ -5029,9 +5032,9 @@ RectTransform:
   m_Father: {fileID: 545300410}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -727.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -727.5}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1061949945
@@ -5084,7 +5087,7 @@ GameObject:
   - component: {fileID: 1089447971}
   - component: {fileID: 1089447970}
   m_Layer: 5
-  m_Name: CountTextPanel (5)
+  m_Name: CountTextPanel (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5448,7 +5451,7 @@ GameObject:
   - component: {fileID: 1216721300}
   m_Layer: 5
   m_Name: Slot (1) Count
-  m_TagString: Untagged
+  m_TagString: PlayerInvCountText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5789,7 +5792,7 @@ GameObject:
   - component: {fileID: 1286572805}
   - component: {fileID: 1286572804}
   m_Layer: 5
-  m_Name: CountTextPanel (1)
+  m_Name: CountTextPanel (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6181,7 +6184,7 @@ GameObject:
   - component: {fileID: 1418598750}
   - component: {fileID: 1418598749}
   m_Layer: 5
-  m_Name: CountTextPanel (9)
+  m_Name: CountTextPanel (10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6258,7 +6261,7 @@ GameObject:
   - component: {fileID: 1446947348}
   m_Layer: 5
   m_Name: Slot (3) Count
-  m_TagString: Untagged
+  m_TagString: PlayerInvCountText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6546,9 +6549,9 @@ RectTransform:
   m_Father: {fileID: 545300410}
   m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -822.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -822.5}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1458625123
@@ -6601,7 +6604,7 @@ GameObject:
   - component: {fileID: 1489491876}
   - component: {fileID: 1489491875}
   m_Layer: 5
-  m_Name: CountTextPanel (7)
+  m_Name: CountTextPanel (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7282,9 +7285,9 @@ RectTransform:
   m_Father: {fileID: 545300410}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -442.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -442.5}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1559906628
@@ -7473,7 +7476,7 @@ GameObject:
   - component: {fileID: 1578263483}
   - component: {fileID: 1578263482}
   m_Layer: 5
-  m_Name: CountTextPanel (8)
+  m_Name: CountTextPanel (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7645,9 +7648,9 @@ RectTransform:
   m_Father: {fileID: 545300410}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -62.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -62.5}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1595821216
@@ -7721,9 +7724,9 @@ RectTransform:
   m_Father: {fileID: 545300410}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -347.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -347.5}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1623520470
@@ -8195,9 +8198,6 @@ MonoBehaviour:
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   maxStackSize: 90
   slots:
   - empty: 1
@@ -8205,163 +8205,102 @@ MonoBehaviour:
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 1
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 1
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 1
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 1
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 1
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 1
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 1
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 1
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 1
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
-  tileSprites: []
   slotsToSave:
   - empty: 0
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 0
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 0
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 0
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 0
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 0
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 0
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 0
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 0
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
   - empty: 0
     count: 0
     item:
       itemType: 0
       tileType: 0
-    slotParentName: 
-    countTextName: 
-    spriteName: 
 --- !u!95 &1712859570
 Animator:
   serializedVersion: 3
@@ -8593,7 +8532,7 @@ GameObject:
   - component: {fileID: 1787988887}
   - component: {fileID: 1787988886}
   m_Layer: 5
-  m_Name: CountTextPanel (3)
+  m_Name: CountTextPanel (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8670,7 +8609,7 @@ GameObject:
   - component: {fileID: 1789920755}
   m_Layer: 5
   m_Name: Slot (8) Count
-  m_TagString: Untagged
+  m_TagString: PlayerInvCountText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9032,7 +8971,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -250.18994, y: -56.149902}
+  m_AnchoredPosition: {x: -250.18945, y: -56.149902}
   m_SizeDelta: {x: 110.38046, y: 52.290665}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1826284383
@@ -9392,7 +9331,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -67.6001, y: -56.149902}
+  m_AnchoredPosition: {x: -67.59961, y: -56.149902}
   m_SizeDelta: {x: 110.38046, y: 52.290665}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1914912392
@@ -9446,7 +9385,7 @@ GameObject:
   - component: {fileID: 1917051887}
   m_Layer: 5
   m_Name: Slot (10) Count
-  m_TagString: Untagged
+  m_TagString: PlayerInvCountText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9713,7 +9652,7 @@ GameObject:
   - component: {fileID: 1978052168}
   m_Layer: 5
   m_Name: Slot (7) Count
-  m_TagString: Untagged
+  m_TagString: PlayerInvCountText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10114,7 +10053,7 @@ GameObject:
   - component: {fileID: 2023785782}
   - component: {fileID: 2023785781}
   m_Layer: 5
-  m_Name: CountTextPanel
+  m_Name: CountTextPanel (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10191,7 +10130,7 @@ GameObject:
   - component: {fileID: 2069893843}
   m_Layer: 5
   m_Name: Slot (2) Count
-  m_TagString: Untagged
+  m_TagString: PlayerInvCountText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10552,7 +10491,7 @@ GameObject:
   - component: {fileID: 2112447568}
   m_Layer: 5
   m_Name: Slot (5) Count
-  m_TagString: Untagged
+  m_TagString: PlayerInvCountText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

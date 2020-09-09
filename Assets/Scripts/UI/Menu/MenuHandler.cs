@@ -239,19 +239,19 @@ public class MenuHandler : MonoBehaviour
 
     public void SetTileScaleFromInput()
     {
-        GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>().tileScale = Mathf.Round(tileScale.value * 10) / 10;
+        GlobalReferences.levelGenParams.tileScale = Mathf.Round(tileScale.value * 10) / 10;
         tileScale.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round(tileScale.value * 10) / 10).ToString();
     }
 
     public void SetLevelWidthFromInput()
     {
-        GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>().worldWidth = (int)width.value;
+        GlobalReferences.levelGenParams.worldWidth = (int)width.value;
         width.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = ((int)width.value).ToString();
     }
 
     public void SetLevelHeightFromInput()
     {
-        GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>().worldHeight = (int)height.value;
+        GlobalReferences.levelGenParams.worldHeight = (int)height.value;
         height.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = ((int)height.value).ToString();
     }
 

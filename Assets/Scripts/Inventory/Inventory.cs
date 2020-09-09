@@ -7,31 +7,10 @@ using TMPro;
 
 public class Inventory : MonoBehaviour
 {
+    #region Singleton/Init
+
     public static Inventory instance;
-
-    public bool inventoryLoaded = false;
-    public bool spritesLoaded = false;
-
-    public int selectedSlotIndex;
-    public Slot selectedSlot;
-
-    public int maxStackSize = 90;
-
-    public Slot[] slots;
-    public Sprite[] tileSprites;
-
-    public Slot[] slotsToSave;
-    private int a = 0;
-
-    public delegate void UpdateSelector(int slotNum);
-    public UpdateSelector updateSelectorUI;
-
-    public delegate void UpdateSlot(int slotIndex);
-    public UpdateSlot updateSlotCallback;
-
-    public delegate void UpdateAllSlots();
-    public UpdateAllSlots updateAllSlotsCallback;
-
+    
     void Awake()
     {
         if (instance != null)
@@ -42,30 +21,53 @@ public class Inventory : MonoBehaviour
         GameReferences.playerInv = instance;
     }
 
+    #endregion
+
+    public bool inventoryLoaded = false;
+    public bool spritesLoaded = false;
+
+    public int selectedSlotIndex;
+    public Slot selectedSlot;
+
+    public int maxStackSize = 90;
+
+    public Slot[] slots;
+
+    public Slot[] slotsToSave;
+    private int a = 0;
+
+    #region UI Event Declaration
+
+    public delegate void UpdateSelector(int slotNum);
+    public UpdateSelector updateSelectorUI;
+
+    public delegate void UpdateSlot(int slotIndex);
+    public UpdateSlot updateSlotCallback;
+
+    public delegate void UpdateAllSlots();
+    public UpdateAllSlots updateAllSlotsCallback;
+
+    #endregion
+
+
     void Start()
     {
-        // Initialize Inventory if Not Loaded from Save
+        // Initialize Inventory if Not Loaded
         if (!inventoryLoaded)
         {
             a = 0;
             foreach (Slot slot in slots)
             {
                 a++;
-                slot.slotParent = GameReferences.playerInvUI.transform.Find("InventoryBackground").transform.Find("Slot (" + a + ")").gameObject;
-                slot.countText = GameObject.Find("Slot (" + a + ") Count");
-                slot.empty = true;
-                slot.count = 0;
                 slot.item.itemType = Item.ItemType.Tile;
                 slot.item.tileType = Tile.TileType.Air;
-                slot.sprite = null;
+                slot.empty = true;
+                slot.count = 0;
             }
         }
 
-        // Initialize sprites Array from Sprite Database
-        tileSprites = DataDontDestroyOnLoad.instance.spriteDB;
-
         // Set Selected Slot to 0 if Null
-        if (selectedSlot.slotParent == null)
+        if (selectedSlot == null)
         {
             selectedSlot = slots[0];
             updateSelectorUI?.Invoke(0);
@@ -86,9 +88,9 @@ public class Inventory : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha9)) { SetSelectedSlot(8); }
         if (Input.GetKeyDown(KeyCode.Alpha0)) { SetSelectedSlot(9); }
 
-        if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex != 9) { SetSelectedSlot(selectedSlotIndex + 1); }
+        if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex != 9) { SetSelectedSlot(selectedSlotIndex - 1); }
         else if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex == 9) { SetSelectedSlot(0); }
-        if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex != 0) { SetSelectedSlot(selectedSlotIndex - 1); }
+        if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex != 0) { SetSelectedSlot(selectedSlotIndex + 1); }
         else if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex == 0) { SetSelectedSlot(9); }
     }
 
@@ -104,9 +106,9 @@ public class Inventory : MonoBehaviour
         bool itemDealt = false;
 
         // Find Slot To Add To
-        for (int s1 = 0; s1 < slots.Length; s1++)
+        for (int s1 = 0; s1 < slots.Length; s1++) 
         {
-            for (int s = 0; s < slots.Length; s++)
+            for (int s = 0; s < slots.Length; s++) // For each slot: check if any other slot has a stackable slot BEFORE adding to current slot
             {
                 // Not the best but check every slot per slot for a stack of tiles, if it's the same tile, stack, otherwise MAKE NEW STACK
                 if (slots[s].item.tileType == item.tileType)
@@ -124,11 +126,11 @@ public class Inventory : MonoBehaviour
                     }
                 }
             }
-            if (itemDealt)
+            if (itemDealt) // Break out of the larger for loop if item was stacked somewhere
             {
                 break;
             }
-            else if (item != slots[s1].item)
+            else if (item != slots[s1].item) // No other slot with this item was found, lets see if this one is eligible
             {
                 // MAKE NEW STACK
                 if (slots[s1].empty)
@@ -138,36 +140,19 @@ public class Inventory : MonoBehaviour
                     slots[s1].count = 0;
                     slots[s1].count++;
 
-                    if (item.itemType == Item.ItemType.Tile)
-                    {
-                        if (tileSprites[(int)item.tileType] != null)
-                        {
-                            slots[s1].sprite = tileSprites[(int)item.tileType];
-                        }
-                        else 
-                        { 
-                            UnityEngine.Debug.LogError("Error when trying to AddItemToSlot: Sprite for " + item.tileType.ToString() + " not found in Inventory Sprites Array!"); 
-                        }
-                    }
-                    else if (item.itemType == Item.ItemType.Tool)
-                    {
-                        // Get Appropriate Tool Sprite in Database (has to equal enums or I'll do it another way)
-
-                    }
-                    else if (item.itemType == Item.ItemType.Weapon)
-                    {
-                        // Get Appropriate Weapon Sprite in Database (has to equal enums or I'll do it another way)
-
-                    }
+                    updateSlotCallback?.Invoke(s1);
 
                     itemDealt = true;
-
-                    updateSlotCallback?.Invoke(s1);
+                    
                     break;
                 }
             }
         }
-        if (!itemDealt) { UnityEngine.Debug.LogWarning("Player Inventory Full, Not sure what to do with destroyed Tile"); }
+        if (!itemDealt) // Player Inventory Full
+        { 
+            UnityEngine.Debug.LogWarning("Player Inventory Full, Not sure what to do with destroyed Tile"); 
+            // Do something like spawn entity for dropped tile or goowop beeboops events and such
+        }
     }
 
     public void TakeFromSlot(Slot slot)
@@ -182,30 +167,23 @@ public class Inventory : MonoBehaviour
         slot.count = 0;
         slot.item.itemType = Item.ItemType.Tile;
         slot.item.tileType = Tile.TileType.Air;
-        slot.sprite = null;
         updateAllSlotsCallback?.Invoke();
     }
 
-
+    // Remove slotParentName and countTextName Because This Will Be Done By The InventoryUI Script itself
 
     public void SetInventoryToSave(string saveName)
     {
         for (int slot = 0; slot < slots.Length; slot++)
         {
             slotsToSave[slot].item.itemType = slots[slot].item.itemType;
+            slotsToSave[slot].item.tileType = slots[slot].item.tileType;
             slotsToSave[slot].empty = slots[slot].empty;
             slotsToSave[slot].count = slots[slot].count;
-
-            slotsToSave[slot].item.tileType = slots[slot].item.tileType;
-            slotsToSave[slot].slotParentName = slots[slot].slotParent.name;
-            slotsToSave[slot].countTextName = slots[slot].countText.name;
-            if (slots[slot].sprite != null)
-            {
-                slotsToSave[slot].spriteName = slots[slot].sprite.name;
-            }
-            else { slotsToSave[slot].spriteName = "Air"; }
         }
     }
+
+    // Remove slotParent and countText Because This Will Be Done By The InventoryUI Script itself
 
     public void LoadInventory(string saveName)
     {
@@ -216,13 +194,9 @@ public class Inventory : MonoBehaviour
         {
             // Set Slot Data to Loaded Slot Data
             slots[slot].item.itemType = saveManager.loadedData.playerData.playerInv[slot].item.itemType;
+            slots[slot].item.tileType = saveManager.loadedData.playerData.playerInv[slot].item.tileType;
             slots[slot].empty = saveManager.loadedData.playerData.playerInv[slot].empty;
             slots[slot].count = saveManager.loadedData.playerData.playerInv[slot].count;
-
-            slots[slot].item.tileType = saveManager.loadedData.playerData.playerInv[slot].item.tileType;
-            slots[slot].slotParent = GameObject.Find(saveManager.loadedData.playerData.playerInv[slot].slotParentName);
-            slots[slot].countText = GameObject.Find(saveManager.loadedData.playerData.playerInv[slot].countTextName);
-            slots[slot].sprite = DataDontDestroyOnLoad.instance.spriteDB[(int)Enum.Parse(typeof(Tile.TileType), saveManager.loadedData.playerData.playerInv[slot].spriteName)];
 
             inventoryLoaded = true;
 
