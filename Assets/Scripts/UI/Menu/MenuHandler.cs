@@ -131,21 +131,7 @@ public class MenuHandler : MonoBehaviour
         }
     }
 
-    public IEnumerator DisableMenuAfterX(float x, GameObject menu) { 
-        yield return new WaitForSeconds(x);
-
-        if (menu == selectSaveMenu)
-        {
-            GameObject go = GameObject.Find("--SelectSaveToLoad--").transform.Find("WorldSavesBackground").gameObject;
-            for (int i = 0; i < go.transform.childCount; i++)
-            {
-                Destroy(go.transform.GetChild(i).gameObject);
-            }
-        }
-
-        menu.SetActive(false); 
-        moving = false; 
-    }
+    #region Generate World Menu
 
     public void GoToEnterWorldName()
     {
@@ -155,6 +141,59 @@ public class MenuHandler : MonoBehaviour
         StartCoroutine(DisableMenuAfterX(.51f, mainMenu));
         newWorldOptions.SetActive(true);
     }
+
+    public void SetWorldNameFromInput()
+    {
+        // Check For Empty World Name, Set To Random Number
+        if (newWorldOptions.transform.Find("WorldNameInput").GetComponent<TMP_InputField>().text == "") { DataDontDestroyOnLoad.instance.saveName = UnityEngine.Random.Range(0, 1000000).ToString(); }
+        else { DataDontDestroyOnLoad.instance.saveName = newWorldOptions.transform.Find("WorldNameInput").GetComponent<TMP_InputField>().text; }
+
+    }
+
+    public void StartNewGame()
+    {
+        loadScreen.transform.Find("Loading").gameObject.SetActive(true);
+        DataDontDestroyOnLoad.instance.newWorld = true;
+        SceneManager.LoadScene("SampleScene");
+    }
+
+    #region Advanced World Creation Settings
+
+    public void ShowAdvancedSettings()
+    {
+        // Play Animation to Show Advanced Settings
+        newWorldOptions.GetComponent<Animator>().Play("Base Layer.AdvancedWorldSettingsShow");
+    }
+
+    public void SetTileScaleFromInput()
+    {
+        GlobalReferences.levelGenParams.tileScale = Mathf.Round(tileScale.value * 10) / 10;
+        tileScale.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round(tileScale.value * 10) / 10).ToString();
+    }
+
+    public void SetLevelWidthFromInput()
+    {
+        GlobalReferences.levelGenParams.worldWidth = (int)width.value;
+        width.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = ((int)width.value).ToString();
+    }
+
+    public void SetLevelHeightFromInput()
+    {
+        GlobalReferences.levelGenParams.worldHeight = (int)height.value;
+        height.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = ((int)height.value).ToString();
+    }
+
+    public void HideAdvancedSettings()
+    {
+        // Play Animation to Show Advanced Settings
+        newWorldOptions.GetComponent<Animator>().Play("Base Layer.AdvancedWorldSettingsHide");
+    }
+
+    #endregion
+
+    #endregion
+
+    #region Load World Menu
 
     public void SelectSaveFileMenu()
     {
@@ -190,6 +229,18 @@ public class MenuHandler : MonoBehaviour
         }
     }
 
+    public void LoadSavedGame(Button button)
+    {
+        loadScreen.transform.Find("Loading").gameObject.SetActive(true);
+        DataDontDestroyOnLoad.instance.saveName = button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
+        DataDontDestroyOnLoad.instance.newWorld = false;
+        SceneManager.LoadScene("SampleScene");
+    }
+
+    #endregion
+
+    #region Options Menu
+
     public void GoToOptionsMenu()
     {
         moving = true;
@@ -199,23 +250,25 @@ public class MenuHandler : MonoBehaviour
         optionsMenu.SetActive(true);
     }
 
+    #region Set Options
+
     public void SetMasterVol(float vol) 
     { 
         PlayerPrefs.SetFloat("Master Volume", Mathf.Round(vol * 100) / 100);
         masterVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round((Mathf.Pow(1 - (Mathf.Round(vol * -1) / 80), 5.807f)) * 100) / 100).ToString();
-        GameObject.Find("MusicManager").GetComponent<MusicManager>().UpdateMixerVolumes(); 
+        GlobalReferences.musicManager.UpdateMixerVolumes(); 
     }
     public void SetMusicVol(float vol) 
     { 
         PlayerPrefs.SetFloat("Music Volume", Mathf.Round(vol * 100) / 100);
         musicVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round((Mathf.Pow(1 - (Mathf.Round(vol * -1) / 80), 5.807f)) * 100) / 100).ToString();
-        GameObject.Find("MusicManager").GetComponent<MusicManager>().UpdateMixerVolumes(); 
+        GlobalReferences.musicManager.UpdateMixerVolumes(); 
     }
     public void SetSfxVol(float vol) 
     { 
         PlayerPrefs.SetFloat("Sfx Volume", Mathf.Round(vol * 100) / 100); 
         sfxVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round((Mathf.Pow(1 - (Mathf.Round(vol * -1) / 80), 5.807f)) * 100) / 100).ToString();
-        GameObject.Find("MusicManager").GetComponent<MusicManager>().UpdateMixerVolumes(); 
+        GlobalReferences.musicManager.UpdateMixerVolumes(); 
     }
     public void SetLockCursorPos(bool locked)
     {
@@ -233,57 +286,25 @@ public class MenuHandler : MonoBehaviour
         PlayerPrefs.SetInt("Enabled Coordinates Display", enabledInt);
     }
 
-    public void SetWorldNameFromInput()
-    {
-        // Check For Empty World Name, Set To Random Number
-        if (newWorldOptions.transform.Find("WorldNameInput").GetComponent<TMP_InputField>().text == "") { DataDontDestroyOnLoad.instance.saveName = UnityEngine.Random.Range(0, 1000000).ToString(); }
-        else { DataDontDestroyOnLoad.instance.saveName = newWorldOptions.transform.Find("WorldNameInput").GetComponent<TMP_InputField>().text; }
-        
-    }
+    #endregion
 
-    public void SetTileScaleFromInput()
-    {
-        GlobalReferences.levelGenParams.tileScale = Mathf.Round(tileScale.value * 10) / 10;
-        tileScale.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round(tileScale.value * 10) / 10).ToString();
-    }
+    #endregion
 
-    public void SetLevelWidthFromInput()
+    public IEnumerator DisableMenuAfterX(float x, GameObject menu)
     {
-        GlobalReferences.levelGenParams.worldWidth = (int)width.value;
-        width.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = ((int)width.value).ToString();
-    }
+        yield return new WaitForSeconds(x);
 
-    public void SetLevelHeightFromInput()
-    {
-        GlobalReferences.levelGenParams.worldHeight = (int)height.value;
-        height.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = ((int)height.value).ToString();
-    }
+        if (menu == selectSaveMenu)
+        {
+            GameObject go = GameObject.Find("--SelectSaveToLoad--").transform.Find("WorldSavesBackground").gameObject;
+            for (int i = 0; i < go.transform.childCount; i++)
+            {
+                Destroy(go.transform.GetChild(i).gameObject);
+            }
+        }
 
-    public void StartNewGame()
-    {
-        loadScreen.transform.Find("Loading").gameObject.SetActive(true);
-        DataDontDestroyOnLoad.instance.newWorld = true;
-        SceneManager.LoadScene("SampleScene");
-    }
-
-    // Take in button, Set world to load Name to button Name (which is set from save file that it represents)
-    public void LoadSavedGame(Button button)
-    {
-        loadScreen.transform.Find("Loading").gameObject.SetActive(true);
-        DataDontDestroyOnLoad.instance.saveName = button.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
-        DataDontDestroyOnLoad.instance.newWorld = false;
-        SceneManager.LoadScene("SampleScene");
-    }
-
-    public void ShowAdvancedSettings()
-    {
-        // Play Animation to Show Advanced Settings
-        newWorldOptions.GetComponent<Animator>().Play("Base Layer.AdvancedWorldSettingsShow");
-    }
-    public void HideAdvancedSettings()
-    {
-        // Play Animation to Show Advanced Settings
-        newWorldOptions.GetComponent<Animator>().Play("Base Layer.AdvancedWorldSettingsHide");
+        menu.SetActive(false);
+        moving = false;
     }
 
     public void BackToMain(GameObject currentMenu)

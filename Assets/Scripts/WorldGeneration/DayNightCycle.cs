@@ -15,7 +15,7 @@ public class DayNightCycle : MonoBehaviour
     [SerializeField]
     private float dayBrightness, nightBrightness;
     [SerializeField]
-    private int lightingChangeDuration = 1; // Seconds It Takes for Lighting To Lerp Between Brightness Values
+    private int lightingChangeDuration = 10; // Seconds It Takes for Lighting To Lerp Between Brightness Values
     [SerializeField]
     private int dayLength, dayMorning, dayNight;
     [SerializeField]
@@ -33,7 +33,7 @@ public class DayNightCycle : MonoBehaviour
     {
         "A New Day! Full of Possibilites :?",
         "Midnight Comes and Goes, Dark as Night...",
-        "Mark Another Tally... It's a New Day."
+        "Mark Another Tally... It's a New Day.",
     };
     private string[] nightNotifText = new string[]
     {
@@ -106,6 +106,9 @@ public class DayNightCycle : MonoBehaviour
             {
                 if (!isDay)
                 {
+                    StopCoroutine(SmoothLightingToDay());
+                    StopCoroutine(SmoothLightingToNight());
+
                     StartCoroutine(SmoothLightingToDay());
                     isDay = true;
 
@@ -118,6 +121,9 @@ public class DayNightCycle : MonoBehaviour
             {
                 if (isDay)
                 {
+                    StopCoroutine(SmoothLightingToDay());
+                    StopCoroutine(SmoothLightingToNight());
+
                     StartCoroutine(SmoothLightingToNight());
                     isDay = false;
 
@@ -197,9 +203,9 @@ public class DayNightCycle : MonoBehaviour
 
     public void LoadDateAndTime()
     {
-        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        day = saveManager.loadedData.levelsSaved[0].day;
-        currentTime = saveManager.loadedData.levelsSaved[0].time;
+        SaveManager saveManager = GlobalReferences.saveManager;
+        day = saveManager.loadedData.levelsSaved[saveManager.loadedData.playerData.levelIndex].day;
+        currentTime = saveManager.loadedData.levelsSaved[saveManager.loadedData.playerData.levelIndex].time;
         loaded = true;
     }
 }

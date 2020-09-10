@@ -9,6 +9,8 @@ using UnityEngine.SceneManagement;
 
 public class SaveManager : MonoBehaviour
 {
+    #region Singleton/Init
+
     public static SaveManager instance;
 
     void Awake()
@@ -26,12 +28,12 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-
+    #endregion
 
     public AllData dataToSave;
     public AllData loadedData;
     
-    public void SetWorldSaveData(string name, LevelSaveData SAVETHISLEVEL)
+    public void SetLevelSaveData(string name, LevelSaveData SAVETHISLEVEL)
     {
         UnityEngine.Debug.Log("Setting World Data to Save");
         dataToSave.levelsSaved[SAVETHISLEVEL.levelIndex] = SAVETHISLEVEL;

@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 
-[Serializable]
 public class Level
 {
     #region World Generation Characteristics
@@ -85,17 +84,23 @@ public class Level
     public void GenerateLevelTiles() // All this does is goes through each tile in world and sets tile type to something
     {
         // Initialize World Generation Characteristics from Where they Are Set In Inspector (DataDontDestroyOnLoad.WorldGenerationParameters.cs)
+        DataDontDestroyOnLoad DDDOL = GlobalReferences.DDDOL;
+        int seed = DDDOL.saveName.GetHashCode();
+        UnityEngine.Random.InitState(seed);
+        UnityEngine.Debug.Log("Generated Level Seed: " + seed);
+
         LevelGenerationParameters levelGenParams = GlobalReferences.levelGenParams;
         surfaceHeightMultiplier = levelGenParams.surfaceHeightPercentage;
         undergroundHeightMultiplier = levelGenParams.undergroundHeightPercentage;
 
+
         for (int x = 0; x < width; x++)
         {
             surfaceHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f);
-            undergroundHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f);
+            surfaceHeightMultiplier *= UnityEngine.Random.Range(.999f, 1.001f);
 
-            surfaceHeightMultiplier = Mathf.Clamp(surfaceHeightMultiplier, undergroundHeightMultiplier, .99f);
-            undergroundHeightMultiplier = Mathf.Clamp(undergroundHeightMultiplier, 0.4f, levelGenParams.undergroundHeightPercentage);
+            undergroundHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f);
+            undergroundHeightMultiplier *= UnityEngine.Random.Range(.999f, 1.001f);
 
             for (int y = 0; y < height; y++)
             {
@@ -116,23 +121,23 @@ public class Level
 
                     else { tiles[x, y].Type = Tile.TileType.Stone; } // Default Underground Resource Type
                 }
-                else if (y == 0) { tiles[x, y].Type = Tile.TileType.DevTile; }
                 else
                 {
                     // Tile is Dirt
                     tiles[x, y].Type = Tile.TileType.Dirt;
                 }
+
+                if (y == 0) { tiles[x, y].Type = Tile.TileType.DevTile; }
             }
         }
 
         FindGrassMakeTrees();
-
     }
 
     public void FindGrassMakeTrees()
     {
         // Initialize Tree Generation Characteristics from Where they Are Set In Inspector (DataDontDestroyOnLoad.WorldGenerationParameters.cs)
-        LevelGenerationParameters levelGenParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>();
+        LevelGenerationParameters levelGenParams = GlobalReferences.levelGenParams;
         treeChance = levelGenParams.treeSpawnChance;
         leafOnTreeHeightMultiplier = levelGenParams.leafHeightOnTree;
         minTreeHeight = levelGenParams.minTreeHeight;
@@ -141,20 +146,20 @@ public class Level
         // Loop through all possible tree spawn locations (Every 3 tiles starting 2 tiles in from sides, 10 tiles below top of world)
         for (int x = 2; x < (width - 2); x += 3)
         {
-            for (int y = 0; y < (height - 10); y++)
+            for (int y = 10; y < (height - 10); y++)
             {
-                // Tree Chance
-                int randTreeInt = UnityEngine.Random.Range(0, 100);
-
-                if ((randTreeInt) < (treeChance * 100))
+                // Find If Tile Type is Grass
+                if (tiles[x, y].Type == Tile.TileType.Grass)
                 {
-                    // Find If Tile Type is Grass
-                    if (tiles[x, y].Type == Tile.TileType.Grass)
+                    int randTreeInt = UnityEngine.Random.Range(0, 100);
+
+                    if ((randTreeInt) < (treeChance * 100))
                     {
-                        UnityEngine.Debug.Log("Generating Tree at x: " + x + " y: " + y);
                         // Generate Tree
+                        UnityEngine.Debug.Log("Generating Tree at x: " + x + " y: " + y);
 
                         int treeHeight = UnityEngine.Random.Range(minTreeHeight, maxTreeHeight);
+
                         for (int t = 0; t <= treeHeight; t++)
                         {
                             // Place Dirt Below Tree
@@ -168,14 +173,26 @@ public class Level
                             {
                                 tiles[x - 1, y + t].Type = Tile.TileType.Leaves;
                                 tiles[x + 1, y + t].Type = Tile.TileType.Leaves;
+
+                                if (UnityEngine.Random.Range(0, 100) > 50)
+                                {
+                                    tiles[x - 2, y + t].Type = Tile.TileType.Leaves;
+                                    tiles[x + 2, y + t].Type = Tile.TileType.Leaves;
+                                }
                             }
                             if (t == treeHeight)
                             {
                                 tiles[x, y + t + 1].Type = Tile.TileType.Leaves;
                             }
                         }
+
                     }
+
                 }
+
+
+
+
             }
         }
     }
@@ -192,6 +209,7 @@ public class Level
 
         levelToSave.width = width;
         levelToSave.height = height;
+        levelToSave.scale = scale;
 
         #region Save Tiles (Set tilesToSave)
 
@@ -212,18 +230,16 @@ public class Level
 
         #endregion
 
-        levelToSave.scale = scale;
-
         levelToSave.day = day;
         levelToSave.time = time;
 
-        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-        saveManager.SetWorldSaveData(saveName, levelToSave);
+        SaveManager saveManager = GlobalReferences.saveManager;
+        saveManager.SetLevelSaveData(saveName, levelToSave);
     }
 
     public void LoadLevel(string saveName, int levelIndex)
     {
-        SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+        SaveManager saveManager = GlobalReferences.saveManager;
         saveManager.LoadAllDataFromDisk(saveName);
 
         LevelSaveData levelSave = saveManager.loadedData.levelsSaved[levelIndex];
@@ -232,9 +248,9 @@ public class Level
 
         this.width = levelSave.width;
         this.height = levelSave.height;
+        this.scale = levelSave.scale;
 
         int index = 0;
-
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -243,8 +259,6 @@ public class Level
                 index++;
             }
         }
-
-        this.scale = levelSave.scale;
 
         this.day = levelSave.day;
         this.time = levelSave.time;
