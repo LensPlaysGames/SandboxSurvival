@@ -57,7 +57,7 @@ public class InventoryUI : MonoBehaviour // I need to add a reference to each sl
 
     void MoveSelector(int slotIndex)
     {
-        selector.transform.position = inventorySlotParents[slotIndex].transform.position;
+        selector.transform.position = inventorySlotParents[slotIndex].position;
     }
 
     void UpdateSlotUI(int slotNum)
@@ -65,9 +65,9 @@ public class InventoryUI : MonoBehaviour // I need to add a reference to each sl
         Slot slot = inventory.slots[slotNum];
 
         // If Image Exists In Slot, Destroy It, We're about to Update it
-        if (inventorySlotParents[slotNum].transform.Find("EmptyImagePrefab(Clone)") != null)
+        if (inventorySlotParents[slotNum].Find("EmptyImagePrefab(Clone)") != null)
         {
-            Destroy(inventorySlotParents[slotNum].transform.Find("EmptyImagePrefab(Clone)").gameObject);
+            Destroy(inventorySlotParents[slotNum].Find("EmptyImagePrefab(Clone)").gameObject);
         }
 
         // If slot is populated, Update text
@@ -79,13 +79,8 @@ public class InventoryUI : MonoBehaviour // I need to add a reference to each sl
             inventorySlotCountTexts[slotNum].GetComponent<TextMeshProUGUI>().text = slot.count.ToString();
             inventorySlotCountTexts[slotNum].transform.localPosition = Vector3.zero;
         }
-        else // NO MORE ITEMS IN SLOT, DESTROY IMAGE, REMOVE ATTRIBUTES
+        else // NO MORE ITEMS IN SLOT, REMOVE ATTRIBUTES
         {
-            if (inventorySlotParents[slotNum].transform.Find("EmptyImagePrefab(Clone)") != null)
-            {
-                Destroy(inventorySlotParents[slotNum].transform.Find("EmptyImagePrefab(Clone)").gameObject);
-            }
-
             inventorySlotCountTexts[slotNum].GetComponent<TextMeshProUGUI>().text = "";
         }
     }

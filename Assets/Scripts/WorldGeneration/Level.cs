@@ -85,10 +85,13 @@ public class Level
     {
         // Initialize World Generation Characteristics from Where they Are Set In Inspector (DataDontDestroyOnLoad.WorldGenerationParameters.cs)
         DataDontDestroyOnLoad DDDOL = GlobalReferences.DDDOL;
+
+        // Get Seed
         int seed = DDDOL.saveName.GetHashCode();
         UnityEngine.Random.InitState(seed);
         UnityEngine.Debug.Log("Generated Level Seed: " + seed);
 
+        // Get Level Params (Height for Surface, Underground)
         LevelGenerationParameters levelGenParams = GlobalReferences.levelGenParams;
         surfaceHeightMultiplier = levelGenParams.surfaceHeightPercentage;
         undergroundHeightMultiplier = levelGenParams.undergroundHeightPercentage;
@@ -98,36 +101,52 @@ public class Level
         {
             surfaceHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f);
             surfaceHeightMultiplier *= UnityEngine.Random.Range(.999f, 1.001f);
+            if (UnityEngine.Random.Range(0, 101) <= 50) { surfaceHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f); }
+            if (UnityEngine.Random.Range(0, 101) <= 1) { surfaceHeightMultiplier *= UnityEngine.Random.Range(.98f, 1.02f); }
 
             undergroundHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f);
             undergroundHeightMultiplier *= UnityEngine.Random.Range(.999f, 1.001f);
+            if (UnityEngine.Random.Range(0, 101) <= 50) { undergroundHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f); }
+            if (UnityEngine.Random.Range(0, 101) <= 1) { undergroundHeightMultiplier *= UnityEngine.Random.Range(.95f, 1.05f); }
+
+            if ((undergroundHeightMultiplier / surfaceHeightMultiplier) > .99f)
+            {
+                undergroundHeightMultiplier *= .98f;
+            }
+            else if ((undergroundHeightMultiplier / surfaceHeightMultiplier) < .9f)
+            {
+                undergroundHeightMultiplier *= 1.02f;
+            }
 
             for (int y = 0; y < height; y++)
             {
-                if (y > (height * surfaceHeightMultiplier))
-                {
-                    // Generate Sky Area Above Ground
-                    tiles[x, y].Type = Tile.TileType.Air;
-                    // Generate Grass at bottom of Sky and top of Floor
-                    if ((y - 1) < (height * surfaceHeightMultiplier)) { tiles[x, y].Type = Tile.TileType.Grass; }
-                }
+                // Generete Bottom of World
+                if (y == 0) { tiles[x, y].Type = Tile.TileType.DevTile; }
+                
                 else if (y < (height * undergroundHeightMultiplier))
                 {
+                    // Below Underground Surface, Generate Stone
                     tiles[x, y].Type = Tile.TileType.Stone;
 
                     // Generate Underground Resources
-                    int randInt = UnityEngine.Random.Range(0, 100);
+                    int randInt = UnityEngine.Random.Range(0, 101);
 
-                    if (randInt <= 10) { tiles[x, y].Type = Tile.TileType.DarkStone; }
-                    else if (randInt <= 15) { tiles[x, y].Type = Tile.TileType.Adobe; }
+                    if (randInt <= 6) { tiles[x, y].Type = Tile.TileType.DarkStone; }
+                    else if (randInt <= 9) { tiles[x, y].Type = Tile.TileType.Adobe; }
                 }
-                else
+                else if (y < (height * surfaceHeightMultiplier))
                 {
-                    // Tile is Dirt
+                    // Below Surface, Generate Dirt
                     tiles[x, y].Type = Tile.TileType.Dirt;
                 }
+                else if (y > (height * surfaceHeightMultiplier))
+                {
+                    // Above Surface, Generate Air
+                    tiles[x, y].Type = Tile.TileType.Air;
 
-                if (y == 0) { tiles[x, y].Type = Tile.TileType.DevTile; }
+                    // If At Bottom of Surface, Generate Grass
+                    if ((y - 1) < (height * surfaceHeightMultiplier)) { tiles[x, y].Type = Tile.TileType.Grass; }
+                }
             }
         }
 

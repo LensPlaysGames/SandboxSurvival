@@ -43,11 +43,6 @@ public class SlotDragHandler : MonoBehaviour, IDragHandler, IBeginDragHandler, I
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // If Over A Slot that Can Be Transferred to
-        // Move Mouse Slot Data To Hovered Over Slot
-        // Clear Mouse Slot Data
-        // Clear Slot Data We Dragged From
-
         EndDrag(-1);
 
         if (imgContainer != null) { Destroy(imgContainer); }

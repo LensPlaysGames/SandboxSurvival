@@ -87,6 +87,7 @@ public class UIMouseManager : MonoBehaviour
         {
             mouseSlot = GameReferences.playerInv.slots[slotIndex];
         }
+
         mouseSlotIndex = slotIndex;
         cachedSlotIndex = slotIndex;
     }
@@ -98,67 +99,155 @@ public class UIMouseManager : MonoBehaviour
         mouseSlot.item.itemType = Item.ItemType.Tile;
         mouseSlot.item.tileType = Tile.TileType.Air;
         mouseSlotIndex = -1;
+        cachedSlotIndex = -1;
     }
+
+
 
     public void TryEndDrag(int unused)
     {
         // Check if hovered slot is there
         // If it is, Transfer Mouse Slot Data to Slot That is Hovered Over
-        if (hoverSlotIndex == 12 && cachedSlotIndex != hoverSlotIndex)
+        if (cachedSlotIndex != hoverSlotIndex && hoverSlotIndex != -1)
         {
-            // Dont Do Anything If Drag Item Onto Output Slot in Craft UI
+            if (hoverSlotIndex == 12) // If Hovering Over Output Slot
+            {
+                // Dont Do Anything If Drag Item Onto Output Slot in Craft UI
+                return;
+            }
+            else if (hoverSlotIndex >= 10) // If Hovering Over Recipe Slots
+            {
+                int hoverIndex = hoverSlotIndex - 10;
+                
+                if (GameReferences.craftSystem.recipeSlots[hoverIndex].count == 0)
+                {
+                    UnityEngine.Debug.Log("Setting Hovered Over Recipe Slot to Mouse Slot Data!");
+
+                    GameReferences.craftSystem.TryAddToRecipeSlot(mouseSlot, hoverIndex);
+
+                    if (cachedSlotIndex == 12)
+                    {
+                        ClearSlot(GameReferences.craftSystem.outputSlot);
+
+                        GameReferences.craftSystem.updateOutputSlotUI();
+                    }
+                    else if (cachedSlotIndex >= 10)
+                    {
+                        ClearSlot(GameReferences.craftSystem.recipeSlots[cachedSlotIndex - 10]);
+
+                        GameReferences.craftSystem.updateRecipeSlotUI(cachedSlotIndex - 10);
+                    }
+                    else if (cachedSlotIndex >= 0)
+                    {
+                        ClearSlot(GameReferences.playerInv.slots[cachedSlotIndex]);
+
+                        GameReferences.playerInv.updateAllSlotsCallback();
+                    }
+
+                    GameReferences.craftSystem.updateRecipeSlotUI(hoverIndex);
+                }
+                else
+                {
+                    if (GameReferences.craftSystem.recipeSlots[hoverIndex].item.itemType == mouseSlot.item.itemType)
+                    {
+                        if (GameReferences.craftSystem.recipeSlots[hoverIndex].item.tileType == mouseSlot.item.tileType)
+                        {
+                            UnityEngine.Debug.Log("Adding Mouse Slot Data to Hovered Over Craft Recipe Slot");
+
+                            GameReferences.craftSystem.TryAddToRecipeSlot(mouseSlot, hoverIndex);
+
+                            if (cachedSlotIndex == 12)
+                            {
+                                ClearSlot(GameReferences.craftSystem.outputSlot);
+
+                                GameReferences.craftSystem.updateOutputSlotUI();
+                            }
+                            else if (cachedSlotIndex >= 10)
+                            {
+                                ClearSlot(GameReferences.craftSystem.recipeSlots[cachedSlotIndex - 10]);
+
+                                GameReferences.craftSystem.updateRecipeSlotUI(cachedSlotIndex - 10);
+                            }
+                            else if (cachedSlotIndex >= 0)
+                            {
+                                ClearSlot(GameReferences.playerInv.slots[cachedSlotIndex]);
+
+                                GameReferences.playerInv.updateAllSlotsCallback();
+                            }
+
+                            GameReferences.craftSystem.updateRecipeSlotUI(hoverIndex);
+                        }
+                    }
+                    return;
+                }
+            }
+            else if (hoverSlotIndex >= 0) // If Hovering Over Player Inv Slots
+            {
+                if (GameReferences.playerInv.slots[hoverSlotIndex].count == 0)
+                {
+                    UnityEngine.Debug.Log("Setting Hovered Over Player Inventory Slot to Mouse Slot Data");
+
+                    GameReferences.playerInv.SetSlot(mouseSlot, hoverSlotIndex);
+
+                    if (cachedSlotIndex == 12)
+                    {
+                        ClearSlot(GameReferences.craftSystem.outputSlot);
+
+                        GameReferences.craftSystem.updateOutputSlotUI();
+                    }
+                    else if (cachedSlotIndex >= 10)
+                    {
+                        ClearSlot(GameReferences.craftSystem.recipeSlots[cachedSlotIndex - 10]);
+
+                        GameReferences.craftSystem.updateAllRecipeSlots();
+                    }
+                    else if (cachedSlotIndex >= 0)
+                    {
+                        ClearSlot(GameReferences.playerInv.slots[cachedSlotIndex]);
+                    }
+
+                    GameReferences.playerInv.updateAllSlotsCallback();
+                }
+                else
+                {
+                    if (GameReferences.playerInv.slots[hoverSlotIndex].item.itemType == mouseSlot.item.itemType)
+                    {
+                        if (GameReferences.playerInv.slots[hoverSlotIndex].item.tileType == mouseSlot.item.tileType)
+                        {
+                            UnityEngine.Debug.Log("Adding Mouse Slot Data to Hovered Over Player Inventory Slot");
+
+                            GameReferences.playerInv.AddToSlot(mouseSlot.count, hoverSlotIndex);
+
+                            if (cachedSlotIndex == 12)
+                            {
+                                ClearSlot(GameReferences.craftSystem.outputSlot);
+
+                                GameReferences.craftSystem.updateOutputSlotUI();
+                            }
+                            else if (cachedSlotIndex >= 10)
+                            {
+                                ClearSlot(GameReferences.craftSystem.recipeSlots[cachedSlotIndex - 10]);
+
+                                GameReferences.craftSystem.updateAllRecipeSlots();
+                            }
+                            else if (cachedSlotIndex >= 0)
+                            {
+                                ClearSlot(GameReferences.playerInv.slots[cachedSlotIndex]);
+                            }
+
+                            GameReferences.playerInv.updateAllSlotsCallback();
+                        }
+                    }
+
+                    return;
+                }
+            }
+
+            ClearMouseSlot(-1);
         }
-        else if (hoverSlotIndex >= 10 && cachedSlotIndex != hoverSlotIndex)
-        {
-            GameReferences.craftSystem.recipeSlots[hoverSlotIndex - 10].empty = mouseSlot.empty;
-            GameReferences.craftSystem.recipeSlots[hoverSlotIndex - 10].count = mouseSlot.count;
-            GameReferences.craftSystem.recipeSlots[hoverSlotIndex - 10].item.itemType = mouseSlot.item.itemType;
-            GameReferences.craftSystem.recipeSlots[hoverSlotIndex - 10].item.tileType = mouseSlot.item.tileType;
-
-            if (cachedSlotIndex == 12)
-            {
-                ClearSlot(GameReferences.craftSystem.outputSlot);
-            }
-            else if (cachedSlotIndex >= 10)
-            {
-                ClearSlot(GameReferences.craftSystem.recipeSlots[cachedSlotIndex - 10]);
-            }
-            else if(cachedSlotIndex >= 0)
-            {
-                ClearSlot(GameReferences.playerInv.slots[cachedSlotIndex]);
-
-                GameReferences.playerInv.updateAllSlotsCallback();
-            }
-
-            GameReferences.craftSystem.updateRecipeSlotUI(hoverSlotIndex - 10);
-        }
-        else if (hoverSlotIndex >= 0 && cachedSlotIndex != hoverSlotIndex)
-        {
-            GameReferences.playerInv.slots[hoverSlotIndex].empty = mouseSlot.empty;
-            GameReferences.playerInv.slots[hoverSlotIndex].count = mouseSlot.count;
-            GameReferences.playerInv.slots[hoverSlotIndex].item.itemType = mouseSlot.item.itemType;
-            GameReferences.playerInv.slots[hoverSlotIndex].item.tileType = mouseSlot.item.tileType;
-
-            if (cachedSlotIndex == 12)
-            {
-                ClearSlot(GameReferences.craftSystem.outputSlot);
-            }
-            else if (cachedSlotIndex >= 10)
-            {
-                ClearSlot(GameReferences.craftSystem.recipeSlots[cachedSlotIndex - 10]);
-
-                GameReferences.craftSystem.updateAllRecipeSlots();
-            }
-            else if (cachedSlotIndex >= 0)
-            {
-                ClearSlot(GameReferences.playerInv.slots[cachedSlotIndex]);
-            }
-
-            GameReferences.playerInv.updateAllSlotsCallback();
-        }
-
-        ClearMouseSlot(0);
     }
+
+
 
     public void ClearSlot(Slot slotToClear)
     {

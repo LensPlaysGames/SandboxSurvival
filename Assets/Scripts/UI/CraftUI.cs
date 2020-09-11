@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class CraftUI : MonoBehaviour
@@ -57,33 +58,35 @@ public class CraftUI : MonoBehaviour
 
         craftSystem.updateRecipeSlotUI += UpdateRecipeSlot;
         craftSystem.updateAllRecipeSlots += UpdateAllRecipeSlots;
+        craftSystem.updateOutputSlotUI += UpdateOutputSlot;
     }
 
     void UpdateRecipeSlot(int slotIndex)
     {
-        Slot slotData = craftSystem.recipeSlots[slotIndex];
 
-        if (recipeSlots[slotIndex].Find("EmptyImagePrefab(Clone)") != null)
+        if (recipeSlots[slotIndex] != null)
         {
-            Destroy(recipeSlots[slotIndex].Find("EmptyImagePrefab(Clone)").gameObject);
-        }
+            UnityEngine.Debug.Log("Updating Recipe Slot UI");
 
-        if (slotData.count != 0) // Something in Slot, Update UI
-        {
-            GameObject image = Instantiate(empty, recipeSlots[slotIndex]);
-            image.transform.SetSiblingIndex(0);
-            image.GetComponent<SpriteRenderer>().sprite = GlobalReferences.DDDOL.spriteDB[(int)slotData.item.tileType];
-            countTexts[slotIndex].text = slotData.count.ToString();
-            countTexts[slotIndex].transform.localPosition = Vector3.zero;
-        }
-        else // Slot is Empty, Destroy any Visual there
-        {
-            if (recipeSlots[slotIndex].Find("EmptyImagePrefab(Clone)") != null)
+            Slot slotData = craftSystem.recipeSlots[slotIndex];
+
+            if (recipeSlots[slotIndex].Find("EmptyImagePrefab(Clone)")?.gameObject != null)
             {
                 Destroy(recipeSlots[slotIndex].Find("EmptyImagePrefab(Clone)").gameObject);
             }
 
-            countTexts[slotIndex].text = "";
+            if (slotData.count != 0) // Something in Slot, Update UI
+            {
+                GameObject image = Instantiate(empty, recipeSlots[slotIndex]);
+                image.transform.SetSiblingIndex(0);
+                image.GetComponent<Image>().sprite = GlobalReferences.DDDOL.spriteDB[(int)slotData.item.tileType];
+                countTexts[slotIndex].text = slotData.count.ToString();
+                countTexts[slotIndex].transform.localPosition = Vector3.zero;
+            }
+            else // Slot is Empty, Destroy any Visual there
+            {
+                countTexts[slotIndex].text = "";
+            }
         }
     }
 
@@ -95,4 +98,31 @@ public class CraftUI : MonoBehaviour
         }
     }
 
+    void UpdateOutputSlot()
+    {
+        if (outputSlot != null)
+        {
+            Slot slotData = GameReferences.craftSystem.outputSlot;
+
+            UnityEngine.Debug.Log("Updating Output Slot UI");
+
+            if (outputSlot.Find("EmptyImagePrefab(Clone)")?.gameObject != null)
+            {
+                Destroy(outputSlot.Find("EmptyImagePrefab(Clone)").gameObject);
+            }
+
+            if (slotData.count != 0)
+            {
+                GameObject img = Instantiate(empty, outputSlot);
+                img.transform.SetSiblingIndex(0);
+                img.GetComponent<Image>().sprite = GlobalReferences.DDDOL.spriteDB[(int)slotData.item.tileType];
+                outputText.text = slotData.count.ToString();
+                outputText.transform.localPosition = Vector3.zero;
+            }
+            else
+            {
+                outputText.text = "";
+            }
+        }
+    }
 }

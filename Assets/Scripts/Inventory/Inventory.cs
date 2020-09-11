@@ -64,11 +64,10 @@ public class Inventory : MonoBehaviour
             }
         }
 
-        // Set Selected Slot to 0 if Null
+        // Set Selected Slot to 0 (First in Inv) if Null
         if (selectedSlot == null)
         {
-            selectedSlot = slots[0];
-            updateSelectorUI?.Invoke(0);
+            SetSelectedSlot(0);
         }
     }
 
@@ -150,6 +149,21 @@ public class Inventory : MonoBehaviour
             UnityEngine.Debug.LogWarning("Player Inventory Full, Not sure what to do with destroyed Tile"); 
             // Do something like spawn entity for dropped tile or goowop beeboops events and such
         }
+    }
+
+    public void SetSlot(Slot slot, int slotIndex)
+    {
+        slots[slotIndex].empty = false;
+        slots[slotIndex].count = slot.count;
+        slots[slotIndex].item.itemType = slot.item.itemType;
+        slots[slotIndex].item.tileType = slot.item.tileType;
+
+        updateSlotCallback?.Invoke(slotIndex);
+    }
+
+    public void AddToSlot(int amount, int slotIndex)
+    {
+        slots[slotIndex].count += amount;
     }
 
     public void TakeFromSlot(Slot slot) // Take from Slot if Count > 0, Check if Count is 0 and Clear

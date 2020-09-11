@@ -40,6 +40,6 @@ public class LevelGenerationParameters : MonoBehaviour
     [Space]
     [Space]
     [Header("Tile Destroy Time Based on Type", order = 3)]
-    public float dirtDestroyTime = .42f;
-    public float grassDestroyTime = .54f, stoneDestroyTime = 1f, logDestroyTime = .72f, leavesDestroyTime = .02f, woodBoardsDestroyTime = .36f, devTileDestroyTime = .2f;
+    public float defaultDestroyTime = .54f;
+    public float fastestDestroyTime = .02f, fasterDestroyTime = .27f, fastDestroyTime = .36f, slowDestroyTime = .72f, slowerDestroyTime = .9f, slowestDestroyTime = 1.8f;
 }

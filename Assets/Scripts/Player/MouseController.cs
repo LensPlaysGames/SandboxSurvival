@@ -59,7 +59,7 @@ public class MouseController : MonoBehaviour
             // Destroy Selected Tile, Add to Inventory
             if (Input.GetMouseButton(0)) { TryToDestroySelectedTile(); }
             // Use Selected Slot Key
-            if (Input.GetMouseButtonUp(1)) 
+            if (Input.GetMouseButton(1)) 
             {
                 // Check if Item in Selected Slot is a Tile, if so, Build Tile
                 if (Player.GetComponent<Inventory>().selectedSlot.item.itemType == Item.ItemType.Tile) { BuildTile(); }
@@ -100,35 +100,28 @@ public class MouseController : MonoBehaviour
 
         LevelGenerationParameters tileDestroyParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>();
 
+        selectedTile.tileDestroyTime = tileDestroyParams.defaultDestroyTime;
+
         if (selectedTile.Type == Tile.TileType.Dirt)
         {
-            selectedTile.tileDestroyTime = tileDestroyParams.dirtDestroyTime;
-        }
-        else if (selectedTile.Type == Tile.TileType.Grass)
-        {
-            selectedTile.tileDestroyTime = tileDestroyParams.grassDestroyTime;
+            selectedTile.tileDestroyTime = tileDestroyParams.fastDestroyTime;
         }
         else if (selectedTile.Type == Tile.TileType.Stone || selectedTile.Type == Tile.TileType.DarkStone || selectedTile.Type == Tile.TileType.Adobe)
         {
-            selectedTile.tileDestroyTime = tileDestroyParams.stoneDestroyTime;
+            selectedTile.tileDestroyTime = tileDestroyParams.slowerDestroyTime;
         }
         else if (selectedTile.Type == Tile.TileType.Log)
         {
-            selectedTile.tileDestroyTime = tileDestroyParams.logDestroyTime;
+            selectedTile.tileDestroyTime = tileDestroyParams.slowDestroyTime;
         }
         else if (selectedTile.Type == Tile.TileType.Leaves)
         {
-            selectedTile.tileDestroyTime = tileDestroyParams.leavesDestroyTime;
-        }
-        else if (selectedTile.Type == Tile.TileType.WoodBoards || selectedTile.Type == Tile.TileType.Chest)
-        {
-            selectedTile.tileDestroyTime = tileDestroyParams.woodBoardsDestroyTime;
+            selectedTile.tileDestroyTime = tileDestroyParams.fastestDestroyTime;
         }
         else if (selectedTile.Type == Tile.TileType.DevTile)
         {
-            selectedTile.tileDestroyTime = tileDestroyParams.devTileDestroyTime;
+            selectedTile.tileDestroyTime = tileDestroyParams.slowestDestroyTime;
         }
-        else { selectedTile.tileDestroyTime = .02f; }
 
         #endregion
 
