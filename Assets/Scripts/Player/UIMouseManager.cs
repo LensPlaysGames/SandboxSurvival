@@ -106,9 +106,14 @@ public class UIMouseManager : MonoBehaviour
 
     public void TryEndDrag(int unused)
     {
-        // Check if hovered slot is there
-        // If it is, Transfer Mouse Slot Data to Slot That is Hovered Over
-        if (cachedSlotIndex != hoverSlotIndex && hoverSlotIndex != -1)
+        // ~ Lens
+
+        // I feel the need to sign this due to the sheer stupidity required in order to achieve something of this nature
+        // 127 LINES GOD-DAMNIT... 127...
+
+        // DOWN TO 98! WOO HOO! (Consolidated ClearCachedSlot Methods Into Each System)
+
+        if (cachedSlotIndex != hoverSlotIndex && hoverSlotIndex != -1) // Check if hovered slot is there. If it is, Transfer Mouse Slot Data to Slot That is Hovered Over
         {
             if (hoverSlotIndex == 12) // If Hovering Over Output Slot
             {
@@ -125,24 +130,7 @@ public class UIMouseManager : MonoBehaviour
 
                     GameReferences.craftSystem.TryAddToRecipeSlot(mouseSlot, hoverIndex);
 
-                    if (cachedSlotIndex == 12)
-                    {
-                        ClearSlot(GameReferences.craftSystem.outputSlot);
-
-                        GameReferences.craftSystem.updateOutputSlotUI();
-                    }
-                    else if (cachedSlotIndex >= 10)
-                    {
-                        ClearSlot(GameReferences.craftSystem.recipeSlots[cachedSlotIndex - 10]);
-
-                        GameReferences.craftSystem.updateRecipeSlotUI(cachedSlotIndex - 10);
-                    }
-                    else if (cachedSlotIndex >= 0)
-                    {
-                        ClearSlot(GameReferences.playerInv.slots[cachedSlotIndex]);
-
-                        GameReferences.playerInv.updateAllSlotsCallback();
-                    }
+                    ClearCachedSlot();
 
                     GameReferences.craftSystem.updateRecipeSlotUI(hoverIndex);
                 }
@@ -156,24 +144,7 @@ public class UIMouseManager : MonoBehaviour
 
                             GameReferences.craftSystem.TryAddToRecipeSlot(mouseSlot, hoverIndex);
 
-                            if (cachedSlotIndex == 12)
-                            {
-                                ClearSlot(GameReferences.craftSystem.outputSlot);
-
-                                GameReferences.craftSystem.updateOutputSlotUI();
-                            }
-                            else if (cachedSlotIndex >= 10)
-                            {
-                                ClearSlot(GameReferences.craftSystem.recipeSlots[cachedSlotIndex - 10]);
-
-                                GameReferences.craftSystem.updateRecipeSlotUI(cachedSlotIndex - 10);
-                            }
-                            else if (cachedSlotIndex >= 0)
-                            {
-                                ClearSlot(GameReferences.playerInv.slots[cachedSlotIndex]);
-
-                                GameReferences.playerInv.updateAllSlotsCallback();
-                            }
+                            ClearCachedSlot();
 
                             GameReferences.craftSystem.updateRecipeSlotUI(hoverIndex);
                         }
@@ -189,22 +160,7 @@ public class UIMouseManager : MonoBehaviour
 
                     GameReferences.playerInv.SetSlot(mouseSlot, hoverSlotIndex);
 
-                    if (cachedSlotIndex == 12)
-                    {
-                        ClearSlot(GameReferences.craftSystem.outputSlot);
-
-                        GameReferences.craftSystem.updateOutputSlotUI();
-                    }
-                    else if (cachedSlotIndex >= 10)
-                    {
-                        ClearSlot(GameReferences.craftSystem.recipeSlots[cachedSlotIndex - 10]);
-
-                        GameReferences.craftSystem.updateAllRecipeSlots();
-                    }
-                    else if (cachedSlotIndex >= 0)
-                    {
-                        ClearSlot(GameReferences.playerInv.slots[cachedSlotIndex]);
-                    }
+                    ClearCachedSlot();
 
                     GameReferences.playerInv.updateAllSlotsCallback();
                 }
@@ -218,22 +174,7 @@ public class UIMouseManager : MonoBehaviour
 
                             GameReferences.playerInv.AddToSlot(mouseSlot.count, hoverSlotIndex);
 
-                            if (cachedSlotIndex == 12)
-                            {
-                                ClearSlot(GameReferences.craftSystem.outputSlot);
-
-                                GameReferences.craftSystem.updateOutputSlotUI();
-                            }
-                            else if (cachedSlotIndex >= 10)
-                            {
-                                ClearSlot(GameReferences.craftSystem.recipeSlots[cachedSlotIndex - 10]);
-
-                                GameReferences.craftSystem.updateAllRecipeSlots();
-                            }
-                            else if (cachedSlotIndex >= 0)
-                            {
-                                ClearSlot(GameReferences.playerInv.slots[cachedSlotIndex]);
-                            }
+                            ClearCachedSlot();
 
                             GameReferences.playerInv.updateAllSlotsCallback();
                         }
@@ -244,6 +185,24 @@ public class UIMouseManager : MonoBehaviour
             }
 
             ClearMouseSlot(-1);
+        }
+    }
+
+    public void ClearCachedSlot()
+    {
+        if (cachedSlotIndex == 12)
+        {
+            GameReferences.craftSystem.ClearOutputSlot();
+
+            GameReferences.craftSystem.SpendRecipeIngredients();
+        }
+        else if (cachedSlotIndex >= 10)
+        {
+            GameReferences.craftSystem.ClearRecipeSlot(cachedSlotIndex - 10);
+        }
+        else if (cachedSlotIndex >= 0)
+        {
+            GameReferences.playerInv.ClearSlotByIndex(cachedSlotIndex);
         }
     }
 

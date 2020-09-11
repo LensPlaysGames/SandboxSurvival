@@ -40,7 +40,7 @@ public class CraftSystem
         {
             recipe[rSlot] = new Slot();
             recipe[rSlot].empty = true;
-            recipe[rSlot].count = 0;
+            recipe[rSlot].count = 1;
             recipe[rSlot].item = new Item();
             recipe[rSlot].item.itemType = Item.ItemType.Tile;
             recipe[rSlot].item.tileType = Tile.TileType.Adobe;
@@ -94,6 +94,8 @@ public class CraftSystem
         {
             ClearRecipeSlot(whatSlot);
         }
+
+        TryCraft();
     }
 
     public void ClearRecipeSlot(int whatSlot)
@@ -102,6 +104,8 @@ public class CraftSystem
         recipeSlots[whatSlot].count = 0;
         recipeSlots[whatSlot].item.itemType = Item.ItemType.Tile;
         recipeSlots[whatSlot].item.tileType = Tile.TileType.Air;
+
+        TryCraft();
 
         updateRecipeSlotUI(whatSlot);
     }
@@ -116,6 +120,8 @@ public class CraftSystem
         updateOutputSlotUI();
     }
 
+
+
     private void TryCraft()
     {
         Slot output = GetRecipeOutput();
@@ -128,6 +134,18 @@ public class CraftSystem
         else // Output is Null, Clear Output Slot
         {
             ClearOutputSlot();
+        }
+    }
+
+    public void SpendRecipeIngredients()
+    {
+        for (int i = 0; i < recipe.Length; i++)
+        {
+            for (int c = 0; c < recipe[i].count; c++)
+            {
+                UnityEngine.Debug.Log("Taking from Recipe Slot " + i);
+                TakeFromSlot(i);
+            }
         }
     }
 

@@ -181,12 +181,23 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    public void ClearSlotByIndex(int slotIndex)
+    {
+        slots[slotIndex].empty = true;
+        slots[slotIndex].count = 0;
+        slots[slotIndex].item.itemType = Item.ItemType.Tile;
+        slots[slotIndex].item.tileType = Tile.TileType.Air;
+
+        updateAllSlotsCallback?.Invoke();
+    }
+
     public void ClearSlot(Slot slot)
     {
         slot.empty = true;
         slot.count = 0;
         slot.item.itemType = Item.ItemType.Tile;
         slot.item.tileType = Tile.TileType.Air;
+
         updateAllSlotsCallback?.Invoke();
     }
 

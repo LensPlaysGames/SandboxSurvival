@@ -7,6 +7,8 @@ using TMPro;
 
 public class CraftUI : MonoBehaviour
 {
+    #region Singleton/Init
+
     public static CraftUI instance;
 
     void Awake()
@@ -22,6 +24,8 @@ public class CraftUI : MonoBehaviour
             GameReferences.craftUI = instance; 
         }
     }
+
+    #endregion
 
     private CraftSystem craftSystem;
 
