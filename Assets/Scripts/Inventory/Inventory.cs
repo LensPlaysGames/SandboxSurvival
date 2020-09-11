@@ -38,14 +38,12 @@ public class Inventory : MonoBehaviour
 
     #region UI Event Declaration
 
-    public delegate void UpdateSelector(int slotNum);
-    public UpdateSelector updateSelectorUI;
+    public delegate void UpdateUIEvent(int slotNum);
+    public UpdateUIEvent updateSelectorUI;
+    public UpdateUIEvent updateSlotCallback;
 
-    public delegate void UpdateSlot(int slotIndex);
-    public UpdateSlot updateSlotCallback;
-
-    public delegate void UpdateAllSlots();
-    public UpdateAllSlots updateAllSlotsCallback;
+    public delegate void UpdateAllUIEvent();
+    public UpdateAllUIEvent updateAllSlotsCallback;
 
     #endregion
 
@@ -154,10 +152,19 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void TakeFromSlot(Slot slot)
+    public void TakeFromSlot(Slot slot) // Take from Slot if Count > 0, Check if Count is 0 and Clear
     {
-        slot.count--;
-        updateSlotCallback?.Invoke(selectedSlotIndex);
+        if (slot.count > 0) // Take from Slot if Something There
+        {
+            slot.count--;
+
+            updateSlotCallback?.Invoke(selectedSlotIndex);
+        }
+
+        if (slot.count <= 0) // Slot is Empty, Clear Slot
+        {
+            ClearSlot(slot);
+        }
     }
 
     public void ClearSlot(Slot slot)

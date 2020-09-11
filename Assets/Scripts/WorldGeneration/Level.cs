@@ -113,13 +113,13 @@ public class Level
                 }
                 else if (y < (height * undergroundHeightMultiplier))
                 {
-                    // Generate Underground
+                    tiles[x, y].Type = Tile.TileType.Stone;
+
+                    // Generate Underground Resources
                     int randInt = UnityEngine.Random.Range(0, 100);
+
                     if (randInt <= 10) { tiles[x, y].Type = Tile.TileType.DarkStone; }
-
                     else if (randInt <= 15) { tiles[x, y].Type = Tile.TileType.Adobe; }
-
-                    else { tiles[x, y].Type = Tile.TileType.Stone; } // Default Underground Resource Type
                 }
                 else
                 {

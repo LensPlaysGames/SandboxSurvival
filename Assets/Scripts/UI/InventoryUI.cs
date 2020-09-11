@@ -29,8 +29,6 @@ public class InventoryUI : MonoBehaviour // I need to add a reference to each sl
     private List<Transform> inventorySlotParents = new List<Transform>();
     [SerializeField]
     private List<Transform> inventorySlotCountTexts = new List<Transform>();
-    [SerializeField]
-    private Sprite[] tileSprites;
 
     private GameObject empty;
 
@@ -40,8 +38,6 @@ public class InventoryUI : MonoBehaviour // I need to add a reference to each sl
     {
         // Prefab for UI image
         empty = Resources.Load<GameObject>("Prefabs/EmptyImagePrefab");
-
-        tileSprites = GlobalReferences.DDDOL.spriteDB;
 
         inventory = GameReferences.playerInv;
         
@@ -77,9 +73,9 @@ public class InventoryUI : MonoBehaviour // I need to add a reference to each sl
         // If slot is populated, Update text
         if (slot.count != 0)
         {
-            GameObject item = Instantiate(empty, inventorySlotParents[slotNum].transform);
+            GameObject item = Instantiate(empty, inventorySlotParents[slotNum]);
             item.transform.SetSiblingIndex(0);
-            item.GetComponent<Image>().sprite = tileSprites[(int)slot.item.tileType];
+            item.GetComponent<Image>().sprite = GlobalReferences.DDDOL.spriteDB[(int)slot.item.tileType];
             inventorySlotCountTexts[slotNum].GetComponent<TextMeshProUGUI>().text = slot.count.ToString();
             inventorySlotCountTexts[slotNum].transform.localPosition = Vector3.zero;
         }
@@ -90,10 +86,6 @@ public class InventoryUI : MonoBehaviour // I need to add a reference to each sl
                 Destroy(inventorySlotParents[slotNum].transform.Find("EmptyImagePrefab(Clone)").gameObject);
             }
 
-            slot.item.tileType = Tile.TileType.Air;
-            slot.item.itemType = Item.ItemType.Tile;
-            slot.empty = true;
-            slot.count = 0;
             inventorySlotCountTexts[slotNum].GetComponent<TextMeshProUGUI>().text = "";
         }
     }

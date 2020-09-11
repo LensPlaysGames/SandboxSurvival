@@ -42,24 +42,21 @@ public class LevelGenerator : MonoBehaviour
 
         player = GameReferences.player;
 
-        if (GlobalReferences.DDDOL.newWorld) { CreateNewWorld(0); }
-        else 
-        {
-            LoadSavedWorld(GlobalReferences.DDDOL.saveName);
-        }
+        if (GlobalReferences.DDDOL.newWorld) { CreateNewLevel(); }
+        else { LoadSavedLevel(GlobalReferences.DDDOL.saveName); }
     }
 
-    public void CreateNewWorld(int levelIndex)
+    public void CreateNewLevel()
     {
         worldCreated = false;
 
-        UnityEngine.Debug.Log("Creating World");
+        UnityEngine.Debug.Log("Creating Level");
 
         // Get Level Generation Characteristics    --    NEED TO GET THIS FROM ARRAY OF LEVEL GENERATION CHARACTERISTICS after i create it
         LevelGenerationParameters levelGenParams = GlobalReferences.levelGenParams;
 
         // Initialize Level
-        level = new Level(levelGenParams.worldWidth, levelGenParams.worldHeight, levelGenParams.tileScale, levelIndex);
+        level = new Level(levelGenParams.worldWidth, levelGenParams.worldHeight, levelGenParams.tileScale, 0);
 
         // Create GameObjects (Visual Layer) For Each Tile in World (Data Layer)
         for (int x = 0; x < level.Width; x++)
@@ -123,6 +120,7 @@ public class LevelGenerator : MonoBehaviour
         StartCoroutine(SaveAllPlayerDataAfterX(1f));
 
         worldCreated = true;
+        UnityEngine.Debug.Log("Level Created");
 
         loadScreen = GameObject.Find("--LoadScreen--");
         loadScreen.transform.Find("Loading").gameObject.SetActive(false);
@@ -130,7 +128,7 @@ public class LevelGenerator : MonoBehaviour
 
     public IEnumerator SaveAllPlayerDataAfterX(float x) { yield return new WaitForSeconds(x); player.GetComponent<Player>().SaveAllPlayerData(GlobalReferences.DDDOL.saveName); }
 
-    public void LoadSavedWorld(string saveName)
+    public void LoadSavedLevel(string saveName)
     {
         worldCreated = false;
 

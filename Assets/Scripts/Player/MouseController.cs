@@ -23,7 +23,8 @@ public class MouseController : MonoBehaviour
     void Start()
     {
         Cursor = GameObject.Find("Cursor");
-        Player = GameObject.Find("Player");
+
+        Player = GameReferences.player;
 
         int locked = PlayerPrefs.GetInt("LockCursorPos", 0);
         if (locked != 0) { lockedToGrid = true; }
@@ -77,13 +78,13 @@ public class MouseController : MonoBehaviour
 
     void SetCanSelect()
     {
-        GameObject pauseMenu = GameObject.Find("UICanvas").GetComponent<UIHandler>().pauseMenu;
+        GameObject pauseMenu = GameReferences.uIHandler.pauseMenu;
 
         if (Mathf.Abs(Cursor.transform.position.x - Player.transform.position.x) > 6) { canSelect = false; } // If Too Far from Player Sideways, Can Not Select
         else if (Cursor.transform.position.y - Player.transform.position.y > 8) { canSelect = false; } // If Too Far Above Player, Can Not Select
         else if (Cursor.transform.position.y - Player.transform.position.y < -4.2) { canSelect = false; } // If Too Far below Player, Can Not Select
 
-        else if (pauseMenu.activeInHierarchy) { canSelect = false; } // If Player is In Pause Menu
+        else if (pauseMenu.activeInHierarchy) { canSelect = false; } // If Player is In Pause Menu, Can Not Select
 
         else { canSelect = true; }
 
@@ -204,17 +205,17 @@ public class MouseController : MonoBehaviour
         if (selectedTile.Type == Tile.TileType.Air)
         {
             // Check if Selected Slot isTile, if so, place it
-            if (Player.GetComponent<Inventory>().selectedSlot.item.itemType == Item.ItemType.Tile)
+            if (GameReferences.playerInv.selectedSlot.item.itemType == Item.ItemType.Tile)
             {
                 // Set Player Intended Build Tile to tile that is in the Selected Slot in Inventory
-                buildTile = Player.GetComponent<Inventory>().selectedSlot.item.tileType;
+                buildTile = GameReferences.playerInv.selectedSlot.item.tileType;
                 // If slot is not empty
                 if (buildTile != Tile.TileType.Air)
                 {
                     // Play Placed Tile Sound (could be based on tile type in future)
                     GameReferences.audioManager.PlaySound("placedTile");
                     // Remove Tile Placed From Slot Selected
-                    Player.GetComponent<Inventory>().TakeFromSlot(Player.GetComponent<Inventory>().selectedSlot);
+                    GameReferences.playerInv.TakeFromSlot(Player.GetComponent<Inventory>().selectedSlot);
                     // Set Tile To The Intended Build Tile
                     selectedTile.Type = buildTile;
                 }

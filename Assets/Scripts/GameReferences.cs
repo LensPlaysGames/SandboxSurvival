@@ -9,11 +9,15 @@ public class GameReferences : MonoBehaviour
     public static Player playerScript;
     public static Inventory playerInv;
 
+    public static UIMouseManager uIMouseManager;
     public static UIHandler uIHandler;
     public static InventoryUI playerInvUI;
+    public static CraftUI craftUI;
 
     public static AudioManager audioManager;
 
     public static DayNightCycle dayNightCycle;
     public static Light2D sunLight;
+
+    public static CraftSystem craftSystem = new CraftSystem();
 }

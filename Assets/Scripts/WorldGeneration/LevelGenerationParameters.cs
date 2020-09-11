@@ -23,7 +23,7 @@ public class LevelGenerationParameters : MonoBehaviour
 
     // Store World Generation Values So Everything Can Just Update them From Here When Need Be
     [Space]
-    [Header("World Generation Characteristics", order = 1)]
+    [Header("Level Generation Characteristics", order = 1)]
     public int worldWidth = 270;
     public int worldHeight = 135;
     public float tileScale = 1.5f;
