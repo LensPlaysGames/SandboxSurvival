@@ -3353,8 +3353,8 @@ MonoBehaviour:
   m_FillRect: {fileID: 288462090}
   m_HandleRect: {fileID: 2039364778}
   m_Direction: 0
-  m_MinValue: -26
-  m_MaxValue: 0
+  m_MinValue: 0
+  m_MaxValue: 1
   m_WholeNumbers: 0
   m_Value: 0
   m_OnValueChanged:
@@ -5836,8 +5836,8 @@ MonoBehaviour:
   m_FillRect: {fileID: 76850325}
   m_HandleRect: {fileID: 487238869}
   m_Direction: 0
-  m_MinValue: -26
-  m_MaxValue: 0
+  m_MinValue: 0
+  m_MaxValue: 1
   m_WholeNumbers: 0
   m_Value: 0
   m_OnValueChanged:
@@ -7019,8 +7019,8 @@ MonoBehaviour:
   m_FillRect: {fileID: 1949786223}
   m_HandleRect: {fileID: 253995770}
   m_Direction: 0
-  m_MinValue: -26
-  m_MaxValue: 0
+  m_MinValue: 0
+  m_MaxValue: 1
   m_WholeNumbers: 0
   m_Value: 0
   m_OnValueChanged:
@@ -11553,13 +11553,13 @@ MonoBehaviour:
   minTreeHeight: 4
   maxTreeHeight: 9
   leafHeightOnTree: 0.5
-  dirtDestroyTime: 0.18
-  grassDestroyTime: 0.27
-  stoneDestroyTime: 0.54
-  logDestroyTime: 0.36
-  leavesDestroyTime: 0.02
-  woodBoardsDestroyTime: 0.36
-  devTileDestroyTime: 0.2
+  defaultDestroyTime: 0.54
+  fastestDestroyTime: 0.02
+  fasterDestroyTime: 0.27
+  fastDestroyTime: 0.36
+  slowDestroyTime: 0.72
+  slowerDestroyTime: 0.9
+  slowestDestroyTime: 1.8
 --- !u!1 &1949786222
 GameObject:
   m_ObjectHideFlags: 0

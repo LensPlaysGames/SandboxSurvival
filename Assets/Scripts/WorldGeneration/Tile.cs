@@ -74,9 +74,9 @@ namespace U_Grow
 
 
 
-        public Tile(Level _world, int _x, int _y)
+        public Tile(Level _level, int _x, int _y)
         {
-            this.level = _world;
+            this.level = _level;
             this.x = _x;
             this.y = _y;
         }

@@ -61,11 +61,8 @@ namespace U_Grow
                 }
             }
 
-            // Set Selected Slot to 0 (First in Inv) if Null
-            if (selectedSlot == null)
-            {
-                SetSelectedSlot(0);
-            }
+            // Set Selected Slot to 0 (First in Inv)
+            SetSelectedSlot(0);
         }
 
         void Update()

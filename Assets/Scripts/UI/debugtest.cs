@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.IO;
+using UnityEngine;
 
 namespace U_Grow
 {
@@ -37,10 +39,12 @@ namespace U_Grow
             output = logString;
             stack = stackTrace;
             myLog = output + "\n" + myLog;
-            if (myLog.Length > 5000)
+            if (myLog.Length > 10000)
             {
-                myLog = myLog.Substring(0, 4000);
+                myLog = myLog.Substring(0, 9000);
             }
+
+            SaveString(myLog);
         }
 
         void OnGUI()
@@ -54,6 +58,34 @@ namespace U_Grow
             }
         }
 
+        void SaveString(string str)
+        {
+            string directory = Application.persistentDataPath + Path.DirectorySeparatorChar + "Logs";
+            if (!Directory.Exists(directory)) { Directory.CreateDirectory(directory); }
+
+            str = "\n" + 
+                "Grow! Debug Log" + "\n" + 
+                "Version: " + Application.version + "\n" + 
+                "Date" + DateTime.Now + "\n\n" +
+                str;
+
+            string path = directory + Path.DirectorySeparatorChar + $"Grow_debuglog_{Application.version}.txt";
+            FileStream stream = new FileStream(path, FileMode.OpenOrCreate);
+
+            try
+            {
+                StreamWriter streamWriter = new StreamWriter(stream);
+                streamWriter.Write(str);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Error While Saving Debug Log: " + e.Message);
+            }
+            finally
+            {
+                stream.Close();
+            }
+        }
         void Update()
         {
             if (inputManager.Debug.DebugLog.triggered)

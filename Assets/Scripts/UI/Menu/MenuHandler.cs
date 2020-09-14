@@ -23,7 +23,7 @@ namespace U_Grow
         {
             if (instance != null)
             {
-                UnityEngine.Debug.LogError("MULTIPLE MENUHANDLERS. ABORTING THIS ONE BECAUSE ITS A ROTTEN ROTTEN CHILD");
+                Debug.LogError("MULTIPLE MENUHANDLERS. ABORTING THIS ONE BECAUSE ITS A ROTTEN ROTTEN CHILD");
                 Destroy(this);
             }
             else
@@ -99,12 +99,12 @@ namespace U_Grow
             musicVolume = containerA.transform.Find("MusicVolume").GetComponent<Slider>();
             sfxVolume = containerA.transform.Find("SfxVolume").GetComponent<Slider>();
 
-            masterVolume.value = PlayerPrefs.GetFloat("Master Volume", -3);
-            masterVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round((Mathf.Pow(1 - (Mathf.Round(PlayerPrefs.GetFloat("Master Volume", -3) * -1) / 80), 5.807f)) * 100) / 100).ToString();
-            musicVolume.value = PlayerPrefs.GetFloat("Music Volume", -3);
-            musicVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round((Mathf.Pow(1 - (Mathf.Round(PlayerPrefs.GetFloat("Music Volume", -3) * -1) / 80), 5.807f)) * 100) / 100).ToString();
-            sfxVolume.value = PlayerPrefs.GetFloat("Sfx Volume", -3);
-            sfxVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round((Mathf.Pow(1 - (Mathf.Round(PlayerPrefs.GetFloat("Sfx Volume", -3) * -1) / 80), 5.807f)) * 100) / 100).ToString();
+            masterVolume.value = Mathf.Pow((PlayerPrefs.GetFloat("Master Volume", -3f) + 80f) / 80f, 8f);
+            masterVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round(Mathf.Pow((PlayerPrefs.GetFloat("Master Volume", -3f) + 80f) / 80f, 8f) * 100) / 100).ToString();
+            musicVolume.value = Mathf.Pow((PlayerPrefs.GetFloat("Music Volume", -3f) + 80f) / 80f, 8f);
+            musicVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round(Mathf.Pow((PlayerPrefs.GetFloat("Music Volume", -3f) + 80f) / 80f, 8f) * 100) / 100).ToString();
+            sfxVolume.value = Mathf.Pow((PlayerPrefs.GetFloat("Sfx Volume", -3f) + 80f) / 80f, 8f);
+            sfxVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round(Mathf.Pow((PlayerPrefs.GetFloat("Sfx Volume", -3f) + 80f) / 80f, 8f) * 100) / 100).ToString();
 
             #endregion
 
@@ -254,20 +254,20 @@ namespace U_Grow
 
         public void SetMasterVol(float vol)
         {
-            PlayerPrefs.SetFloat("Master Volume", Mathf.Round(vol * 100) / 100);
-            masterVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round((Mathf.Pow(1 - (Mathf.Round(vol * -1) / 80), 5.807f)) * 100) / 100).ToString();
+            PlayerPrefs.SetFloat("Master Volume", (Mathf.Pow(Mathf.Round(vol * 100) / 100, (1f / 8f)) * 80) - 80);
+            masterVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round(vol * 100) / 100).ToString();
             GlobalReferences.musicManager.UpdateMixerVolumes();
         }
         public void SetMusicVol(float vol)
         {
-            PlayerPrefs.SetFloat("Music Volume", Mathf.Round(vol * 100) / 100);
-            musicVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round((Mathf.Pow(1 - (Mathf.Round(vol * -1) / 80), 5.807f)) * 100) / 100).ToString();
+            PlayerPrefs.SetFloat("Music Volume", (Mathf.Pow(Mathf.Round(vol * 100) / 100, (1f / 8f)) * 80) - 80);
+            musicVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round(vol * 100) / 100).ToString();
             GlobalReferences.musicManager.UpdateMixerVolumes();
         }
         public void SetSfxVol(float vol)
         {
-            PlayerPrefs.SetFloat("Sfx Volume", Mathf.Round(vol * 100) / 100);
-            sfxVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round((Mathf.Pow(1 - (Mathf.Round(vol * -1) / 80), 5.807f)) * 100) / 100).ToString();
+            PlayerPrefs.SetFloat("Sfx Volume", (Mathf.Pow(Mathf.Round(vol * 100) / 100, (1f / 8f)) * 80) - 80);
+            sfxVolume.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = (Mathf.Round(vol * 100) / 100).ToString();
             GlobalReferences.musicManager.UpdateMixerVolumes();
         }
         public void SetLockCursorPos(bool locked)

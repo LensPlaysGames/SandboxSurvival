@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace U_Grow
@@ -82,7 +84,7 @@ namespace U_Grow
                     tile_Collider.size = new Vector3(1, 1);
                     tile_Collider.enabled = false;
 
-                    tileData.SetTileTypeChangedCallback((Tile _tile) => { OnTileTypeChanged(_tile, tile); }); // this spooky syntax is a lambda, basically a void function with no name, with input of _tile, that runs the function OnTileTypeChanged when subscribed and called
+                    tileData.SetTileTypeChangedCallback((Tile _tile) => { OnTileTypeChanged(_tile, tile); }); // Basically we Define our Action<Tile> here, using an unnamed lambda in place of a delegate    // this spooky syntax is a lambda, basically a void function with no name, with input of _tile, that runs the function OnTileTypeChanged when subscribed and called
                 }
             }
 
@@ -207,6 +209,9 @@ namespace U_Grow
 
         public void OnTileTypeChanged(Tile tileData, GameObject tile) // Callback for when Tile Changes so Tile Visuals are updated when Tile Data is updated
         {
+            Chest chest = tile.GetComponent<Chest>();
+            if (chest != null) { Destroy(chest); }
+
             // false = Not Solid = Layer 9
             // true = Solid = Layer 8
 
@@ -214,9 +219,10 @@ namespace U_Grow
 
             // Set All Tiles to Appropriate Sprite and Solid
             tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)tileData.Type];
+
             SetTileState(tile, true);
 
-            #region Tile Overrides
+            #region Tile Overrides (not solid, variable textures, different components, etc)
 
             if (tileData.Type == Tile.TileType.Air) // If Air, NOT SOLID
             {
@@ -229,6 +235,10 @@ namespace U_Grow
             else if (tileData.Type == Tile.TileType.Leaves) // If Leaves, NOT SOLID
             {
                 SetTileState(tile, false);
+            }
+            else if (tileData.Type == Tile.TileType.Chest) // If Chest, Add Chest Script
+            {
+                tile.AddComponent<Chest>();
             }
 
             #endregion

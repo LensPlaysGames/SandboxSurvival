@@ -1,0 +1,311 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!181963792 &2655988077585873504
+Preset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ListOfRecipes_2020-09-13_{5}
+  m_TargetType:
+    m_NativeTypeID: 114
+    m_ManagedTypePPtr: {fileID: 11500000, guid: 0dc0253d8ed818b45b574cc3e52ee8bd, type: 3}
+    m_ManagedTypeFallback: 
+  m_Properties:
+  - target: {fileID: 0}
+    propertyPath: m_Enabled
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorHideFlags
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorClassIdentifier
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.size
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].name
+    value: AdobeBricks
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].ingredients.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].ingredients.Array.data[0].empty
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].ingredients.Array.data[0].count
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].ingredients.Array.data[0].item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].ingredients.Array.data[0].item.tileType
+    value: 8
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].ingredients.Array.data[1].empty
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].ingredients.Array.data[1].count
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].ingredients.Array.data[1].item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].ingredients.Array.data[1].item.tileType
+    value: 8
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].output.empty
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].output.count
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].output.item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[0].output.item.tileType
+    value: 9
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].name
+    value: WoodBoards
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].ingredients.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].ingredients.Array.data[0].empty
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].ingredients.Array.data[0].count
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].ingredients.Array.data[0].item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].ingredients.Array.data[0].item.tileType
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].ingredients.Array.data[1].empty
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].ingredients.Array.data[1].count
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].ingredients.Array.data[1].item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].ingredients.Array.data[1].item.tileType
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].output.empty
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].output.count
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].output.item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[1].output.item.tileType
+    value: 7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].name
+    value: GrassToLeaves0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].ingredients.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].ingredients.Array.data[0].empty
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].ingredients.Array.data[0].count
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].ingredients.Array.data[0].item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].ingredients.Array.data[0].item.tileType
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].ingredients.Array.data[1].empty
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].ingredients.Array.data[1].count
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].ingredients.Array.data[1].item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].ingredients.Array.data[1].item.tileType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].output.empty
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].output.count
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].output.item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[2].output.item.tileType
+    value: 6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].name
+    value: GrassToLeaves1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].ingredients.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].ingredients.Array.data[0].empty
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].ingredients.Array.data[0].count
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].ingredients.Array.data[0].item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].ingredients.Array.data[0].item.tileType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].ingredients.Array.data[1].empty
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].ingredients.Array.data[1].count
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].ingredients.Array.data[1].item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].ingredients.Array.data[1].item.tileType
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].output.empty
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].output.count
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].output.item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[3].output.item.tileType
+    value: 6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].name
+    value: Chest
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].ingredients.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].ingredients.Array.data[0].empty
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].ingredients.Array.data[0].count
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].ingredients.Array.data[0].item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].ingredients.Array.data[0].item.tileType
+    value: 7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].ingredients.Array.data[1].empty
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].ingredients.Array.data[1].count
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].ingredients.Array.data[1].item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].ingredients.Array.data[1].item.tileType
+    value: 7
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].output.empty
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].output.count
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].output.item.itemType
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: recipes.Array.data[4].output.item.tileType
+    value: 10
+    objectReference: {fileID: 0}
+  m_ExcludedProperties: []

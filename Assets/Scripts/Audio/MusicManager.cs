@@ -59,9 +59,9 @@ namespace U_Grow
 
         public void UpdateMixerVolumes()
         {
-            mixer.SetFloat("Master Volume", PlayerPrefs.GetFloat("Master Volume", 1f));
-            mixer.SetFloat("Music Volume", PlayerPrefs.GetFloat("Music Volume", 1f));
-            mixer.SetFloat("Sfx Volume", PlayerPrefs.GetFloat("Sfx Volume", 1f));
+            mixer.SetFloat("Master Volume", PlayerPrefs.GetFloat("Master Volume", -12f));
+            mixer.SetFloat("Music Volume", PlayerPrefs.GetFloat("Music Volume", -12f));
+            mixer.SetFloat("Sfx Volume", PlayerPrefs.GetFloat("Sfx Volume", -12f));
         }
 
         public void PlayRandomMusic()

@@ -8,6 +8,8 @@ namespace U_Grow
 {
     public class SaveManager : MonoBehaviour
     {
+        private static string saveDirectory;
+
         #region Singleton/Init
 
         public static SaveManager instance;
@@ -25,6 +27,13 @@ namespace U_Grow
                 GlobalReferences.saveManager = instance;
                 DontDestroyOnLoad(instance);
             }
+
+            saveDirectory =
+              Application.persistentDataPath +
+              Path.DirectorySeparatorChar +
+              "Saves";
+
+            if (!Directory.Exists(saveDirectory)) { Directory.CreateDirectory(saveDirectory); }
         }
 
         #endregion
@@ -34,13 +43,13 @@ namespace U_Grow
 
         public void SetLevelSaveData(string name, LevelSaveData SAVETHISLEVEL)
         {
-            UnityEngine.Debug.Log("Setting World Data to Save");
+            Debug.Log("Setting World Data to Save");
             dataToSave.levelsSaved[SAVETHISLEVEL.levelIndex] = SAVETHISLEVEL;
             SaveAllDataToDisk(name, dataToSave);
         }
         public void SetPlayerDataSaveData(string name, PlayerSaveData playerData)
         {
-            UnityEngine.Debug.Log("Saving All Player Data");
+            Debug.Log("Saving All Player Data");
             dataToSave.playerData = playerData;
             SaveAllDataToDisk(name, dataToSave);
         }
@@ -49,19 +58,22 @@ namespace U_Grow
 
         public void SaveAllDataToDisk(string name, AllData data)
         {
-            FileStream file = new FileStream(Application.persistentDataPath + Path.DirectorySeparatorChar + "world_" + name + ".dat", FileMode.OpenOrCreate);
+            string saveName = "world_" + name + ".dat";
+            string savePath = saveDirectory + Path.DirectorySeparatorChar + saveName;
 
-            UnityEngine.Debug.Log("Saving All Data in World: " + "world_" + name + ".dat");
+            Debug.Log("Saving All Data in World: " + saveName);
+
+            FileStream file = new FileStream(savePath, FileMode.OpenOrCreate);
 
             try
             {
                 BinaryFormatter formatter = new BinaryFormatter();
                 formatter.Serialize(file, data);
-                UnityEngine.Debug.Log("Saved World Data!");
+                Debug.Log("Saved World Data!");
             }
             catch (SerializationException e)
             {
-                UnityEngine.Debug.LogError("Issue Serializing World Data: " + e.Message);
+                Debug.LogError("Issue Serializing World Data: " + e.Message);
             }
             finally
             {
@@ -71,13 +83,14 @@ namespace U_Grow
 
         public void LoadAllDataFromDisk(string name)
         {
-            UnityEngine.Debug.Log("Loading World Data!");
+            Debug.Log("Loading World Data!");
 
-            string savePath = Application.persistentDataPath + Path.DirectorySeparatorChar + "world_" + name + ".dat";
+            string saveName = "world_" + name + ".dat";
+            string savePath = saveDirectory + Path.DirectorySeparatorChar + saveName;
 
             if (File.Exists(savePath))
             {
-                UnityEngine.Debug.Log("Save File Exists! Attempting to Load From " + savePath);
+                Debug.Log($"Save File {saveName} Exists! \nAttempting to Load From {savePath}");
 
                 FileStream file = new FileStream(savePath, FileMode.Open);
 
@@ -85,11 +98,11 @@ namespace U_Grow
                 {
                     BinaryFormatter formatter = new BinaryFormatter();
                     loadedData = (AllData)formatter.Deserialize(file);
-                    UnityEngine.Debug.Log("Loaded World Data!");
+                    Debug.Log("Loaded World Data!");
                 }
                 catch (SerializationException e)
                 {
-                    UnityEngine.Debug.LogError("Issue Deserializing World Data: " + e.Message);
+                    Debug.LogError("Issue Deserializing World Data: " + e.Message);
                 }
                 finally
                 {
@@ -98,7 +111,7 @@ namespace U_Grow
             }
             else
             {
-                UnityEngine.Debug.Log("Save File NULL at path: " + savePath);
+                Debug.Log("Save File NULL at path: " + savePath);
                 SceneManager.LoadScene("Menu");
             }
         }
@@ -109,10 +122,10 @@ namespace U_Grow
         public string[] worldSaves;
         public void GetSaveFiles()
         {
-            worldSaves = Directory.GetFiles(Application.persistentDataPath.ToString(), "*.dat");
+            worldSaves = Directory.GetFiles(saveDirectory.ToString(), "*.dat");
             foreach (string worldSave in worldSaves)
             {
-                UnityEngine.Debug.Log("World Save Found on Disk! Exists. Name: " + Path.GetFileName(worldSave));
+                Debug.Log("World Save Found on Disk! Exists. Name: " + Path.GetFileName(worldSave));
             }
         }
 
@@ -128,7 +141,7 @@ namespace U_Grow
 
                 if (saveName == name) // Found Save to Delete
                 {
-                    UnityEngine.Debug.Log("DELETING WORLD SAVE AT " + s);
+                    Debug.Log("DELETING WORLD SAVE AT " + s);
                     File.Delete(s);
                 }
             }

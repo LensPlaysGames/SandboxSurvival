@@ -7,7 +7,7 @@ namespace U_Grow
         public void Use()
         {
             // Open Chest UI
-
+            Debug.Log("Opening Chest!");
         }
     }
 
