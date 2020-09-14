@@ -1,33 +1,36 @@
 ﻿using UnityEngine;
 using TMPro;
 
-public class GetVersion : MonoBehaviour
+namespace U_Grow
 {
-    [SerializeField]
-    private TextMeshProUGUI vText;
-
-    private string version;
-
-    void Awake()
+    public class GetVersion : MonoBehaviour
     {
-        version = Application.version;
+        [SerializeField]
+        private TextMeshProUGUI vText;
 
-        if (version != "")
+        private string version;
+
+        void Awake()
         {
-            vText = GetComponent<TextMeshProUGUI>();
-            if (vText != null)
+            version = Application.version;
+
+            if (version != "")
             {
-                SetText(version);
+                vText = GetComponent<TextMeshProUGUI>();
+                if (vText != null)
+                {
+                    SetText(version);
+                }
+            }
+            else
+            {
+                Debug.Log("Can not Get Application Version");
             }
         }
-        else
-        {
-            UnityEngine.Debug.Log("Can not Get Application Version");
-        }
-    }
 
-    void SetText(string str)
-    {
-        vText.text = str;
+        void SetText(string str)
+        {
+            vText.text = str;
+        }
     }
 }

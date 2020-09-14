@@ -1,207 +1,257 @@
-﻿using System;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class CraftSystem
+namespace U_Grow
 {
-    public const int numberOfRecipeSlots = 2;
-
-    public Slot[] recipeSlots;
-    public Slot outputSlot;
-
-    private Slot mouseDragSlot;
-
-    private Slot[] recipe;
-
-    public delegate void UICraftingEvent(int whatSlot);
-    public UICraftingEvent updateRecipeSlotUI;
-
-    public delegate void UIAllCraftingEvent();
-    public UIAllCraftingEvent updateAllRecipeSlots;
-    public UIAllCraftingEvent updateOutputSlotUI;
-
-    public CraftSystem()
+    public class CraftSystem : ISlotContainer
     {
-        recipeSlots = new Slot[numberOfRecipeSlots];
-        for (int i = 0; i < recipeSlots.Length; i++)
+        public const int numberOfRecipeSlots = 2;
+
+        public Slot[] recipeSlots;
+        public Slot outputSlot;
+
+        private List<Recipe> recipes = new List<Recipe>();
+        private Recipe cachedRecipe;
+
+        public delegate void UICraftingEvent(int whatSlot);
+        public UICraftingEvent updateRecipeSlotUI;
+
+        public delegate void UIAllCraftingEvent();
+        public UIAllCraftingEvent updateAllRecipeSlots;
+        public UIAllCraftingEvent updateOutputSlotUI;
+
+        public CraftSystem(MonoBehaviour mb)
         {
-            recipeSlots[i] = new Slot();
-            recipeSlots[i].empty = true;
-            recipeSlots[i].count = 0;
-            recipeSlots[i].item = new Item();
-            recipeSlots[i].item.itemType = Item.ItemType.Tile;
-            recipeSlots[i].item.tileType = Tile.TileType.Air;
-        }
-
-        outputSlot = new Slot();
-        outputSlot.item = new Item();
-
-        recipe = new Slot[numberOfRecipeSlots];
-        for (int rSlot = 0; rSlot < recipe.Length; rSlot++)
-        {
-            recipe[rSlot] = new Slot();
-            recipe[rSlot].empty = true;
-            recipe[rSlot].count = 1;
-            recipe[rSlot].item = new Item();
-            recipe[rSlot].item.itemType = Item.ItemType.Tile;
-            recipe[rSlot].item.tileType = Tile.TileType.Adobe;
-        }
-    }
-
-
-
-    public void TryAddToRecipeSlot(Slot slot, int whatSlot)
-    {
-        if (recipeSlots[whatSlot] != null)
-        {
-            if (recipeSlots[whatSlot].empty == true) // Fill Slot
+            recipeSlots = new Slot[numberOfRecipeSlots];
+            for (int i = 0; i < recipeSlots.Length; i++)
             {
-                recipeSlots[whatSlot].empty = false;
-                recipeSlots[whatSlot].count = slot.count;
-                recipeSlots[whatSlot].item.itemType = slot.item.itemType;
-                recipeSlots[whatSlot].item.tileType = slot.item.tileType;
-
-                updateRecipeSlotUI(whatSlot);
-            }
-            else if (recipeSlots[whatSlot].item.itemType == slot.item.itemType) 
-            {
-                if (recipeSlots[whatSlot].item.tileType == slot.item.tileType) // Stack Tiles
+                recipeSlots[i] = new Slot
                 {
-                    recipeSlots[whatSlot].count++;
+                    empty = true,
+                    count = 0,
+                    item = new Item
+                    {
+                        itemType = Item.ItemType.Tile,
+                        tileType = Tile.TileType.Air
+                    }
+                };
+            }
 
-                    updateRecipeSlotUI(whatSlot);
+            outputSlot = new Slot
+            {
+                item = new Item()
+            };
+
+            mb.StartCoroutine(InitRecipesWaitForLoad(.5f));
+        }
+        IEnumerator InitRecipesWaitForLoad(float x)
+        {
+            yield return new WaitForSeconds(x);
+            recipes = GameReferences.listOfRecipes.recipes;
+            Debug.Log("Initialized Recipes for CraftSystem");
+        }
+
+        public void AddToSlot(int whatSlot, Slot slot)
+        {
+            if (recipeSlots[whatSlot] != null)
+            {
+                if (recipeSlots[whatSlot].empty == true) // Fill Slot
+                {
+                    recipeSlots[whatSlot].empty = false;
+                    recipeSlots[whatSlot].count = slot.count;
+                    recipeSlots[whatSlot].item.itemType = slot.item.itemType;
+                    recipeSlots[whatSlot].item.tileType = slot.item.tileType;
+
+                    updateRecipeSlotUI?.Invoke(whatSlot);
                 }
+                else if (recipeSlots[whatSlot].item.itemType == slot.item.itemType)
+                {
+                    if (recipeSlots[whatSlot].item.tileType == slot.item.tileType) // Stack Tiles
+                    {
+                        recipeSlots[whatSlot].count++;
+
+                        updateRecipeSlotUI?.Invoke(whatSlot);
+                    }
+                }
+
+                TryCraft();
+            }
+            else
+            {
+                Debug.LogWarning("Crafting Slot " + whatSlot + " Was Not Found, Can Not Try to Add Item");
+            }
+        }
+        public void TryAddToSlot(Slot slot)
+        {
+            return;
+        }
+        public void SetSlot(int whatSlot, Slot slot)
+        {
+            recipeSlots[whatSlot].empty = slot.empty;
+            recipeSlots[whatSlot].count = slot.count;
+            recipeSlots[whatSlot].item.itemType = slot.item.itemType;
+            recipeSlots[whatSlot].item.tileType = slot.item.tileType;
+
+            updateRecipeSlotUI?.Invoke(whatSlot);
+
+            TryCraft();
+        }
+        public void TryTakeFromSlot(int whatSlot)
+        {
+            if (recipeSlots[whatSlot].count > 0) // Slot is Not Empty, Take From Slot
+            {
+                recipeSlots[whatSlot].count--;
+
+                updateRecipeSlotUI?.Invoke(whatSlot);
+            }
+            if (recipeSlots[whatSlot].count <= 0) // Slot is Empty, Clear Slot Data
+            {
+                ClearSlot(whatSlot);
             }
 
             TryCraft();
         }
-        else
+        public void ModifySlotCount(int whatSlot, int amount)
         {
-            UnityEngine.Debug.LogWarning("Crafting Slot " + whatSlot + " Was Not Found, Can Not Try to Add Item");
+            recipeSlots[whatSlot].count += amount;
+            Mathf.Clamp(recipeSlots[whatSlot].count, 0f, 90f);
+
+            updateRecipeSlotUI?.Invoke(whatSlot);
+
+            TryCraft();
         }
-    }
-
-
-
-    public void TakeFromSlot(int whatSlot)
-    {
-        if (recipeSlots[whatSlot].count > 0) // Slot is Not Empty, Take From Slot
+        public void ClearSlot(int whatSlot)
         {
-            recipeSlots[whatSlot].count--;
+            recipeSlots[whatSlot].empty = true;
+            recipeSlots[whatSlot].count = 0;
+            recipeSlots[whatSlot].item.itemType = Item.ItemType.Tile;
+            recipeSlots[whatSlot].item.tileType = Tile.TileType.Air;
 
-            updateRecipeSlotUI(whatSlot);
-        }
-        if (recipeSlots[whatSlot].count <= 0) // Slot is Empty, Clear Slot Data
-        {
-            ClearRecipeSlot(whatSlot);
+            updateRecipeSlotUI?.Invoke(whatSlot);
+
+            TryCraft();
         }
 
-        TryCraft();
-    }
-
-    public void ClearRecipeSlot(int whatSlot)
-    {
-        recipeSlots[whatSlot].empty = true;
-        recipeSlots[whatSlot].count = 0;
-        recipeSlots[whatSlot].item.itemType = Item.ItemType.Tile;
-        recipeSlots[whatSlot].item.tileType = Tile.TileType.Air;
-
-        TryCraft();
-
-        updateRecipeSlotUI(whatSlot);
-    }
-
-    public void ClearOutputSlot()
-    {
-        outputSlot.empty = true;
-        outputSlot.count = 0;
-        outputSlot.item.itemType = Item.ItemType.Tile;
-        outputSlot.item.tileType = Tile.TileType.Air;
-
-        updateOutputSlotUI();
-    }
-
-
-
-    private void TryCraft()
-    {
-        Slot output = GetRecipeOutput();
-        if (output != null)
+        public void ClearOutputSlot()
         {
-            outputSlot = output;
+            outputSlot.empty = true;
+            outputSlot.count = 0;
+            outputSlot.item.itemType = Item.ItemType.Tile;
+            outputSlot.item.tileType = Tile.TileType.Air;
 
-            updateOutputSlotUI();
+            updateOutputSlotUI?.Invoke();
+
+            TryCraft();
         }
-        else // Output is Null, Clear Output Slot
-        {
-            ClearOutputSlot();
-        }
-    }
 
-    public void SpendRecipeIngredients()
-    {
-        for (int i = 0; i < recipe.Length; i++)
+        private void TryCraft()
         {
-            for (int c = 0; c < recipe[i].count; c++)
+            Debug.Log("Trying to Craft!");
+
+            Slot output = GetRecipeOutput();
+
+            if (output != null)
             {
-                UnityEngine.Debug.Log("Taking from Recipe Slot " + i);
-                TakeFromSlot(i);
+                Debug.Log("Setting Output Slot!");
+
+                outputSlot = output;
+
+                updateOutputSlotUI?.Invoke();
+            }
+            else // Output is Null, Clear Output Slot
+            {
+                Debug.Log("No Output, Clearing Slot!");
+
+                ClearOutputSlot();
             }
         }
-    }
 
-    private Slot GetRecipeOutput()
-    {
-        Slot output = new Slot();
-
-        output.empty = false;
-        output.count = 3;
-        output.item = new Item();
-        output.item.itemType = Item.ItemType.Tile;
-        output.item.tileType = Tile.TileType.AdobeBricks;
-
-        for (int slot = 0; slot < recipeSlots.Length; slot++)
+        public void SpendRecipeIngredients()
         {
-            if (recipeSlots[slot].item.itemType != recipe[slot].item.itemType)
+            Debug.Log($"Spending {cachedRecipe.name} Ingredients!");
+
+            for (int i = 0; i < cachedRecipe.ingredients.Length; i++)
             {
-                output = null;
-            }
-            else // Item Type Matches
-            {
-                if (recipeSlots[slot].item.tileType != recipe[slot].item.tileType) // But Tile Type Does Not
+                for (int c = 0; c < cachedRecipe.ingredients[i].count; c++)
                 {
-                    output = null;
-                }   
+                    TryTakeFromSlot(i);
+                }
             }
         }
 
-        return output;
-    }
-
-
-
-    public Slot GetRecipeSlot(int whatSlot)
-    {
-        if (recipeSlots[whatSlot] != null)
+        private Slot GetRecipeOutput()
         {
-            return recipeSlots[whatSlot];
+            Slot output = new Slot
+            {
+                count = 0,
+                empty = true,
+                item = new Item
+                {
+                    itemType = Item.ItemType.Tile,
+                    tileType = Tile.TileType.Air
+                }
+            };
+
+            for (int r = 0; r < recipes.Count; r++)
+            {
+                Debug.Log("Testing Recipe " + recipes[r].name);
+
+                output = recipes[r].output;
+
+                for (int slot = 0; slot < recipeSlots.Length; slot++)
+                {
+                    if (recipeSlots[slot].item.itemType != recipes[r].ingredients[slot].item.itemType)
+                    {
+                        Debug.Log("Can Not Craft: itemType does not match!");
+                        output = null;
+                    }
+                    else // Item Type Matches
+                    {
+                        if (recipeSlots[slot].item.tileType != recipes[r].ingredients[slot].item.tileType) // But Tile Type Does Not
+                        {
+                            Debug.Log("Can Not Craft: tileType does not match!");
+                            output = null;
+                        }
+                    }
+                }
+                if (output != null) 
+                {
+                    Debug.Log("Valid Recipe Found: " + recipes[r].name);
+                    cachedRecipe = recipes[r];
+                    return output;
+                }
+            }
+
+            return output;
         }
-        else
-        {
-            UnityEngine.Debug.LogWarning("Recipe Crafting Slot " + whatSlot + " Was Not Found, Can Not Get Slot");
-            return null;
-        }
-    }
 
-    public Slot GetOutputSlot()
-    {
-        if (outputSlot != null)
+
+
+        public Slot GetRecipeSlot(int whatSlot)
         {
-            return outputSlot;
+            if (recipeSlots[whatSlot] != null)
+            {
+                return recipeSlots[whatSlot];
+            }
+            else
+            {
+                Debug.LogWarning("Recipe Crafting Slot " + whatSlot + " Was Not Found, Can Not Get Slot");
+                return null;
+            }
         }
-        else
+
+        public Slot GetOutputSlot()
         {
-            UnityEngine.Debug.LogWarning("Output Crafting Slot Was Not Found, Can Not Get Slot");
-            return null;
+            if (outputSlot != null)
+            {
+                return outputSlot;
+            }
+            else
+            {
+                Debug.LogWarning("Output Crafting Slot Was Not Found, Can Not Get Slot");
+                return null;
+            }
         }
     }
 }

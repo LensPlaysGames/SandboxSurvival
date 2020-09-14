@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BackToMain : MonoBehaviour
+namespace U_Grow
 {
-    void Update()
+    public class BackToMain : MonoBehaviour
     {
-        if (Input.GetButtonDown("Cancel")) { GameObject.Find("Canvas").GetComponent<MenuHandler>().BackToMain(this.gameObject); }
+        void Update()
+        {
+            if (Input.GetButtonDown("Cancel")) { GameObject.Find("Canvas").GetComponent<MenuHandler>().BackToMain(gameObject); }
+        }
     }
 }

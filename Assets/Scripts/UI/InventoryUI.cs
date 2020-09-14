@@ -1,95 +1,96 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Events;
 using TMPro;
 
-public class InventoryUI : MonoBehaviour // I need to add a reference to each slot (basically what I had in Inventory Start() but instead of slots it's transforms and stuff likea dat) AND THEN ACTUALLY USE THEM
+namespace U_Grow
 {
-    #region Singleton/Init
-
-    public static InventoryUI instance;
-
-    void Awake()
+    public class InventoryUI : MonoBehaviour
     {
-        if (instance != null) { UnityEngine.Debug.LogError("Multiple Inventory UIs!!! What the heck is going on???"); }
-        instance = this;
-        GameReferences.playerInvUI = instance;
-    }
+        #region Singleton/Init
 
-    #endregion
+        public static InventoryUI instance;
 
-    [SerializeField]
-    private Inventory inventory;
-    [SerializeField]
-    private GameObject selector;
-
-    [SerializeField]
-    private List<Transform> inventorySlotParents = new List<Transform>();
-    [SerializeField]
-    private List<Transform> inventorySlotCountTexts = new List<Transform>();
-
-    private GameObject empty;
-
-    private int a = 0;
-
-    void Start()
-    {
-        // Prefab for UI image
-        empty = Resources.Load<GameObject>("Prefabs/EmptyImagePrefab");
-
-        inventory = GameReferences.playerInv;
-        
-        for (int slot = 0; slot < inventory.slots.Length; slot++) // Foreach Slot but FASTERRRR
+        void Awake()
         {
-            a++; // So that Index is converted to my DUMBASS naming scheme that starts at "(1)"
-            Transform slotParent = GameReferences.playerInvUI.transform.Find("InventoryBackground").transform.Find("Slot (" + a + ")");
-            inventorySlotParents.Insert(slot, slotParent);
-            inventorySlotCountTexts.Insert(slot, slotParent.transform.Find("CountTextPanel (" + a + ")").transform.Find("Slot (" + a + ") Count"));
+            if (instance != null) { UnityEngine.Debug.LogError("Multiple Inventory UIs!!! What the heck is going on???"); }
+            instance = this;
+            GameReferences.playerInvUI = instance;
         }
 
-        // Assign Event Listeners from Inventory Script on Player
-        inventory.updateSlotCallback += UpdateSlotUI;
-        inventory.updateAllSlotsCallback += UpdateSlotsUI;
-        inventory.updateSelectorUI += MoveSelector;
-    }
+        #endregion
 
-    void MoveSelector(int slotIndex)
-    {
-        selector.transform.position = inventorySlotParents[slotIndex].position;
-    }
+        [SerializeField]
+        private Inventory inventory;
+        [SerializeField]
+        private GameObject selector;
 
-    void UpdateSlotUI(int slotNum)
-    {
-        Slot slot = inventory.slots[slotNum];
+        [SerializeField]
+        private List<Transform> inventorySlotParents = new List<Transform>();
+        [SerializeField]
+        private List<Transform> inventorySlotCountTexts = new List<Transform>();
 
-        // If Image Exists In Slot, Destroy It, We're about to Update it
-        if (inventorySlotParents[slotNum].Find("EmptyImagePrefab(Clone)") != null)
+        private GameObject empty;
+
+        private int a = 0;
+
+        void Start()
         {
-            Destroy(inventorySlotParents[slotNum].Find("EmptyImagePrefab(Clone)").gameObject);
+            // Prefab for UI image
+            empty = Resources.Load<GameObject>("Prefabs/EmptyImagePrefab");
+
+            inventory = GameReferences.playerInv;
+
+            for (int slot = 0; slot < inventory.slots.Length; slot++) // Foreach Slot but FASTERRRR
+            {
+                a++; // So that Index is converted to my DUMBASS naming scheme that starts at "(1)"
+                Transform slotParent = GameReferences.playerInvUI.transform.Find("InventoryBackground").transform.Find("Slot (" + a + ")");
+                inventorySlotParents.Insert(slot, slotParent);
+                inventorySlotCountTexts.Insert(slot, slotParent.transform.Find("CountTextPanel (" + a + ")").transform.Find("Slot (" + a + ") Count"));
+            }
+
+            // Assign Event Listeners from Inventory Script on Player
+            inventory.updateSlotCallback += UpdateSlotUI;
+            inventory.updateAllSlotsCallback += UpdateSlotsUI;
+            inventory.updateSelectorUI += MoveSelector;
         }
 
-        // If slot is populated, Update text
-        if (slot.count != 0)
+        void MoveSelector(int slotIndex)
         {
-            GameObject item = Instantiate(empty, inventorySlotParents[slotNum]);
-            item.transform.SetSiblingIndex(0);
-            item.GetComponent<Image>().sprite = GlobalReferences.DDDOL.spriteDB[(int)slot.item.tileType];
-            inventorySlotCountTexts[slotNum].GetComponent<TextMeshProUGUI>().text = slot.count.ToString();
-            inventorySlotCountTexts[slotNum].transform.localPosition = Vector3.zero;
+            selector.transform.position = inventorySlotParents[slotIndex].position;
         }
-        else // NO MORE ITEMS IN SLOT, REMOVE ATTRIBUTES
-        {
-            inventorySlotCountTexts[slotNum].GetComponent<TextMeshProUGUI>().text = "";
-        }
-    }
 
-    void UpdateSlotsUI()
-    {
-        for (int slotNum = 0; slotNum < inventory.slots.Length; slotNum++)
+        void UpdateSlotUI(int slotNum)
         {
-            UpdateSlotUI(slotNum);
+            Slot slot = inventory.slots[slotNum];
+
+            // If Image Exists In Slot, Destroy It, We're about to Update it
+            if (inventorySlotParents[slotNum].Find("EmptyImagePrefab(Clone)") != null)
+            {
+                Destroy(inventorySlotParents[slotNum].Find("EmptyImagePrefab(Clone)").gameObject);
+            }
+
+            // If slot is populated, Update text
+            if (slot.count != 0)
+            {
+                GameObject item = Instantiate(empty, inventorySlotParents[slotNum]);
+                item.transform.SetSiblingIndex(0);
+                item.GetComponent<Image>().sprite = GlobalReferences.DDDOL.spriteDB[(int)slot.item.tileType];
+                inventorySlotCountTexts[slotNum].GetComponent<TextMeshProUGUI>().text = slot.count.ToString();
+                inventorySlotCountTexts[slotNum].transform.localPosition = Vector3.zero;
+            }
+            else // NO MORE ITEMS IN SLOT, REMOVE ATTRIBUTES
+            {
+                inventorySlotCountTexts[slotNum].GetComponent<TextMeshProUGUI>().text = "";
+            }
+        }
+
+        void UpdateSlotsUI()
+        {
+            for (int slotNum = 0; slotNum < inventory.slots.Length; slotNum++)
+            {
+                UpdateSlotUI(slotNum);
+            }
         }
     }
 }

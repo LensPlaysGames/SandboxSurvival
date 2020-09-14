@@ -1,11 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class TestInteract : MonoBehaviour, IInteracteable
+namespace U_Grow
 {
-    public void Use()
+    public class TestInteract : MonoBehaviour, IInteracteable
     {
-        UnityEngine.Debug.Log("Whoopie, you did it, fat ass!");
+        public void Use()
+        {
+            Debug.Log("Whoopie, you did it, fat ass!");
+        }
     }
 }

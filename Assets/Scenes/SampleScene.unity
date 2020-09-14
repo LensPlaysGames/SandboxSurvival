@@ -9176,6 +9176,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1877133458}
   - component: {fileID: 1877133459}
+  - component: {fileID: 1877133460}
   m_Layer: 0
   m_Name: --GameReferences--
   m_TagString: Untagged
@@ -9209,6 +9210,91 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f372f1a19232dac4da01d2e7f2c96224, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1877133460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1877133457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dc0253d8ed818b45b574cc3e52ee8bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  recipes:
+  - name: AdobeBricks
+    ingredients:
+    - empty: 0
+      count: 1
+      item:
+        itemType: 0
+        tileType: 8
+    - empty: 0
+      count: 1
+      item:
+        itemType: 0
+        tileType: 8
+    output:
+      empty: 0
+      count: 3
+      item:
+        itemType: 0
+        tileType: 9
+  - name: WoodBoards
+    ingredients:
+    - empty: 0
+      count: 1
+      item:
+        itemType: 0
+        tileType: 5
+    - empty: 0
+      count: 1
+      item:
+        itemType: 0
+        tileType: 5
+    output:
+      empty: 0
+      count: 3
+      item:
+        itemType: 0
+        tileType: 7
+  - name: GrassToLeaves0
+    ingredients:
+    - empty: 0
+      count: 1
+      item:
+        itemType: 0
+        tileType: 1
+    - empty: 1
+      count: 0
+      item:
+        itemType: 0
+        tileType: 0
+    output:
+      empty: 0
+      count: 3
+      item:
+        itemType: 0
+        tileType: 6
+  - name: GrassToLeaves1
+    ingredients:
+    - empty: 1
+      count: 0
+      item:
+        itemType: 0
+        tileType: 0
+    - empty: 0
+      count: 1
+      item:
+        itemType: 0
+        tileType: 1
+    output:
+      empty: 0
+      count: 3
+      item:
+        itemType: 0
+        tileType: 6
 --- !u!1 &1893884974
 GameObject:
   m_ObjectHideFlags: 0

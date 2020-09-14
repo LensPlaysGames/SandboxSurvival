@@ -1,17 +1,20 @@
 ﻿using System;
-using UnityEngine;
 
-[Serializable]
-public class Item
+namespace U_Grow
 {
-    public enum ItemType
+    [Serializable]
+    public class Item
     {
-        Tile,
-        Tool,
-        Weapon,
-    };
+        public enum ItemType
+        {
+            Tile,
+            Tool,
+            Weapon,
+        };
 
-    public ItemType itemType;
+        public ItemType itemType;
 
-    public Tile.TileType tileType;
+        public Tile.TileType tileType;
+    }
+
 }

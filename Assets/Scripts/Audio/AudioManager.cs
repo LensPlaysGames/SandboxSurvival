@@ -1,39 +1,40 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class AudioManager : MonoBehaviour
+namespace U_Grow
 {
-    public static AudioManager instance;
-
-    public Sound[] sounds;
-
-    void Start()
+    public class AudioManager : MonoBehaviour
     {
-        if (instance != null) { UnityEngine.Debug.LogError("Multiple Audio Managers in Scene!"); Destroy(this.gameObject); }
-        else { instance = this; GameReferences.audioManager = instance; }
+        public static AudioManager instance;
 
-        AudioMixer mixer = Resources.Load<AudioMixer>("Audio/AudioMixer");
-        foreach (Sound s in sounds)
+        public Sound[] sounds;
+
+        void Start()
         {
-            s.source = gameObject.AddComponent<AudioSource>();
-            s.source.clip = s.clip;
+            if (instance != null) { UnityEngine.Debug.LogError("Multiple Audio Managers in Scene!"); Destroy(this.gameObject); }
+            else { instance = this; GameReferences.audioManager = instance; }
 
-            s.source.volume = s.volume;
-            s.source.pitch = s.pitch;
+            AudioMixer mixer = Resources.Load<AudioMixer>("Audio/AudioMixer");
+            foreach (Sound s in sounds)
+            {
+                s.source = gameObject.AddComponent<AudioSource>();
+                s.source.clip = s.clip;
 
-            s.source.loop = s.loop;
+                s.source.volume = s.volume;
+                s.source.pitch = s.pitch;
 
-            s.source.outputAudioMixerGroup = mixer.FindMatchingGroups("Sfx")[0];
+                s.source.loop = s.loop;
+
+                s.source.outputAudioMixerGroup = mixer.FindMatchingGroups("Sfx")[0];
+            }
         }
-    }
 
-    public void PlaySound(string name)
-    {
-        Sound s = Array.Find(sounds, sound => sound.name == name);
-        if (s == null) { UnityEngine.Debug.LogWarning("Sound of name " + name + " was not found."); }
-        s.source.Play();
+        public void PlaySound(string name)
+        {
+            Sound s = Array.Find(sounds, sound => sound.name == name);
+            if (s == null) { UnityEngine.Debug.LogWarning("Sound of name " + name + " was not found."); }
+            s.source.Play();
+        }
     }
 }

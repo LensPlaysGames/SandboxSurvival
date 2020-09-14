@@ -1,12 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Chest : MonoBehaviour, IInteracteable
+namespace U_Grow
 {
-    public void Use()
+    public class Chest : MonoBehaviour, IInteracteable
     {
-        // Open Chest UI
+        public void Use()
+        {
+            // Open Chest UI
 
+        }
     }
+
 }

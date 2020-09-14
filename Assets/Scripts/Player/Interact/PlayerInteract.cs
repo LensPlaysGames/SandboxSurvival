@@ -1,23 +1,22 @@
-﻿using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class PlayerInteract : MonoBehaviour
+namespace U_Grow
 {
-    public GameObject player;
-
-    private void OnTriggerStay2D(Collider2D collider)
+    public class PlayerInteract : MonoBehaviour
     {
-        if (Input.GetButtonDown("Interact"))
+        public GameObject player;
+
+        private void OnTriggerStay2D(Collider2D collider)
         {
-            // Find Object To Interact With
-            IInteracteable interacteable = collider.GetComponent<IInteracteable>();
-            if (interacteable != null)
+            if (Input.GetButtonDown("Interact"))
             {
-                // USE THAT SON OF A BITCH YOU DIRTY DOG YOU
-                interacteable.Use();
+                // Find Object To Interact With
+                IInteracteable interacteable = collider.GetComponent<IInteracteable>();
+                if (interacteable != null)
+                {
+                    // USE THAT SON OF A BITCH YOU DIRTY DOG YOU
+                    interacteable.Use();
+                }
             }
         }
     }

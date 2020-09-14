@@ -1,23 +1,32 @@
 ﻿using UnityEngine;
 using UnityEngine.Experimental.Rendering.Universal;
 
-public class GameReferences : MonoBehaviour
+namespace U_Grow
 {
-    public static LevelGenerator levelGenerator;
+    public class GameReferences : MonoBehaviour
+    {
+        public static LevelGenerator levelGenerator;
 
-    public static GameObject player;
-    public static Player playerScript;
-    public static Inventory playerInv;
+        public static GameObject player;
+        public static Player playerScript;
+        public static Inventory playerInv;
 
-    public static UIMouseManager uIMouseManager;
-    public static UIHandler uIHandler;
-    public static InventoryUI playerInvUI;
-    public static CraftUI craftUI;
+        public static UIMouseManager uIMouseManager;
+        public static UIHandler uIHandler;
+        public static InventoryUI playerInvUI;
+        public static CraftUI craftUI;
 
-    public static AudioManager audioManager;
+        public static AudioManager audioManager;
 
-    public static DayNightCycle dayNightCycle;
-    public static Light2D sunLight;
+        public static DayNightCycle dayNightCycle;
+        public static Light2D sunLight;
 
-    public static CraftSystem craftSystem = new CraftSystem();
+        public static CraftSystem craftSystem;
+        public static listOfRecipes listOfRecipes;
+
+        void Awake()
+        {
+            craftSystem = new CraftSystem(this);
+        }
+    }
 }

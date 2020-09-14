@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public interface IInteracteable
+﻿namespace U_Grow
 {
-    void Use();
+    public interface IInteracteable
+    {
+        void Use();
+    }
 }

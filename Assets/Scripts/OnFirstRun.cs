@@ -1,74 +1,74 @@
-﻿using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class OnFirstRun : MonoBehaviour
+namespace U_Grow
 {
-    public static OnFirstRun instance;
-
-    public int firstRun = 0;
-    public int runs;
-
-    private InputManager inputManager;
-
-    void Awake()
+    public class OnFirstRun : MonoBehaviour
     {
-        if (instance != null) 
-        { 
-            UnityEngine.Debug.LogError("Multiple ONFIRSTRUNs in Game. Destroying " + this.name); 
-            Destroy(this.gameObject); 
-        }
-        else 
-        { 
-            instance = this;
-            GlobalReferences.firstRun = instance;
-            DontDestroyOnLoad(this); 
-        }
+        public static OnFirstRun instance;
 
-        inputManager = new InputManager();
-    }
+        public int firstRun = 0;
+        public int runs;
 
-    void OnEnable()
-    {
-        inputManager.Debug.Enable();
-    }
+        private InputManager inputManager;
 
-    void OnDisable()
-    {
-        inputManager.Debug.Disable();
-    }
-
-    void Start()
-    {
-        firstRun = PlayerPrefs.GetInt("FirstRun");
-        runs = PlayerPrefs.GetInt("Runs");
-
-        if (firstRun == 0) 
+        void Awake()
         {
-            UnityEngine.Debug.Log("First Time Game has Ran on " + System.Environment.UserName);
+            if (instance != null)
+            {
+                UnityEngine.Debug.LogError("Multiple ONFIRSTRUNs in Game. Destroying " + this.name);
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                instance = this;
+                GlobalReferences.firstRun = instance;
+                DontDestroyOnLoad(this);
+            }
 
-            firstRun = 1;
-            PlayerPrefs.SetInt("FirstRun", firstRun);
-
-            runs++;
+            inputManager = new InputManager();
         }
-        else
-        {
-            runs++;
-            PlayerPrefs.SetInt("Runs", runs);
-            UnityEngine.Debug.Log("The Game Has Ran " + runs + " Times");
-        }
-    }
 
-    void Update()
-    {
-        if (inputManager.Debug.DebugReset.triggered)
+        void OnEnable()
         {
-            UnityEngine.Debug.Log("Debug_Reset");
-            PlayerPrefs.DeleteAll();
-            PlayerPrefs.SetInt("FirstRun", 0);
-            PlayerPrefs.SetInt("Runs", 0);
+            inputManager.Debug.Enable();
+        }
+
+        void OnDisable()
+        {
+            inputManager.Debug.Disable();
+        }
+
+        void Start()
+        {
+            firstRun = PlayerPrefs.GetInt("FirstRun");
+            runs = PlayerPrefs.GetInt("Runs");
+
+            if (firstRun == 0)
+            {
+                UnityEngine.Debug.Log("First Time Game has Ran on " + System.Environment.UserName);
+
+                firstRun = 1;
+                PlayerPrefs.SetInt("FirstRun", firstRun);
+
+                runs++;
+            }
+            else
+            {
+                runs++;
+                PlayerPrefs.SetInt("Runs", runs);
+                UnityEngine.Debug.Log("The Game Has Ran " + runs + " Times");
+            }
+        }
+
+        void Update()
+        {
+            if (inputManager.Debug.DebugReset.triggered)
+            {
+                UnityEngine.Debug.Log("Debug_Reset");
+                PlayerPrefs.DeleteAll();
+                PlayerPrefs.SetInt("FirstRun", 0);
+                PlayerPrefs.SetInt("Runs", 0);
+            }
         }
     }
 }
