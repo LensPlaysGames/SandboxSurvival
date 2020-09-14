@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace U_Grow
@@ -42,14 +41,6 @@ namespace U_Grow
             {
                 item = new Item()
             };
-
-            mb.StartCoroutine(InitRecipesWaitForLoad(.5f));
-        }
-        IEnumerator InitRecipesWaitForLoad(float x)
-        {
-            yield return new WaitForSeconds(x);
-            recipes = GameReferences.listOfRecipes.recipes;
-            Debug.Log("Initialized Recipes for CraftSystem");
         }
 
         public void AddToSlot(int whatSlot, Slot slot)
@@ -133,7 +124,7 @@ namespace U_Grow
             TryCraft();
         }
 
-        public void ClearOutputSlot()
+        public void ClearOutputSlot() // DO NOT PUT TryCraft() IN THIS METHOD, LOOPS TO INFINITY
         {
             outputSlot.empty = true;
             outputSlot.count = 0;
@@ -141,8 +132,6 @@ namespace U_Grow
             outputSlot.item.tileType = Tile.TileType.Air;
 
             updateOutputSlotUI?.Invoke();
-
-            TryCraft();
         }
 
         private void TryCraft()
@@ -180,24 +169,24 @@ namespace U_Grow
             }
         }
 
+
         private Slot GetRecipeOutput()
         {
-            Slot output = new Slot
-            {
-                count = 0,
-                empty = true,
-                item = new Item
-                {
-                    itemType = Item.ItemType.Tile,
-                    tileType = Tile.TileType.Air
-                }
-            };
-
+            recipes = GameReferences.listOfRecipes.recipes;
             for (int r = 0; r < recipes.Count; r++)
             {
                 Debug.Log("Testing Recipe " + recipes[r].name);
 
-                output = recipes[r].output;
+                Slot output = new Slot
+                {
+                    count = recipes[r].output.count,
+                    empty = recipes[r].output.empty,
+                    item = new Item
+                    {
+                        itemType = recipes[r].output.item.itemType,
+                        tileType = recipes[r].output.item.tileType,
+                    }
+                };
 
                 for (int slot = 0; slot < recipeSlots.Length; slot++)
                 {
@@ -215,15 +204,17 @@ namespace U_Grow
                         }
                     }
                 }
-                if (output != null) 
+                if (output != null)
                 {
                     Debug.Log("Valid Recipe Found: " + recipes[r].name);
+                    Debug.Log("Output TileType: " + output.item.tileType);
+
                     cachedRecipe = recipes[r];
                     return output;
                 }
             }
-
-            return output;
+            Debug.Log(@"THIS SHOULD NEVER BE CALLED HOOP DOOP BEEP BORP SCHKLIP {S|ES F");
+            return null;
         }
 
 

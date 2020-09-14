@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace U_Grow
 {
-    public class listOfRecipes : MonoBehaviour
+    public class ListOfRecipes : MonoBehaviour
     {
-        public static listOfRecipes instance;
+        public static ListOfRecipes instance;
 
         void Awake()
         {

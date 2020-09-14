@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace U_Grow
 {
@@ -196,8 +194,9 @@ namespace U_Grow
             {
                 if (cachedSlotIndex == 12)
                 {
-                    GameReferences.craftSystem.ClearOutputSlot();
+                    Debug.Log("Player Took Craft Item! Clear Output and Spend Ingredients");
 
+                    GameReferences.craftSystem.ClearOutputSlot();
                     GameReferences.craftSystem.SpendRecipeIngredients();
                 }
                 else if (cachedSlotIndex >= 10)

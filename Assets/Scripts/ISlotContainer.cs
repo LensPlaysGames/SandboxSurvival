@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace U_Grow
+﻿namespace U_Grow
 {
     public interface ISlotContainer
     {

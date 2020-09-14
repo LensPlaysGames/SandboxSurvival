@@ -22,7 +22,7 @@ namespace U_Grow
         public static Light2D sunLight;
 
         public static CraftSystem craftSystem;
-        public static listOfRecipes listOfRecipes;
+        public static ListOfRecipes listOfRecipes;
 
         void Awake()
         {
