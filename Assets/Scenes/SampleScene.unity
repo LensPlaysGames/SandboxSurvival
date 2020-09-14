@@ -9175,6 +9175,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1877133458}
+  - component: {fileID: 1877133461}
   - component: {fileID: 1877133459}
   - component: {fileID: 1877133460}
   m_Layer: 0
@@ -9313,6 +9314,19 @@ MonoBehaviour:
       item:
         itemType: 0
         tileType: 10
+--- !u!114 &1877133461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1877133457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4805f9722ca7f5745b4143445d1a3b13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interval: 90
 --- !u!1 &1893884974
 GameObject:
   m_ObjectHideFlags: 0

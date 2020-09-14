@@ -213,7 +213,7 @@ namespace U_Grow
                     return output;
                 }
             }
-            Debug.Log(@"THIS SHOULD NEVER BE CALLED HOOP DOOP BEEP BORP SCHKLIP {S|ES F");
+            Debug.Log("No Matching Recipes Found, Returning null");
             return null;
         }
 

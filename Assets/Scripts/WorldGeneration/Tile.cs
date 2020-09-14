@@ -48,7 +48,6 @@ namespace U_Grow
                 // Call the callback AKA let things know that the tile has updated IF tile type has changed and it is not already being called (lambdas are weird, I think this is right)
                 if (tileTypeChangedCallback != null && oldTileType != type)
                 {
-                    UnityEngine.Debug.Log("Tile Type Changed from " + oldTileType + " to " + type);
                     tileTypeChangedCallback(this);
                 }
 

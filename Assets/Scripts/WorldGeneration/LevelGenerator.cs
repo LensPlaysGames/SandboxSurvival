@@ -105,7 +105,7 @@ namespace U_Grow
                 {
                     // 2.) Add Random Number Between 0 and 1000000 and append to intended save name
                     // This is assuming that the player won't get unlucky AND name new worlds the same everytime... Should probably add exception handling eventually grumble grumble
-                    UnityEngine.Debug.Log("World " + saveName + " was found when trying to create new world, setting new world name");
+                    Debug.Log("World " + saveName + " was found when trying to create new world, setting new world name");
                     GlobalReferences.DDDOL.saveName += UnityEngine.Random.Range(0, 1000000).ToString();
                 }
             }
@@ -121,8 +121,10 @@ namespace U_Grow
             // SAVE PLAYER DATA
             StartCoroutine(SaveAllPlayerDataAfterX(1f));
 
+            GlobalReferences.debugLog.SaveString(GlobalReferences.debugLog.MyLog);
+
             worldCreated = true;
-            UnityEngine.Debug.Log("Level Created");
+            Debug.Log("Level Created");
 
             loadScreen = GameObject.Find("--LoadScreen--");
             loadScreen.transform.Find("Loading").gameObject.SetActive(false);

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.IO;
 using UnityEngine;
 
@@ -8,19 +7,30 @@ namespace U_Grow
     public class debugtest : MonoBehaviour
     {
         //#if !UNITY_EDITOR
+        public static debugtest instance;
+
         static string myLog = "";
         private string output;
         private string stack;
 
+        public string MyLog
+        {
+            get
+            {
+                return myLog;
+            }
+        }
+        
         private bool toggle;
 
         private InputManager inputManager;
 
         void Awake()
         {
-            inputManager = new InputManager();
+            if (instance != null) { Debug.Log("MULTIPLE DEBUG LOGS"); Destroy(this); }
+            else { instance = this; GlobalReferences.debugLog = instance; }
 
-            StartCoroutine(SaveDebugLog());
+            inputManager = new InputManager();
         }
 
         void OnEnable()
@@ -36,6 +46,13 @@ namespace U_Grow
 
             inputManager.Debug.Disable();
         }
+        void Update()
+        {
+            if (inputManager.Debug.DebugLog.triggered)
+            {
+                toggle = !toggle;
+            }
+        }
 
         public void Log(string logString, string stackTrace, LogType type)
         {
@@ -46,8 +63,9 @@ namespace U_Grow
             {
                 myLog = myLog.Substring(0, 9000);
             }
-        }
 
+            SaveString(myLog);
+        }
         void OnGUI()
         {
             //if (!Application.isEditor) //Do not display in editor ( or you can use the UNITY_EDITOR macro to also disable the rest)
@@ -59,7 +77,7 @@ namespace U_Grow
             }
         }
 
-        void SaveString(string str)
+        public void SaveString(string str)
         {
             string directory = Application.persistentDataPath + Path.DirectorySeparatorChar + "Logs";
             if (!Directory.Exists(directory)) { Directory.CreateDirectory(directory); }
@@ -85,22 +103,6 @@ namespace U_Grow
             finally
             {
                 stream.Close();
-            }
-        }
-        public IEnumerator SaveDebugLog()
-        {
-            while (enabled)
-            {
-                SaveString(myLog);
-                yield return new WaitForSeconds(300);
-            }
-
-        }
-        void Update()
-        {
-            if (inputManager.Debug.DebugLog.triggered)
-            {
-                toggle = !toggle;
             }
         }
         //#endif

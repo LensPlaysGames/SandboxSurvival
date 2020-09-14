@@ -8,9 +8,12 @@ namespace U_Grow
 
         void Awake()
         {
-            if (instance != null) { UnityEngine.Debug.LogError("Multiple GlobalReferences In Scene, Destroying"); Destroy(this); Destroy(this.gameObject); return; }
-            instance = this;
-            DontDestroyOnLoad(this);
+            if (instance != null) { UnityEngine.Debug.LogError("Multiple GlobalReferences In Scene, Destroying"); Destroy(this.gameObject); }
+            else 
+            {
+                instance = this;
+                DontDestroyOnLoad(this);
+            }
         }
 
         public static MenuHandler menuHandler;
@@ -24,5 +27,6 @@ namespace U_Grow
         public static GameObject loadScreen;
 
         public static OnFirstRun firstRun;
+        public static debugtest debugLog;
     }
 }
