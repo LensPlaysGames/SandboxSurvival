@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 
 namespace U_Grow
@@ -38,9 +39,10 @@ namespace U_Grow
 
                 for (int s = 0; s < Enum.GetNames(typeof(Tile.TileType)).Length; s++)
                 {
-                    spritesDB[s] = new Sprite[2];
-                    spritesDB[s][0] = Resources.Load<Sprite>(texturePack + "/" + Enum.GetName(typeof(Tile.TileType), s));
-                    spritesDB[s][1] = Resources.Load<Sprite>(texturePack + "/" + (Enum.GetName(typeof(Tile.TileType), s)) + "1");
+                    spritesDB[s] = new Sprite[3];
+                    spritesDB[s][0] = Resources.Load<Sprite>(texturePack + Path.DirectorySeparatorChar + Enum.GetName(typeof(Tile.TileType), s));
+                    spritesDB[s][1] = Resources.Load<Sprite>(texturePack + Path.DirectorySeparatorChar + (Enum.GetName(typeof(Tile.TileType), s)) + "1");
+                    spritesDB[s][2] = Resources.Load<Sprite>(texturePack + Path.DirectorySeparatorChar + (Enum.GetName(typeof(Tile.TileType), s)) + "2");
                 }
 
 

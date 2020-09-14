@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using UnityEngine;
 
@@ -18,6 +19,8 @@ namespace U_Grow
         void Awake()
         {
             inputManager = new InputManager();
+
+            StartCoroutine(SaveDebugLog());
         }
 
         void OnEnable()
@@ -43,8 +46,6 @@ namespace U_Grow
             {
                 myLog = myLog.Substring(0, 9000);
             }
-
-            SaveString(myLog);
         }
 
         void OnGUI()
@@ -85,6 +86,15 @@ namespace U_Grow
             {
                 stream.Close();
             }
+        }
+        public IEnumerator SaveDebugLog()
+        {
+            while (enabled)
+            {
+                SaveString(myLog);
+                yield return new WaitForSeconds(300);
+            }
+
         }
         void Update()
         {

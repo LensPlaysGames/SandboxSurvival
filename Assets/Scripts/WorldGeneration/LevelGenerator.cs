@@ -232,6 +232,14 @@ namespace U_Grow
             {
                 tile.GetComponent<SpriteRenderer>().sprite = data.spritesDB[(int)tileData.Type][UnityEngine.Random.Range(0, 2)];
             }
+            else if (tileData.Type == Tile.TileType.Dirt) // If Dirt, pick random texture from list
+            {
+                tile.GetComponent<SpriteRenderer>().sprite = data.spritesDB[(int)tileData.Type][UnityEngine.Random.Range(0, 3)];
+            }
+            else if (tileData.Type == Tile.TileType.Stone)
+            {
+                tile.GetComponent<SpriteRenderer>().sprite = data.spritesDB[(int)tileData.Type][UnityEngine.Random.Range(0, 3)];
+            }
             else if (tileData.Type == Tile.TileType.Leaves) // If Leaves, NOT SOLID
             {
                 SetTileState(tile, false);
