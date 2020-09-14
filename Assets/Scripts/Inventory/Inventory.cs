@@ -7,15 +7,21 @@ namespace U_Grow
         #region Singleton/Init
 
         public static Inventory instance;
+        public InputManager inputManager;
 
-        void Awake()
+        private void Awake()
         {
             if (instance != null)
             {
-                UnityEngine.Debug.LogError("Multiple Inventories attempting to Initialize");
+                Debug.LogError("Multiple Inventories attempting to Initialize");
             }
-            instance = this;
-            GameReferences.playerInv = instance;
+            else
+            {
+                instance = this;
+                GameReferences.playerInv = instance;
+            }
+
+            inputManager = new InputManager();
         }
 
         #endregion
@@ -44,7 +50,15 @@ namespace U_Grow
 
         #endregion
 
-
+        void OnEnable()
+        {
+            inputManager.Enable();
+        }
+        void OnDisable()
+        {
+            inputManager.Disable();
+        }
+        
         void Start()
         {
             // Initialize Inventory if Not Loaded
@@ -82,6 +96,11 @@ namespace U_Grow
             else if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex == 0) { SetSelectedSlot(9); }
             if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex != 9) { SetSelectedSlot(selectedSlotIndex + 1); }
             else if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex == 9) { SetSelectedSlot(0); }
+
+            if (inputManager.PlayerUI.InventorySelectionBack.triggered && selectedSlotIndex != 0) { SetSelectedSlot(selectedSlotIndex - 1); }
+            else if (inputManager.PlayerUI.InventorySelectionBack.triggered && selectedSlotIndex == 0) { SetSelectedSlot(9); }
+            if (inputManager.PlayerUI.InventorySelectionForward.triggered && selectedSlotIndex != 9) { SetSelectedSlot(selectedSlotIndex + 1); }
+            else if (inputManager.PlayerUI.InventorySelectionForward.triggered && selectedSlotIndex == 9) { SetSelectedSlot(0); }
         }
 
         public void SetSelectedSlot(int slotIndex)
@@ -103,11 +122,10 @@ namespace U_Grow
                     // Not the best but check every slot per slot for a stack of tiles, if it's the same tile, stack, otherwise MAKE NEW STACK
                     if (slots[s].item.tileType == slot.item.tileType)
                     {
-                        if (slots[s].count < maxStackSize)
+                        if (slots[s].count + slot.count < maxStackSize)
                         {
                             // STACK ITEMS
-                            slots[s].count++;
-                            slots[s].item = slot.item;
+                            slots[s].count += slot.count;
 
                             itemDealt = true;
 
@@ -157,8 +175,12 @@ namespace U_Grow
 
         public void ModifySlotCount(int slotIndex, int amount = 1)
         {
-            slots[slotIndex].count += amount;
-            Mathf.Clamp(slots[slotIndex].count, 0f, 90f);
+            if (slots[slotIndex].count + amount <= maxStackSize)
+            {
+                slots[slotIndex].count += amount;
+            }
+
+            updateSlotCallback?.Invoke(slotIndex);
         }
 
         public void TryTakeFromSlot(int slotIndex) // Take from Slot if Count > 0, Check if Count is 0 and Clear
@@ -198,7 +220,7 @@ namespace U_Grow
 
 
 
-        public void SetInventoryToSave(string saveName)
+        public Slot[] GetInventoryToSave()
         {
             for (int slot = 0; slot < slots.Length; slot++)
             {
@@ -207,6 +229,8 @@ namespace U_Grow
                 slotsToSave[slot].empty = slots[slot].empty;
                 slotsToSave[slot].count = slots[slot].count;
             }
+
+            return slotsToSave;
         }
         public void LoadInventory(string saveName)
         {

@@ -3,10 +3,13 @@ using UnityEngine;
 
 namespace U_Grow
 {
+    [RequireComponent(typeof(PlayerStats))]
     public class MouseController : MonoBehaviour
     {
         public GameObject Cursor;
         public GameObject Player;
+
+        public PlayerStats stats;
 
         public bool lockedToGrid;
 
@@ -26,6 +29,8 @@ namespace U_Grow
             Cursor = GameObject.Find("Cursor");
 
             Player = GameReferences.player;
+
+            stats = Player.GetComponent<PlayerStats>();
 
             int locked = PlayerPrefs.GetInt("LockCursorPos", 0);
             if (locked != 0) { lockedToGrid = true; }
@@ -63,7 +68,7 @@ namespace U_Grow
                 if (Input.GetMouseButton(1))
                 {
                     // Check if Item in Selected Slot is a Tile, if so, Build Tile
-                    if (Player.GetComponent<Inventory>().selectedSlot.item.itemType == Item.ItemType.Tile) { BuildTile(); }
+                    if (GameReferences.playerInv.selectedSlot.item.itemType == Item.ItemType.Tile) { BuildTile(); }
                 }
             }
         }
@@ -126,6 +131,8 @@ namespace U_Grow
 
             #endregion
 
+            selectedTile.tileDestroyTime *= stats.tileDestroyTimeMultiplier;
+
             if (selectedTile.Type != Tile.TileType.Air) // If tile isn't Air (aka a tile to break and collect) Then Actually try to destroy it
             {
                 // Start Breaking Block Until tileDestroyTime <= 0
@@ -166,17 +173,21 @@ namespace U_Grow
                         }
                         else if (selectedTile.Type == Tile.TileType.Stone)
                         {
-                            GameReferences.audioManager.PlaySound("placedTile");
+                            GameReferences.audioManager.PlaySound("placedTile0");
                             GameReferences.audioManager.PlaySound("Hit");
+                        }
+                        else if(selectedTile.Type == Tile.TileType.Log || selectedTile.Type == Tile.TileType.WoodBoards)
+                        {
+                            GameReferences.audioManager.PlaySound("placedTile1");
                         }
                         else
                         {
-                            GameReferences.audioManager.PlaySound("placedTile");
+                            GameReferences.audioManager.PlaySound("placedTile0");
                         }
 
                         #endregion
 
-                        // Actually add the damned thing to Inventory
+                        // Actually Add the Damned Tile to Inventory
                         Slot slotFromTile = new Slot
                         {
                             count = 1,
@@ -187,9 +198,10 @@ namespace U_Grow
                                 tileType = selectedTile.Type
                             }
                         };
-                        Player.GetComponent<Inventory>().TryAddToSlot(slotFromTile);
 
-                        // Actually Break The Damn Tile
+                        GameReferences.playerInv.TryAddToSlot(slotFromTile);
+
+                        // Actually "Break" The Damn Tile
                         selectedTile.Type = Tile.TileType.Air;
 
                         yield break;
@@ -215,9 +227,9 @@ namespace U_Grow
                     if (buildTile != Tile.TileType.Air)
                     {
                         // Play Placed Tile Sound (could be based on tile type in future)
-                        GameReferences.audioManager.PlaySound("placedTile");
+                        GameReferences.audioManager.PlaySound("placedTile0");
                         // Remove Tile Placed From Slot Selected
-                        GameReferences.playerInv.TryTakeFromSlot(Player.GetComponent<Inventory>().selectedSlotIndex);
+                        GameReferences.playerInv.TryTakeFromSlot(GameReferences.playerInv.selectedSlotIndex);
                         // Set Tile To The Intended Build Tile
                         selectedTile.Type = buildTile;
                     }

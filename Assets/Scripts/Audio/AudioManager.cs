@@ -33,7 +33,7 @@ namespace U_Grow
         public void PlaySound(string name)
         {
             Sound s = Array.Find(sounds, sound => sound.name == name);
-            if (s == null) { UnityEngine.Debug.LogWarning("Sound of name " + name + " was not found."); }
+            if (s == null) { UnityEngine.Debug.LogWarning("Sound of name " + name + " was not found."); return; }
             s.source.Play();
         }
     }

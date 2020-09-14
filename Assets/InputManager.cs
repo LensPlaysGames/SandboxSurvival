@@ -41,6 +41,14 @@ public class @InputManager : IInputActionCollection, IDisposable
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Dash"",
+                    ""type"": ""Button"",
+                    ""id"": ""88d2c193-2c68-4b17-a7d6-a5bea7274a38"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -219,6 +227,28 @@ public class @InputManager : IInputActionCollection, IDisposable
                     ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3e8e48ac-5890-43cc-9f7b-05302c5c7845"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": ""MultiTap"",
+                    ""processors"": """",
+                    ""groups"": ""PC"",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""50e1cc36-42ca-464c-8584-09f55bdb2b3a"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": ""MultiTap"",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -317,6 +347,22 @@ public class @InputManager : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""InventorySelectionBack"",
+                    ""type"": ""Button"",
+                    ""id"": ""3234b9a8-4e66-4891-9250-a83fc8e588cc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""InventorySelectionForward"",
+                    ""type"": ""Button"",
+                    ""id"": ""321a7903-bef2-46bb-a973-13822222e9cb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -396,6 +442,28 @@ public class @InputManager : IInputActionCollection, IDisposable
                     ""action"": ""EscapeMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c7ddbdce-4bcd-4fc5-a685-9bd022311093"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""InventorySelectionBack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4724ac35-9300-4940-a77d-27835da5b71f"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""InventorySelectionForward"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -435,6 +503,7 @@ public class @InputManager : IInputActionCollection, IDisposable
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
+        m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         // Debug
         m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
         m_Debug_DebugLog = m_Debug.FindAction("DebugLog", throwIfNotFound: true);
@@ -444,6 +513,8 @@ public class @InputManager : IInputActionCollection, IDisposable
         m_PlayerUI_CraftMenu = m_PlayerUI.FindAction("CraftMenu", throwIfNotFound: true);
         m_PlayerUI_Inventory = m_PlayerUI.FindAction("Inventory", throwIfNotFound: true);
         m_PlayerUI_EscapeMenu = m_PlayerUI.FindAction("EscapeMenu", throwIfNotFound: true);
+        m_PlayerUI_InventorySelectionBack = m_PlayerUI.FindAction("InventorySelectionBack", throwIfNotFound: true);
+        m_PlayerUI_InventorySelectionForward = m_PlayerUI.FindAction("InventorySelectionForward", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -496,6 +567,7 @@ public class @InputManager : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Movement;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Sprint;
+    private readonly InputAction m_Player_Dash;
     public struct PlayerActions
     {
         private @InputManager m_Wrapper;
@@ -503,6 +575,7 @@ public class @InputManager : IInputActionCollection, IDisposable
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
+        public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -521,6 +594,9 @@ public class @InputManager : IInputActionCollection, IDisposable
                 @Sprint.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSprint;
                 @Sprint.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSprint;
                 @Sprint.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSprint;
+                @Dash.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @Dash.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @Dash.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -534,6 +610,9 @@ public class @InputManager : IInputActionCollection, IDisposable
                 @Sprint.started += instance.OnSprint;
                 @Sprint.performed += instance.OnSprint;
                 @Sprint.canceled += instance.OnSprint;
+                @Dash.started += instance.OnDash;
+                @Dash.performed += instance.OnDash;
+                @Dash.canceled += instance.OnDash;
             }
         }
     }
@@ -586,6 +665,8 @@ public class @InputManager : IInputActionCollection, IDisposable
     private readonly InputAction m_PlayerUI_CraftMenu;
     private readonly InputAction m_PlayerUI_Inventory;
     private readonly InputAction m_PlayerUI_EscapeMenu;
+    private readonly InputAction m_PlayerUI_InventorySelectionBack;
+    private readonly InputAction m_PlayerUI_InventorySelectionForward;
     public struct PlayerUIActions
     {
         private @InputManager m_Wrapper;
@@ -593,6 +674,8 @@ public class @InputManager : IInputActionCollection, IDisposable
         public InputAction @CraftMenu => m_Wrapper.m_PlayerUI_CraftMenu;
         public InputAction @Inventory => m_Wrapper.m_PlayerUI_Inventory;
         public InputAction @EscapeMenu => m_Wrapper.m_PlayerUI_EscapeMenu;
+        public InputAction @InventorySelectionBack => m_Wrapper.m_PlayerUI_InventorySelectionBack;
+        public InputAction @InventorySelectionForward => m_Wrapper.m_PlayerUI_InventorySelectionForward;
         public InputActionMap Get() { return m_Wrapper.m_PlayerUI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -611,6 +694,12 @@ public class @InputManager : IInputActionCollection, IDisposable
                 @EscapeMenu.started -= m_Wrapper.m_PlayerUIActionsCallbackInterface.OnEscapeMenu;
                 @EscapeMenu.performed -= m_Wrapper.m_PlayerUIActionsCallbackInterface.OnEscapeMenu;
                 @EscapeMenu.canceled -= m_Wrapper.m_PlayerUIActionsCallbackInterface.OnEscapeMenu;
+                @InventorySelectionBack.started -= m_Wrapper.m_PlayerUIActionsCallbackInterface.OnInventorySelectionBack;
+                @InventorySelectionBack.performed -= m_Wrapper.m_PlayerUIActionsCallbackInterface.OnInventorySelectionBack;
+                @InventorySelectionBack.canceled -= m_Wrapper.m_PlayerUIActionsCallbackInterface.OnInventorySelectionBack;
+                @InventorySelectionForward.started -= m_Wrapper.m_PlayerUIActionsCallbackInterface.OnInventorySelectionForward;
+                @InventorySelectionForward.performed -= m_Wrapper.m_PlayerUIActionsCallbackInterface.OnInventorySelectionForward;
+                @InventorySelectionForward.canceled -= m_Wrapper.m_PlayerUIActionsCallbackInterface.OnInventorySelectionForward;
             }
             m_Wrapper.m_PlayerUIActionsCallbackInterface = instance;
             if (instance != null)
@@ -624,6 +713,12 @@ public class @InputManager : IInputActionCollection, IDisposable
                 @EscapeMenu.started += instance.OnEscapeMenu;
                 @EscapeMenu.performed += instance.OnEscapeMenu;
                 @EscapeMenu.canceled += instance.OnEscapeMenu;
+                @InventorySelectionBack.started += instance.OnInventorySelectionBack;
+                @InventorySelectionBack.performed += instance.OnInventorySelectionBack;
+                @InventorySelectionBack.canceled += instance.OnInventorySelectionBack;
+                @InventorySelectionForward.started += instance.OnInventorySelectionForward;
+                @InventorySelectionForward.performed += instance.OnInventorySelectionForward;
+                @InventorySelectionForward.canceled += instance.OnInventorySelectionForward;
             }
         }
     }
@@ -651,6 +746,7 @@ public class @InputManager : IInputActionCollection, IDisposable
         void OnMovement(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
+        void OnDash(InputAction.CallbackContext context);
     }
     public interface IDebugActions
     {
@@ -662,5 +758,7 @@ public class @InputManager : IInputActionCollection, IDisposable
         void OnCraftMenu(InputAction.CallbackContext context);
         void OnInventory(InputAction.CallbackContext context);
         void OnEscapeMenu(InputAction.CallbackContext context);
+        void OnInventorySelectionBack(InputAction.CallbackContext context);
+        void OnInventorySelectionForward(InputAction.CallbackContext context);
     }
 }

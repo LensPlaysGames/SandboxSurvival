@@ -15,6 +15,7 @@ namespace U_Grow
         public static UIHandler uIHandler;
         public static InventoryUI playerInvUI;
         public static CraftUI craftUI;
+        public static ChestUI chestUI;
 
         public static AudioManager audioManager;
 

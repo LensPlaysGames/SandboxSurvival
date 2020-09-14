@@ -7,16 +7,17 @@ namespace U_Grow
     {
         public Slider staminaSlider;
         public Player player;
+        public PlayerMovement playerMoveScript;
 
         void Start()
         {
             staminaSlider = GetComponent<Slider>();
-            player = GameObject.Find("Player").GetComponent<Player>();
+            playerMoveScript = GameReferences.player.GetComponent<PlayerMovement>();
         }
 
         void Update()
         {
-            if (staminaSlider.value != player.GetPlayerStamina()) { staminaSlider.value = player.GetPlayerStamina(); }
+            if (staminaSlider.value != playerMoveScript.GetPlayerStamina()) { staminaSlider.value = playerMoveScript.GetPlayerStamina(); }
         }
     }
 }
