@@ -8203,6 +8203,7 @@ GameObject:
   - component: {fileID: 1712859568}
   - component: {fileID: 1712859573}
   - component: {fileID: 1712859572}
+  - component: {fileID: 1712859574}
   - component: {fileID: 1712859567}
   - component: {fileID: 1712859569}
   - component: {fileID: 1712859571}
@@ -8532,6 +8533,20 @@ MonoBehaviour:
   speedMultipler: 1
   jumpForceMultiplier: 1
   dashMultiplier: 1.5
+--- !u!114 &1712859574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712859564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44079b4fc046b574e807a4e225d4f566, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dashParticles: {fileID: 4551232527328002930, guid: 1b419f01b67d60049920f2b4d7c9497a, type: 3}
+  sprintParticles: {fileID: 7149564013466724392, guid: 2000191a1492df844939108f28223e78, type: 3}
 --- !u!1 &1727635866
 GameObject:
   m_ObjectHideFlags: 0

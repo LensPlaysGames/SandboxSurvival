@@ -58,7 +58,7 @@ namespace U_Grow
         {
             inputManager.Disable();
         }
-        
+
         void Start()
         {
             // Initialize Inventory if Not Loaded

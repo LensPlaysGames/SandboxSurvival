@@ -42,7 +42,9 @@ namespace U_Grow
         private Vector3 input;
         private float speed, jumpForce, stamina;
 
-        private Vector3 cachedPos;
+        public delegate void PlayerMoveEvent();
+        public PlayerMoveEvent OnSprint;
+        public PlayerMoveEvent OnDash;
 
         private void Awake()
         {
@@ -89,31 +91,29 @@ namespace U_Grow
 
             #region Run/Walk && Stamina
 
-            if (inputManager.Player.Sprint.ReadValue<float>() != 0)
+            if (inputManager.Player.Sprint.ReadValue<float>() != 0) // Player Wants to Sprint!
             {
+                OnSprint?.Invoke();
 
                 staminaRegain = staminaRegainTime;
 
-                if (stamina > 0)
+                if (stamina > 0) // Player Sprinting
                 {
-                    // Player Sprinting
                     stamina -= Time.deltaTime;
                     speed = runSpeed;
                     jumpForce = lesserJumpForce;
                     GetComponent<SpriteRenderer>().color = darkened;
                 }
-                else
+                else // Player Exhausted 
                 {
-                    // Player Exhausted 
                     speed = walkSpeed / 2;
                     jumpForce = lesserJumpForce;
                     GetComponent<SpriteRenderer>().color = darker;
                 }
             }
-            else
+            else // Player Wants to Walk
             {
-                // Player Walking
-                if (stamina < totalStamina)
+                if (stamina < totalStamina) // Regain Stamina if Not Full
                 {
                     if (staminaRegain <= 0)
                     {
@@ -124,8 +124,9 @@ namespace U_Grow
                         staminaRegain -= Time.deltaTime;
                     }
                 }
-                else if (stamina >= totalStamina) { stamina = totalStamina; }
+                else if (stamina >= totalStamina) { stamina = totalStamina; } // Don't Let Stamina Get Above Total Stamina
 
+                // Defaults
                 speed = walkSpeed;
                 jumpForce = defaultJumpForce;
                 GetComponent<SpriteRenderer>().color = Color.white;
@@ -133,13 +134,13 @@ namespace U_Grow
 
             #endregion
 
-            if (Physics2D.OverlapCircle(grounded.position, groundedRadius, ground)) { if (inputManager.Player.Jump.triggered) {Jump(); } } // If on ground and Press Jump, Jump()
+            if (Physics2D.OverlapCircle(grounded.position, groundedRadius, ground)) { if (inputManager.Player.Jump.triggered) { Jump(); } } // If on ground and Press Jump, Jump()
             else // If in air and let go of jump, push downwards
-            { 
-                if (inputManager.Player.Jump.ReadValue<float>() == 0) 
-                { 
-                    rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime; 
-                } 
+            {
+                if (inputManager.Player.Jump.ReadValue<float>() == 0)
+                {
+                    rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime;
+                }
             }
 
             if (inputManager.Player.Dash.triggered) { Dash(); }
@@ -156,10 +157,6 @@ namespace U_Grow
         public void MultiplyFall()
         {
             if (rb.velocity.y < minVertSpeed)
-            {
-                rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
-            }
-            else if (rb.velocity.y < 0)
             {
                 rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
             }
@@ -194,10 +191,10 @@ namespace U_Grow
 
         public void Dash()
         {
-            Debug.Log("Player Dashing");
-
             rb.velocity = new Vector3(rb.velocity.x, Vector3.zero.y);
-            rb.AddForce(input * speed * stats.dashMultiplier, ForceMode2D.Impulse);
+            rb.velocity += new Vector2(input.x * speed * stats.dashMultiplier, rb.velocity.y);
+
+            OnDash?.Invoke();
         }
 
 

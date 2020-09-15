@@ -176,7 +176,7 @@ namespace U_Grow
                             GameReferences.audioManager.PlaySound("placedTile0");
                             GameReferences.audioManager.PlaySound("Hit");
                         }
-                        else if(selectedTile.Type == Tile.TileType.Log || selectedTile.Type == Tile.TileType.WoodBoards)
+                        else if (selectedTile.Type == Tile.TileType.Log || selectedTile.Type == Tile.TileType.WoodBoards)
                         {
                             GameReferences.audioManager.PlaySound("placedTile1");
                         }

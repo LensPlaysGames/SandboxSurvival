@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -44,7 +43,7 @@ namespace U_Grow
 
         public delegate void MenuEvent();
         public MenuEvent ExitMenu;
-        
+
         public bool inMenu;
 
         public Level level;
@@ -112,7 +111,7 @@ namespace U_Grow
             {
                 if (inMenu) { ExitMenu?.Invoke(); }
                 else { TogglePauseMenu(); }
-                
+
             }
             if (inputManager.PlayerUI.CraftMenu.triggered)
             {

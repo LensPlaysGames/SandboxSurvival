@@ -9,7 +9,7 @@ namespace U_Grow
         void Awake()
         {
             if (instance != null) { UnityEngine.Debug.LogError("Multiple GlobalReferences In Scene, Destroying"); Destroy(this.gameObject); }
-            else 
+            else
             {
                 instance = this;
                 DontDestroyOnLoad(this);

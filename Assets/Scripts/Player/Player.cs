@@ -50,7 +50,7 @@ namespace U_Grow
                 Debug.Log("Player Fell Below Level! Setting Position to: " + middleTopofWorld);
                 transform.position = middleTopofWorld;
             }
-        }  
+        }
 
         #region Player Data Save/Load
 

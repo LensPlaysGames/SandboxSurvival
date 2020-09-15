@@ -20,7 +20,7 @@ namespace U_Grow
                 return myLog;
             }
         }
-        
+
         private bool toggle;
 
         private InputManager inputManager;
@@ -82,9 +82,9 @@ namespace U_Grow
             string directory = Application.persistentDataPath + Path.DirectorySeparatorChar + "Logs";
             if (!Directory.Exists(directory)) { Directory.CreateDirectory(directory); }
 
-            str = "\n" + 
-                "Grow! Debug Log" + "\n" + 
-                "Version: " + Application.version + "\n" + 
+            str = "\n" +
+                "Grow! Debug Log" + "\n" +
+                "Version: " + Application.version + "\n" +
                 "Date" + DateTime.Now + "\n\n" +
                 str;
 

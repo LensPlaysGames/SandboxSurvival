@@ -13,7 +13,7 @@ namespace U_Grow
             {
                 instance = this;
                 GameReferences.chestUI = instance;
-            } 
+            }
 
             if (GameReferences.chestUI != null)
             {
