@@ -244,12 +244,11 @@ namespace U_Grow
                 slots[slot].item.tileType = saveManager.loadedData.playerData.playerInv[slot].item.tileType;
                 slots[slot].empty = saveManager.loadedData.playerData.playerInv[slot].empty;
                 slots[slot].count = saveManager.loadedData.playerData.playerInv[slot].count;
-
-                inventoryLoaded = true;
-
-                // Update UI (Visual GameObject) to Represent New Data Loaded
-                updateSlotCallback?.Invoke(slot);
             }
+
+            inventoryLoaded = true;
+
+            updateAllSlotsCallback?.Invoke();
         }
     }
 

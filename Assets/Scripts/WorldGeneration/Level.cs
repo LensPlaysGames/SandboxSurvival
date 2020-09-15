@@ -97,27 +97,33 @@ namespace U_Grow
             surfaceHeightMultiplier = levelGenParams.surfaceHeightPercentage;
             undergroundHeightMultiplier = levelGenParams.undergroundHeightPercentage;
 
-
             for (int x = 0; x < width; x++)
             {
+                #region Random Height Gen
+
                 surfaceHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f);
                 surfaceHeightMultiplier *= UnityEngine.Random.Range(.999f, 1.001f);
+
                 if (UnityEngine.Random.Range(0, 101) <= 50) { surfaceHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f); }
                 if (UnityEngine.Random.Range(0, 101) <= 1) { surfaceHeightMultiplier *= UnityEngine.Random.Range(.98f, 1.02f); }
 
                 undergroundHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f);
                 undergroundHeightMultiplier *= UnityEngine.Random.Range(.999f, 1.001f);
+
                 if (UnityEngine.Random.Range(0, 101) <= 50) { undergroundHeightMultiplier *= UnityEngine.Random.Range(.99f, 1.01f); }
                 if (UnityEngine.Random.Range(0, 101) <= 1) { undergroundHeightMultiplier *= UnityEngine.Random.Range(.95f, 1.05f); }
 
-                if (undergroundHeightMultiplier / surfaceHeightMultiplier > .99f)
+                // Keep Underground At bay
+                if ((undergroundHeightMultiplier / surfaceHeightMultiplier) > .99f)
                 {
                     undergroundHeightMultiplier *= .98f;
                 }
-                else if (undergroundHeightMultiplier / surfaceHeightMultiplier < .9f)
+                else if ((undergroundHeightMultiplier / surfaceHeightMultiplier) < .9f)
                 {
                     undergroundHeightMultiplier *= 1.02f;
                 }
+
+                #endregion
 
                 for (int y = 0; y < height; y++)
                 {

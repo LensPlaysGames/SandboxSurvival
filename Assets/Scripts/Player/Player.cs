@@ -56,30 +56,30 @@ namespace U_Grow
 
         public void SaveAllPlayerData(string saveName)
         {
-            PlayerSaveData playerDataToSave = new PlayerSaveData();
+            PlayerSaveData playerDataToSave = new PlayerSaveData
+            {
+                // Current World Level Player is In
+                levelIndex = level,
 
-            // Current World Level Player is In
-            playerDataToSave.levelIndex = level;
+                // Player Pos
+                x = Mathf.Round(transform.position.x * 100) / 100,
+                y = Mathf.Round(Mathf.Ceil(transform.position.y) * 100) / 100,
 
-            // Player Pos
-            playerDataToSave.x = Mathf.Round(transform.position.x * 100) / 100;
-            playerDataToSave.y = Mathf.Round(Mathf.Ceil(transform.position.y) * 100) / 100;
+                // Player Inventory
+                playerInv = GetComponent<Inventory>().GetInventoryToSave()
+            };
 
-            // Player Inventory
-            playerDataToSave.playerInv = GetComponent<Inventory>().GetInventoryToSave();
-
-            SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
-            saveManager.SetPlayerDataSaveData(saveName, playerDataToSave);
+            GlobalReferences.saveManager.SetPlayerDataSaveData(saveName, playerDataToSave);
         }
 
         public void LoadAllPlayerData(string saveName)
         {
-            SaveManager saveManager = GameObject.Find("SaveManager").GetComponent<SaveManager>();
+            SaveManager saveManager = GlobalReferences.saveManager;
             saveManager.LoadAllDataFromDisk(saveName);
 
             level = saveManager.loadedData.playerData.levelIndex;
 
-            Vector3 loadedPos = new Vector3(saveManager.loadedData.playerData.x, saveManager.loadedData.playerData.y);
+            Vector3 loadedPos = new Vector3(saveManager.loadedData.playerData.x, saveManager.loadedData.playerData.y, 0f);
             transform.position = loadedPos;
 
             GetComponent<Inventory>().LoadInventory(saveName);

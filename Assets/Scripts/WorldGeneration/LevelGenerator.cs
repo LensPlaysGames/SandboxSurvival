@@ -31,7 +31,7 @@ namespace U_Grow
         {
             if (instance != null)
             {
-                UnityEngine.Debug.LogError("There Should NOT be more than one LevelGenerator");
+                Debug.LogError("There Should NOT be more than one LevelGenerator");
                 Destroy(this.gameObject);
             }
             else
@@ -52,7 +52,7 @@ namespace U_Grow
         {
             worldCreated = false;
 
-            UnityEngine.Debug.Log("Creating Level");
+            Debug.Log("Creating Level");
 
             // Get Level Generation Characteristics    --    NEED TO GET THIS FROM ARRAY OF LEVEL GENERATION CHARACTERISTICS after i create it
             LevelGenerationParameters levelGenParams = GlobalReferences.levelGenParams;
@@ -148,7 +148,7 @@ namespace U_Grow
             int width = saveManager.loadedData.levelsSaved[levelIndex].width;
             int height = saveManager.loadedData.levelsSaved[levelIndex].height;
             float scale = saveManager.loadedData.levelsSaved[levelIndex].scale;
-            UnityEngine.Debug.Log("Loaded World Size! x: " + width + " y: " + height + "    World Scale: " + scale + "    World Level Index: " + levelIndex);
+            Debug.Log("Loaded World Size! x: " + width + " y: " + height + "    World Scale: " + scale + "    World Level Index: " + levelIndex);
 
             // Create Level
             level = new Level(width, height, scale, levelIndex);
@@ -196,10 +196,8 @@ namespace U_Grow
 
             #region Load Player
 
-            // Get Player To Load To
-            GameObject player = GameObject.Find("Player");
             // LOAD ALL PLAYER DATA
-            player.GetComponent<Player>().LoadAllPlayerData(saveName);
+            GameReferences.playerScript.LoadAllPlayerData(saveName);
 
             #endregion
 
@@ -214,14 +212,13 @@ namespace U_Grow
             Chest chest = tile.GetComponent<Chest>();
             if (chest != null) { Destroy(chest); }
 
-            // false = Not Solid = Layer 9
-            // true = Solid = Layer 8
-
             DataDontDestroyOnLoad data = GlobalReferences.DDDOL;
 
             // Set All Tiles to Appropriate Sprite and Solid
             tile.GetComponent<SpriteRenderer>().sprite = data.spriteDB[(int)tileData.Type];
 
+            // false = Not Solid = Layer 9
+            // true = Solid = Layer 8
             SetTileState(tile, true);
 
             #region Tile Overrides (not solid, variable textures, different components, etc)

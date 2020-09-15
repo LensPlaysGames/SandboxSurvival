@@ -32,29 +32,17 @@ namespace U_Grow
         [SerializeField]
         private int cachedSlotIndex;
         [SerializeField]
-        private int mouseSlotIndex;
-        [SerializeField]
         private int hoverSlotIndex;
 
-        public Slot MouseSlot
-        {
-            get
-            {
-                return mouseSlot;
-            }
-        }
-        public Slot HoverSlot
-        {
-            get
-            {
-                return hoverSlot;
-            }
-        }
+        public Slot MouseSlot => mouseSlot;
+        public Slot HoverSlot => hoverSlot;
+
+        SlotDragHandler[] slots;
 
         void Start()
         {
             // Subscribe to Every SlotDragHandler Event...
-            SlotDragHandler[] slots = FindObjectsOfType<SlotDragHandler>();
+            slots = FindObjectsOfType<SlotDragHandler>();
             for (int i = 0; i < slots.Length; i++)
             {
                 slots[i].SetMouseSlot += SetMouseSlot;
@@ -66,11 +54,26 @@ namespace U_Grow
             }
 
             cachedSlotIndex = -1;
-            mouseSlotIndex = -1;
             hoverSlotIndex = -1;
         }
 
+        private void FixedUpdate()
+        {
+            if (FindObjectsOfType<SlotDragHandler>().Length != slots.Length)
+            {
+                slots = FindObjectsOfType<SlotDragHandler>();
 
+                for (int i = 0; i < slots.Length; i++)
+                {
+                    slots[i].SetMouseSlot += SetMouseSlot;
+
+                    slots[i].EndDrag += TryEndDrag;
+
+                    slots[i].HoverOverSlot += SetHoverSlot;
+                    slots[i].ClearHoverSlot += ClearHoverSlot;
+                }
+            }
+        }
 
         public void SetMouseSlot(int slotIndex)
         {
@@ -88,17 +91,15 @@ namespace U_Grow
                 mouseSlot = GameReferences.playerInv.slots[slotIndex];
             }
 
-            mouseSlotIndex = slotIndex;
             cachedSlotIndex = slotIndex;
         }
 
-        public void ClearMouseSlot(int unused)
+        public void ClearMouseSlot()
         {
             mouseSlot.empty = true;
             mouseSlot.count = 0;
             mouseSlot.item.itemType = Item.ItemType.Tile;
             mouseSlot.item.tileType = Tile.TileType.Air;
-            mouseSlotIndex = -1;
             cachedSlotIndex = -1;
         }
 
@@ -184,7 +185,7 @@ namespace U_Grow
                     }
                 }
 
-                ClearMouseSlot(-1);
+                ClearMouseSlot();
             }
         }
 

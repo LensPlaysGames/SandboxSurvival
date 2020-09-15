@@ -178,11 +178,10 @@ namespace U_Grow
             string saveName = DataDontDestroyOnLoad.instance.saveName;
 
             // Save World
-            GameObject levelGenerator = GameObject.Find("LevelGenerator");
-            level = levelGenerator.GetComponent<LevelGenerator>().GetLevelInstance();
+            level = GameReferences.levelGenerator.GetLevelInstance();
 
-            level.day = levelGenerator.GetComponent<DayNightCycle>().GetDate();
-            level.time = levelGenerator.GetComponent<DayNightCycle>().GetTime();
+            level.day = GameReferences.levelGenerator.gameObject.GetComponent<DayNightCycle>().GetDate();
+            level.time = GameReferences.levelGenerator.gameObject.GetComponent<DayNightCycle>().GetTime();
 
             level.SaveLevel(saveName);
 
