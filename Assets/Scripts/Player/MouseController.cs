@@ -180,6 +180,10 @@ namespace U_Grow
                         {
                             GameReferences.audioManager.PlaySound("placedTile1");
                         }
+                        else if (selectedTile.Type == Tile.TileType.Leaves)
+                        {
+                            GameReferences.audioManager.PlaySound("leaves" + Random.Range(1, 3));
+                        }
                         else
                         {
                             GameReferences.audioManager.PlaySound("placedTile0");

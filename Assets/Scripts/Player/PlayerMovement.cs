@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace U_Grow
 {
@@ -69,7 +70,7 @@ namespace U_Grow
 
             grounded = transform.Find("GroundCheck");
 
-            stamina = totalStamina;
+            stamina = stats.stamina;
         }
         private void Update()
         {
@@ -83,76 +84,90 @@ namespace U_Grow
             Animate(); // Update Visuals
         }
 
-
+        private bool canInput = true;
 
         public void GetInput()
         {
-            input.x = inputManager.Player.Movement.ReadValue<float>();
-
-            #region Run/Walk && Stamina
-
-            if (inputManager.Player.Sprint.ReadValue<float>() != 0) // Player Wants to Sprint!
+            if (canInput)
             {
-                OnSprint?.Invoke();
+                input.x = inputManager.Player.Movement.ReadValue<float>();
 
-                staminaRegain = staminaRegainTime;
+                #region Run/Walk && Stamina
 
-                if (stamina > 0) // Player Sprinting
+                if (inputManager.Player.Sprint.ReadValue<float>() != 0) // Player Wants to Sprint!
                 {
-                    stamina -= Time.deltaTime;
-                    speed = runSpeed;
-                    jumpForce = lesserJumpForce;
-                    GetComponent<SpriteRenderer>().color = darkened;
-                }
-                else // Player Exhausted 
-                {
-                    speed = walkSpeed / 2;
-                    jumpForce = lesserJumpForce;
-                    GetComponent<SpriteRenderer>().color = darker;
-                }
-            }
-            else // Player Wants to Walk
-            {
-                if (stamina < totalStamina) // Regain Stamina if Not Full
-                {
-                    if (staminaRegain <= 0)
+                    OnSprint?.Invoke();
+
+                    staminaRegain = staminaRegainTime;
+
+                    if (stamina > 0) // Player Sprinting
                     {
-                        stamina += Time.deltaTime;
+                        stamina -= Time.deltaTime;
+                        speed = runSpeed;
+                        jumpForce = lesserJumpForce;
+                        GetComponent<SpriteRenderer>().color = darkened;
                     }
-                    else
+                    else // Player Exhausted 
                     {
-                        staminaRegain -= Time.deltaTime;
+                        speed = walkSpeed / 2;
+                        jumpForce = lesserJumpForce;
+                        GetComponent<SpriteRenderer>().color = darker;
                     }
                 }
-                else if (stamina >= totalStamina) { stamina = totalStamina; } // Don't Let Stamina Get Above Total Stamina
-
-                // Defaults
-                speed = walkSpeed;
-                jumpForce = defaultJumpForce;
-                GetComponent<SpriteRenderer>().color = Color.white;
-            }
-
-            #endregion
-
-            if (Physics2D.OverlapCircle(grounded.position, groundedRadius, ground)) { if (inputManager.Player.Jump.triggered) { Jump(); } } // If on ground and Press Jump, Jump()
-            else // If in air and let go of jump, push downwards
-            {
-                if (inputManager.Player.Jump.ReadValue<float>() == 0)
+                else // Player Wants to Walk
                 {
-                    rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime;
-                }
-            }
+                    if (stamina < totalStamina) // Regain Stamina if Not Full
+                    {
+                        if (staminaRegain <= 0)
+                        {
+                            stamina += Time.deltaTime;
+                        }
+                        else
+                        {
+                            staminaRegain -= Time.deltaTime;
+                        }
+                    }
+                    else if (stamina >= totalStamina) { stamina = totalStamina; } // Don't Let Stamina Get Above Total Stamina
 
-            if (inputManager.Player.Dash.triggered) { Dash(); }
+                    // Defaults
+                    speed = walkSpeed;
+                    jumpForce = defaultJumpForce;
+                    GetComponent<SpriteRenderer>().color = Color.white;
+                }
+
+                #endregion
+
+                if (Physics2D.OverlapCircle(grounded.position, groundedRadius, ground)) { if (inputManager.Player.Jump.triggered) { Jump(); } } // If on ground and Press Jump, Jump()
+                else // If in air and let go of jump, push downwards
+                {
+                    if (inputManager.Player.Jump.ReadValue<float>() == 0)
+                    {
+                        rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplier * Time.deltaTime;
+                    }
+                }
+
+                if (inputManager.Player.Dash.triggered) { Dash(); }
+            }
         }
+
         public void MovePlayer()
         {
             transform.position += input * speed * stats.speedMultipler * Time.fixedDeltaTime;
         }
         public void Jump()
         {
-            rb.velocity = new Vector3(rb.velocity.x, Vector3.zero.y);
+            rb.velocity = new Vector3(rb.velocity.x, 0f);
             rb.AddForce(Vector3.up * jumpForce * stats.jumpForceMultiplier, ForceMode2D.Impulse);
+        }
+        public void Dash()
+        {
+            float dashTime = .2f;
+            StartCoroutine(DisableInputForX(dashTime));
+
+            rb.velocity = new Vector3(rb.velocity.x, 1f);
+            rb.velocity += new Vector2(input.x * speed * stats.dashMultiplier, rb.velocity.y);
+
+            OnDash?.Invoke();
         }
         public void MultiplyFall()
         {
@@ -189,15 +204,14 @@ namespace U_Grow
 
         #endregion
 
-        public void Dash()
+        private IEnumerator DisableInputForX(float x)
         {
-            rb.velocity = new Vector3(rb.velocity.x, Vector3.zero.y);
-            rb.velocity += new Vector2(input.x * speed * stats.dashMultiplier, rb.velocity.y);
+            canInput = false;
 
-            OnDash?.Invoke();
+            yield return new WaitForSeconds(x);
+
+            canInput = true;
         }
-
-
 
         void OnCollisionEnter2D(Collision2D collision)
         {

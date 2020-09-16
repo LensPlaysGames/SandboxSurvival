@@ -77,13 +77,16 @@ namespace U_Grow
 
         public void SetMouseSlot(int slotIndex)
         {
-            if (slotIndex == 12)
+            if (slotIndex >= 13 && slotIndex <= 89) // Set mouseSlot from Chest Slot [slotIndex - 13]
+            {
+                // Actually find the chest and ya know, read the slot we need ta, yaf uc k
+            }
+            else if (slotIndex == 12) // Set mouseSlot from CraftSystem output Slot
             {
                 mouseSlot = GameReferences.craftSystem.outputSlot;
             }
-            else if (slotIndex >= 10)
+            else if (slotIndex >= 10) // Set mouseSlot from CraftSystem Recipe Slots
             {
-                // Set mouseSlot from CraftSystem
                 mouseSlot = GameReferences.craftSystem.recipeSlots[slotIndex - 10];
             }
             else // Set mouseSlot from Player Inventory
@@ -107,47 +110,55 @@ namespace U_Grow
 
         public void TryEndDrag(int unused)
         {
-            // ~ Lens
+            /*/ ~ Lens
 
-            // I feel the need to sign this due to the sheer stupidity required in order to achieve something of this nature
-            // 127 LINES GOD-DAMNIT... 127...
+            I feel the need to sign this due to the sheer stupidity required in order to achieve something of this nature
+            127 LINES GOD-DAMNIT... 127...
 
-            // DOWN TO 98! WOO HOO! (Consolidated ClearCachedSlot Methods Into Each System)
+            DOWN TO 98! WOO HOO! (Consolidated ClearCachedSlot Methods Into Each System)
+
+            /*/
 
             if (cachedSlotIndex != hoverSlotIndex && hoverSlotIndex != -1) // Check if hovered slot is there. If it is, Transfer Mouse Slot Data to Slot That is Hovered Over
             {
-                if (hoverSlotIndex == 12) // If Hovering Over Output Slot
+                if (hoverSlotIndex >= 13 && hoverSlotIndex <= 89) // If Hovering Over Chest
+                {
+                    int hoverINDEX = hoverSlotIndex - 13;
+
+                    // Find Chest to Add to, then, ya know, DO IT
+                }
+                else if (hoverSlotIndex == 12) // If Hovering Over Output Slot
                 {
                     // Dont Do Anything If Drag Item Onto Output Slot in Craft UI
                     return;
                 }
                 else if (hoverSlotIndex >= 10) // If Hovering Over Recipe Slots
                 {
-                    int hoverIndex = hoverSlotIndex - 10;
+                    int hoverINDEX = hoverSlotIndex - 10;
 
-                    if (GameReferences.craftSystem.recipeSlots[hoverIndex].count == 0)
+                    if (GameReferences.craftSystem.recipeSlots[hoverINDEX].count == 0)
                     {
                         UnityEngine.Debug.Log("Setting Hovered Over Recipe Slot to Mouse Slot Data!");
 
-                        GameReferences.craftSystem.SetSlot(hoverIndex, mouseSlot);
+                        GameReferences.craftSystem.SetSlot(hoverINDEX, mouseSlot);
 
                         ClearCachedSlot();
 
-                        GameReferences.craftSystem.updateRecipeSlotUI?.Invoke(hoverIndex);
+                        GameReferences.craftSystem.updateRecipeSlotUI?.Invoke(hoverINDEX);
                     }
                     else
                     {
-                        if (GameReferences.craftSystem.recipeSlots[hoverIndex].item.itemType == mouseSlot.item.itemType)
+                        if (GameReferences.craftSystem.recipeSlots[hoverINDEX].item.itemType == mouseSlot.item.itemType)
                         {
-                            if (GameReferences.craftSystem.recipeSlots[hoverIndex].item.tileType == mouseSlot.item.tileType)
+                            if (GameReferences.craftSystem.recipeSlots[hoverINDEX].item.tileType == mouseSlot.item.tileType)
                             {
                                 UnityEngine.Debug.Log("Adding Mouse Slot Data to Hovered Over Craft Recipe Slot");
 
-                                GameReferences.craftSystem.AddToSlot(hoverIndex, mouseSlot);
+                                GameReferences.craftSystem.AddToSlot(hoverINDEX, mouseSlot);
 
                                 ClearCachedSlot();
 
-                                GameReferences.craftSystem.updateRecipeSlotUI?.Invoke(hoverIndex);
+                                GameReferences.craftSystem.updateRecipeSlotUI?.Invoke(hoverINDEX);
                             }
                         }
                         return;
@@ -193,7 +204,11 @@ namespace U_Grow
         {
             if (cachedSlotIndex != -1)
             {
-                if (cachedSlotIndex == 12)
+                if (cachedSlotIndex >= 13 && cachedSlotIndex <= 89)
+                {
+                    // Find Chest to take from... (cachedSlotIndex - 13)
+                }
+                else if (cachedSlotIndex == 12)
                 {
                     Debug.Log("Player Took Craft Item! Clear Output and Spend Ingredients");
 
@@ -211,8 +226,6 @@ namespace U_Grow
             }
         }
 
-
-
         public void ClearSlot(Slot slotToClear)
         {
             slotToClear.empty = true;
@@ -223,7 +236,13 @@ namespace U_Grow
 
         public void SetHoverSlot(int slotIndex)
         {
-            if (slotIndex == 12)
+            if (slotIndex >= 13 && slotIndex <= 89)
+            {
+                int slotINDEX = slotIndex - 13;
+
+                // Find Chest to set Hover Slot to...
+            }
+            else if (slotIndex == 12)
             {
                 hoverSlot.empty = GameReferences.craftSystem.outputSlot.empty;
                 hoverSlot.count = GameReferences.craftSystem.outputSlot.count;
@@ -232,10 +251,12 @@ namespace U_Grow
             }
             else if (slotIndex >= 10)
             {
-                hoverSlot.empty = GameReferences.craftSystem.recipeSlots[slotIndex - 10].empty;
-                hoverSlot.count = GameReferences.craftSystem.recipeSlots[slotIndex - 10].count;
-                hoverSlot.item.itemType = GameReferences.craftSystem.recipeSlots[slotIndex - 10].item.itemType;
-                hoverSlot.item.tileType = GameReferences.craftSystem.recipeSlots[slotIndex - 10].item.tileType;
+                int slotINDEX = slotIndex - 10;
+
+                hoverSlot.empty = GameReferences.craftSystem.recipeSlots[slotINDEX].empty;
+                hoverSlot.count = GameReferences.craftSystem.recipeSlots[slotINDEX].count;
+                hoverSlot.item.itemType = GameReferences.craftSystem.recipeSlots[slotINDEX].item.itemType;
+                hoverSlot.item.tileType = GameReferences.craftSystem.recipeSlots[slotINDEX].item.tileType;
             }
             else
             {

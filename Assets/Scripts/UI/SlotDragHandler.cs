@@ -6,8 +6,7 @@ namespace U_Grow
 {
     public class SlotDragHandler : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
     {
-        [SerializeField]
-        private int slotIndex;
+        public int slotIndex;
 
         public delegate void SlotDragHandlerEvent(int slotIndex);
         public SlotDragHandlerEvent SetMouseSlot;

@@ -1,26 +1,36 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace U_Grow
 {
     public class Chest : MonoBehaviour, IInteracteable, ISlotContainer
     {
+        private const int maxChestSize = 77;
+
         public int numberOfSlots = 18;
         public int maxStackSize = 90;
 
         public int x, y;
 
-        private List<Slot> slots;
-        private List<Transform> slotParents;
+        private List<Slot> slots = new List<Slot>();
+        private List<GameObject> slotParents = new List<GameObject>();
+
+        private GameObject empty;
+        private GameObject slotPrefab;
 
         private bool loaded;
         private void Start()
         {
+            // Prefab for UI image
+            empty = Resources.Load<GameObject>("Prefabs/EmptyImagePrefab");
+            slotPrefab = Resources.Load<GameObject>("Prefabs/Slot");
+
             #region Initialize slots Data
 
             if (!loaded)
             {
-                slots = new List<Slot>();
+                if (numberOfSlots > maxChestSize) { numberOfSlots = maxChestSize; }
 
                 for (int s = 0; s < numberOfSlots; s++)
                 {
@@ -135,14 +145,20 @@ namespace U_Grow
             Debug.Log("Opening Chest!");
 
             GameReferences.uIHandler.inMenu = true;
-            GameReferences.uIHandler.ExitMenu += ExitUI;
+            GameReferences.uIHandler.ExitMenu += ExitUI; // THIS IS NOT ASS
 
             GameReferences.chestUI.gameObject.SetActive(true);
 
             // Fill Chest UI with SlotPrefabs (Instantiate), Fill slotParents List from Newly Created Prefabs (.Add())
-
+            for (int s = 0; s < slots.Count; s++)
+            {
+                GameObject slot = Instantiate(slotPrefab, GameReferences.chestUI.transform.Find("ChestBG"));
+                slot.GetComponent<SlotDragHandler>().slotIndex = s + 13; // THIS IS ASS
+                slotParents.Add(slot);
+            }
 
             // Update UI
+            UpdateUI();
         }
 
         public void UpdateUI()
@@ -156,11 +172,26 @@ namespace U_Grow
         {
             Slot slotData = slots[slotIndex];
 
-            // Need to figure out how I'm going to go about the UI at this point
+            if (slotParents[slotIndex].transform.Find("EmptyImagePrefab(Clone)") != null)
+            {
+                Destroy(slotParents[slotIndex].transform.Find("EmptyImagePrefab(Clone)").gameObject);
+            }
+
+            if (slotData.count != 0)
+            {
+                GameObject item = Instantiate(empty, slotParents[slotIndex].transform);
+                item.transform.SetSiblingIndex(0);
+                item.GetComponent<Image>().sprite = GlobalReferences.DDDOL.spriteDB[(int)slotData.item.tileType];
+            }
         }
 
         public void ExitUI()
         {
+            for (int s = 0; s < slotParents.Count; s++)
+            {
+                Destroy(slotParents[s]);
+            }
+
             GameReferences.uIHandler.inMenu = false;
             GameReferences.chestUI.gameObject.SetActive(false);
         }
