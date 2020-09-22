@@ -46,6 +46,7 @@ namespace LensorRadii.U_Grow
         public delegate void PlayerMoveEvent();
         public PlayerMoveEvent OnSprint;
         public PlayerMoveEvent OnDash;
+        public PlayerMoveEvent OnJump;
 
         private void Awake()
         {
@@ -158,6 +159,8 @@ namespace LensorRadii.U_Grow
         {
             rb.velocity = new Vector3(rb.velocity.x, 0f);
             rb.AddForce(Vector3.up * jumpForce * stats.jumpForceMultiplier, ForceMode2D.Impulse);
+
+            OnJump?.Invoke();
         }
         public void Dash()
         {

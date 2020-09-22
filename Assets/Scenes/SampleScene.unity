@@ -4261,7 +4261,7 @@ MonoBehaviour:
   m_BlendUpdateMethod: 1
   m_DefaultBlend:
     m_Style: 1
-    m_Time: 2
+    m_Time: 1
     m_CustomCurve:
       serializedVersion: 2
       m_Curve: []
@@ -8546,6 +8546,7 @@ MonoBehaviour:
       tileType: 0
   cachedSlotIndex: 0
   hoverSlotIndex: 0
+  interactingChest: {fileID: 0}
 --- !u!114 &1712859572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8606,6 +8607,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dashParticles: {fileID: 4551232527328002930, guid: 1b419f01b67d60049920f2b4d7c9497a, type: 3}
   sprintParticles: {fileID: 7149564013466724392, guid: 2000191a1492df844939108f28223e78, type: 3}
+  jumpParticles: {fileID: 715062099996668551, guid: a3e3442e8277a1548b77f54718ef1522, type: 3}
 --- !u!1 &1727635866
 GameObject:
   m_ObjectHideFlags: 0
