@@ -1,4 +1,4 @@
-﻿namespace U_Grow
+﻿namespace LensorRadii.U_Grow
 {
     public interface ISlotContainer
     {

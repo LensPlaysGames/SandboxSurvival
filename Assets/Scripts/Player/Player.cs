@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     [RequireComponent(typeof(Inventory), typeof(PlayerMovement), typeof(PlayerStats))]
     public class Player : MonoBehaviour

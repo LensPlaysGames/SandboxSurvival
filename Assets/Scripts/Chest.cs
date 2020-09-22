@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class Chest : MonoBehaviour, IInteracteable, ISlotContainer
     {
@@ -13,46 +15,60 @@ namespace U_Grow
 
         public int x, y;
 
-        private List<Slot> slots = new List<Slot>();
+        public List<Slot> slots = new List<Slot>();
         private List<GameObject> slotParents = new List<GameObject>();
+        private List<TextMeshProUGUI> countTexts = new List<TextMeshProUGUI>();
 
         private GameObject empty;
         private GameObject slotPrefab;
 
-        private bool loaded;
+        private bool loaded = false;
         private void Start()
         {
             // Prefab for UI image
             empty = Resources.Load<GameObject>("Prefabs/EmptyImagePrefab");
             slotPrefab = Resources.Load<GameObject>("Prefabs/Slot");
 
+            Level level = GameReferences.levelGenerator.GetLevelInstance();
+
+            x = (int)(transform.position.x / level.Scale);
+            y = (int)(transform.position.y / level.Scale);
+
             #region Initialize slots Data
 
-            if (!loaded)
+            if (numberOfSlots > maxChestSize) { numberOfSlots = maxChestSize; }
+
+            for (int s = 0; s < numberOfSlots; s++)
             {
-                if (numberOfSlots > maxChestSize) { numberOfSlots = maxChestSize; }
-
-                for (int s = 0; s < numberOfSlots; s++)
+                Slot slot = new Slot
                 {
-                    Slot slot = new Slot
+                    empty = true,
+                    count = 0,
+                    item = new Item
                     {
-                        empty = true,
-                        count = 0,
-                        item = new Item
-                        {
-                            itemType = Item.ItemType.Tile,
-                            tileType = Tile.TileType.Air
-                        }
-                    };
+                        itemType = Item.ItemType.Tile,
+                        tileType = Tile.TileType.Air
+                    }
+                };
 
-                    slots.Add(slot);
-                }
+                slots.Add(slot);
             }
+
+            Debug.Log("Chest Initialized.");
+            Debug.Log("Slots Initialized: " + slots.Count);
 
             #endregion
 
-            x = (int)(transform.position.x / GameReferences.levelGenerator.GetLevelInstance().Scale);
-            y = (int)(transform.position.y / GameReferences.levelGenerator.GetLevelInstance().Scale);
+            StartCoroutine(LoadChestAfterX(.2f));
+        }
+
+        private IEnumerator LoadChestAfterX(float x)
+        {
+            yield return new WaitForSeconds(x);
+            if (GameReferences.levelGenerator.GetLevelInstance()?.GetTileDataAt(this.x, y)?.inventorySlots != null)
+            {
+                LoadChest();
+            }
         }
 
         public void ClearSlot(int slotIndex)
@@ -89,38 +105,46 @@ namespace U_Grow
         {
             bool itemDealt = false;
 
-            for (int s = 0; s < slots.Count; s++)
+            for (int s = 0; s < slots.Count; s++) // Check for stackable slots
             {
-                for (int s1 = 0; s1 < slots.Count; s1++)
+                if (slots[s].item.tileType == slot.item.tileType)
                 {
-                    if (slots[s].item.tileType == slot.item.tileType)
+                    if (slots[s].count + slot.count < maxStackSize)
                     {
-                        if (slots[s].count + slot.count < maxStackSize)
-                        {
-                            slots[s].count += slot.count;
+                        Debug.Log("Found Stackable Slot in Chest!");
 
-                            itemDealt = true;
+                        slots[s].count += slot.count;
 
-                            UpdateSlotUI(s);
-                            break;
-                        }
+                        itemDealt = true;
+
+                        UpdateSlotUI(s);
+                        break;
                     }
                 }
-                if (itemDealt) { return; }
-                else if (slots[s].empty)
+            }
+
+            if (!itemDealt) // Check for empty slots
+            {
+                for (int s = 0; s < slots.Count; s++)
                 {
-                    slots[s].empty = false;
-                    slots[s].count = slot.count;
-                    slots[s].item = slot.item;
+                    if (slots[s].empty)
+                    {
+                        Debug.Log("Found Empty Slot in Chest!");
 
-                    itemDealt = true;
+                        slots[s].empty = false;
+                        slots[s].count = slot.count;
+                        slots[s].item.itemType = slot.item.itemType;
+                        slots[s].item.tileType = slot.item.tileType;
 
-                    UpdateSlotUI(s);
+                        itemDealt = true;
 
-                    break;
+                        UpdateSlotUI(s);
+                        break;
+                    }
                 }
             }
-            if (!itemDealt)
+
+            if (!itemDealt) // No Available Slots
             {
                 Debug.LogError("Error when Trying to add Item to Chest!");
             }
@@ -136,29 +160,42 @@ namespace U_Grow
             }
             else
             {
+                slots[slotIndex].empty = true;
+
                 ClearSlot(slotIndex);
             }
         }
 
         public void Use()
         {
-            Debug.Log("Opening Chest!");
-
-            GameReferences.uIHandler.inMenu = true;
-            GameReferences.uIHandler.ExitMenu += ExitUI; // THIS IS NOT ASS
-
-            GameReferences.chestUI.gameObject.SetActive(true);
-
-            // Fill Chest UI with SlotPrefabs (Instantiate), Fill slotParents List from Newly Created Prefabs (.Add())
-            for (int s = 0; s < slots.Count; s++)
+            if (!GameReferences.uIHandler.inMenu)
             {
-                GameObject slot = Instantiate(slotPrefab, GameReferences.chestUI.transform.Find("ChestBG"));
-                slot.GetComponent<SlotDragHandler>().slotIndex = s + 13; // THIS IS ASS
-                slotParents.Add(slot);
-            }
+                Debug.Log("Opening Chest!");
+                Debug.Log("Chest Capacity: " + numberOfSlots);
+                Debug.Log("Slots Found: " + slots.Count);
+                Debug.Log("Slot Parents Found (should be 0): " + slotParents.Count);
 
-            // Update UI
-            UpdateUI();
+                GameReferences.uIMouseManager.interactingChest = this;
+
+                GameReferences.uIHandler.inMenu = true;
+                GameReferences.uIHandler.ExitMenu += ExitUI; // THIS IS NOT ASS
+
+                GameReferences.chestUI.gameObject.SetActive(true);
+
+                // Fill Chest UI with SlotPrefabs (Instantiate), Fill slotParents List from Newly Created Prefabs (.Add())
+                for (int s = 0; s < slots.Count; s++)
+                {
+                    GameObject slot = Instantiate(slotPrefab, GameReferences.chestUI.transform.Find("ChestBG"));
+                    slot.GetComponent<SlotDragHandler>().slotIndex = s + 13; // THIS IS ASS
+                    slotParents.Add(slot);
+                    countTexts.Add(slot.transform.Find("CountTextPanel").transform.Find("Slot Count").GetComponent<TextMeshProUGUI>());
+                }
+
+                Debug.Log("Slot Parents Found: " + slotParents.Count);
+
+                // Update UI
+                UpdateUI();
+            }
         }
 
         public void UpdateUI()
@@ -172,7 +209,7 @@ namespace U_Grow
         {
             Slot slotData = slots[slotIndex];
 
-            if (slotParents[slotIndex].transform.Find("EmptyImagePrefab(Clone)") != null)
+            if (slotParents[slotIndex].transform.Find("EmptyImagePrefab(Clone)")?.gameObject != null)
             {
                 Destroy(slotParents[slotIndex].transform.Find("EmptyImagePrefab(Clone)").gameObject);
             }
@@ -183,6 +220,8 @@ namespace U_Grow
                 item.transform.SetSiblingIndex(0);
                 item.GetComponent<Image>().sprite = GlobalReferences.DDDOL.spriteDB[(int)slotData.item.tileType];
             }
+
+            countTexts[slotIndex].text = slotData.count.ToString();
         }
 
         public void ExitUI()
@@ -191,39 +230,56 @@ namespace U_Grow
             {
                 Destroy(slotParents[s]);
             }
+            slotParents.Clear();
+            countTexts.Clear();
 
             GameReferences.uIHandler.inMenu = false;
             GameReferences.chestUI.gameObject.SetActive(false);
+
+            GameReferences.uIMouseManager.interactingChest = null;
+
+            Level level = GameReferences.levelGenerator.GetLevelInstance();
+            ExtraTileData data = new ExtraTileData(level, x, y);
+            data.SetSlots(GetSlotsToSave());
+            level.tileDatas[x, y] = data;
         }
 
-        public Slot[] GetSlotsToSave()
+        public List<Slot> GetSlotsToSave()
         {
-            Slot[] slotsToSave = new Slot[slots.Count];
+            List<Slot> slotsToSave = new List<Slot>();
 
-            for (int slot = 0; slot < slots.Count; slot++)
+            for (int s = 0; s < slots.Count; s++)
             {
-                slotsToSave[slot] = new Slot
+                Slot slot = new Slot
                 {
-                    count = slots[slot].count,
-                    empty = slots[slot].empty,
+                    count = slots[s].count,
+                    empty = slots[s].empty,
                     item = new Item
                     {
-                        itemType = slots[slot].item.itemType,
-                        tileType = slots[slot].item.tileType
+                        itemType = slots[s].item.itemType,
+                        tileType = slots[s].item.tileType
                     }
                 };
+
+                slotsToSave.Add(slot);
             }
 
             return slotsToSave;
         }
 
-        public void LoadChestFromSave(string saveName)
+        public void LoadChest()
         {
-            SaveManager saveManager = GlobalReferences.saveManager;
-            saveManager.LoadAllDataFromDisk(saveName);
+            List<Slot> savedSlots = GameReferences.levelGenerator.GetLevelInstance().GetTileDataAt(x, y).inventorySlots;
 
-            // Find THIS chest in save data (oh god)
+            for (int s = 0; s < savedSlots.Count; s++)
+            {
+                slots[s].empty = savedSlots[s].empty;
+                slots[s].count = savedSlots[s].count;
+                slots[s].item.itemType = savedSlots[s].item.itemType;
+                slots[s].item.tileType = savedSlots[s].item.tileType;
+            }
+
+            UpdateUI();
         }
     }
-
 }

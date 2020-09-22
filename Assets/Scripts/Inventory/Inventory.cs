@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class Inventory : MonoBehaviour, ISlotContainer
     {
@@ -114,45 +114,44 @@ namespace U_Grow
         {
             bool itemDealt = false;
 
-            // Find Slot To Add To
-            for (int s1 = 0; s1 < slots.Length; s1++)
+            for (int s = 0; s < slots.Length; s++) // Check for stackable slots
             {
-                for (int s = 0; s < slots.Length; s++) // For each slot: check if any other slot has a stackable slot BEFORE adding to current slot
+                // Not the best but check every slot per slot for a stack of tiles, if it's the same tile, stack, otherwise MAKE NEW STACK
+                if (slots[s].item.tileType == slot.item.tileType)
                 {
-                    // Not the best but check every slot per slot for a stack of tiles, if it's the same tile, stack, otherwise MAKE NEW STACK
-                    if (slots[s].item.tileType == slot.item.tileType)
+                    if (slots[s].count + slot.count < maxStackSize)
                     {
-                        if (slots[s].count + slot.count < maxStackSize)
-                        {
-                            // STACK ITEMS
-                            slots[s].count += slot.count;
-
-                            itemDealt = true;
-
-                            updateSlotCallback?.Invoke(s);
-                            break;
-                        }
-                    }
-                }
-                if (itemDealt) // Break out of the larger for loop if item was stacked somewhere
-                {
-                    break;
-                }
-                else if (slot.item != slots[s1].item) // No other slot with this item was found, lets see if this one is eligible
-                {
-                    // MAKE NEW STACK
-                    if (slots[s1].empty)
-                    {
-                        slots[s1].item = slot.item;
-                        slots[s1].empty = false;
-                        slots[s1].count = 0;
-                        slots[s1].count++;
-
-                        updateSlotCallback?.Invoke(s1);
+                        // STACK ITEMS
+                        slots[s].count += slot.count;
 
                         itemDealt = true;
 
+                        updateSlotCallback?.Invoke(s);
                         break;
+                    }
+                }
+            }
+
+            if (!itemDealt)
+            {
+                for (int s = 0; s < slots.Length; s++) // Find Empty Slot To Add To
+                {
+                    if (slot.item != slots[s].item) // No other slot with this item was found, lets see if this one is eligible
+                    {
+                        // MAKE NEW STACK
+                        if (slots[s].empty)
+                        {
+                            slots[s].item = slot.item;
+                            slots[s].empty = false;
+                            slots[s].count = 0;
+                            slots[s].count++;
+
+                            updateSlotCallback?.Invoke(s);
+
+                            itemDealt = true;
+
+                            break;
+                        }
                     }
                 }
             }
@@ -194,6 +193,8 @@ namespace U_Grow
 
             if (slots[slotIndex].count <= 0) // Slot is Empty, Clear Slot
             {
+                slots[slotIndex].empty = true;
+
                 ClearSlot(slotIndex);
             }
         }

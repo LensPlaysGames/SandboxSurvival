@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class MusicManager : MonoBehaviour
     {

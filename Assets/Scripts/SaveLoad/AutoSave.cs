@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class AutoSave : MonoBehaviour
     {

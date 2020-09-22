@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Experimental.Rendering.Universal;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class DayNightCycle : MonoBehaviour
     {

@@ -4,7 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class SaveManager : MonoBehaviour
     {

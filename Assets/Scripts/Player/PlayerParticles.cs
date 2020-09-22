@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     [RequireComponent(typeof(PlayerMovement))]
     public class PlayerParticles : MonoBehaviour

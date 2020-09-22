@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class OnFirstRun : MonoBehaviour
     {
@@ -15,7 +15,7 @@ namespace U_Grow
         {
             if (instance != null)
             {
-                UnityEngine.Debug.LogError("Multiple ONFIRSTRUNs in Game. Destroying " + this.name);
+                Debug.LogError("Multiple ONFIRSTRUNs in Game. Destroying " + this.name);
                 Destroy(this.gameObject);
             }
             else
@@ -45,7 +45,7 @@ namespace U_Grow
 
             if (firstRun == 0)
             {
-                UnityEngine.Debug.Log("First Time Game has Ran on " + System.Environment.UserName);
+                Debug.Log("First Time Game has Ran on " + System.Environment.UserName);
 
                 firstRun = 1;
                 PlayerPrefs.SetInt("FirstRun", firstRun);
@@ -56,7 +56,7 @@ namespace U_Grow
             {
                 runs++;
                 PlayerPrefs.SetInt("Runs", runs);
-                UnityEngine.Debug.Log("The Game Has Ran " + runs + " Times");
+                Debug.Log("The Game Has Ran " + runs + " Times");
             }
         }
 
@@ -64,7 +64,7 @@ namespace U_Grow
         {
             if (inputManager.Debug.DebugReset.triggered)
             {
-                UnityEngine.Debug.Log("Debug_Reset");
+                Debug.Log("Debug_Reset");
                 PlayerPrefs.DeleteAll();
                 PlayerPrefs.SetInt("FirstRun", 0);
                 PlayerPrefs.SetInt("Runs", 0);

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class UIHandler : MonoBehaviour
     {
@@ -179,8 +179,8 @@ namespace U_Grow
             // Save World
             level = GameReferences.levelGenerator.GetLevelInstance();
 
-            level.day = GameReferences.levelGenerator.gameObject.GetComponent<DayNightCycle>().GetDate();
-            level.time = GameReferences.levelGenerator.gameObject.GetComponent<DayNightCycle>().GetTime();
+            level.day = GameReferences.dayNightCycle.GetDate();
+            level.time = GameReferences.dayNightCycle.GetTime();
 
             level.SaveLevel(saveName);
 

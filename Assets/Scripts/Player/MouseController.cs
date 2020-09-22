@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     [RequireComponent(typeof(PlayerStats))]
     public class MouseController : MonoBehaviour

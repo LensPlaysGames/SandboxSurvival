@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     [Serializable]
     public class Tile
@@ -37,15 +37,13 @@ namespace U_Grow
 
         public TileType Type
         {
-            get
-            {
-                return type;
-            }
+            get { return type; }
             set
             {
                 TileType oldTileType = type;
+
                 type = value;
-                // Call the callback AKA let things know that the tile has updated IF tile type has changed and it is not already being called (lambdas are weird, I think this is right)
+
                 if (tileTypeChangedCallback != null && oldTileType != type)
                 {
                     tileTypeChangedCallback(this);
@@ -75,9 +73,9 @@ namespace U_Grow
 
         public Tile(Level _level, int _x, int _y)
         {
-            this.level = _level;
-            this.x = _x;
-            this.y = _y;
+            level = _level;
+            x = _x;
+            y = _y;
         }
 
         public void SetTileTypeChangedCallback(Action<Tile> callback)

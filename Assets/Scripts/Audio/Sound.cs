@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     [Serializable]
     public class Sound

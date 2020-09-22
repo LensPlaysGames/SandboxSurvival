@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class SaveClasses { }
 
@@ -23,6 +23,7 @@ namespace U_Grow
         public int width, height;
         public float scale;
         public Tile[] tiles;
+        public ExtraTileData[] tileDatas;
         public int day, time;
     }
 

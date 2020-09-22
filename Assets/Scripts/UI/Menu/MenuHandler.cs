@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class MenuHandler : MonoBehaviour
     {

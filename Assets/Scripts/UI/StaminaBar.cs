@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class StaminaBar : MonoBehaviour
     {

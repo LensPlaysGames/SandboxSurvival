@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2854892521134551431}
   - component: {fileID: 2854892521134551428}
   m_Layer: 5
-  m_Name: CountTextPanel (1)
+  m_Name: CountTextPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 2854892521729439761}
   - component: {fileID: 2854892521729439763}
   m_Layer: 5
-  m_Name: Slot (1)
+  m_Name: Slot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -178,7 +178,7 @@ GameObject:
   - component: {fileID: 2854892521937552676}
   - component: {fileID: 2854892521937552677}
   m_Layer: 5
-  m_Name: Slot (1) Count
+  m_Name: Slot Count
   m_TagString: PlayerInvCountText
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

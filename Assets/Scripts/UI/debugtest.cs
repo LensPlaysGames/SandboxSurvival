@@ -2,7 +2,7 @@
 using System.IO;
 using UnityEngine;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class debugtest : MonoBehaviour
     {

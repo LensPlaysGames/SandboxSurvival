@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     [Serializable]
     public class Recipe

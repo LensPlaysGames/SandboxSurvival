@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class Level
     {
@@ -20,6 +20,9 @@ namespace U_Grow
 
         public Tile[,] tiles;
         public Tile[] tilesToSave;
+
+        public ExtraTileData[,] tileDatas;
+        public ExtraTileData[] tileDatasToSave;
 
         private int width;
         private int height;
@@ -66,6 +69,8 @@ namespace U_Grow
             scale = _scale;
 
             tiles = new Tile[width, height];
+
+            tileDatas = new ExtraTileData[width, height];
 
             for (int x = 0; x < width; x++)
             {
@@ -239,10 +244,9 @@ namespace U_Grow
 
             #region Save Tiles (Set tilesToSave)
 
-            int index = 0;
-
             tilesToSave = new Tile[tiles.Length];
 
+            int index = 0;
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
@@ -258,6 +262,24 @@ namespace U_Grow
 
             levelToSave.day = day;
             levelToSave.time = time;
+
+            #region Save Extra Tile Data
+
+            tileDatasToSave = new ExtraTileData[tiles.Length];
+
+            int indexprime = 0;
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    tileDatasToSave[indexprime] = tileDatas[x, y];
+                    indexprime++;
+                }
+            }
+
+            levelToSave.tileDatas = tileDatasToSave;
+
+            #endregion
 
             SaveManager saveManager = GlobalReferences.saveManager;
             saveManager.SetLevelSaveData(saveName, levelToSave);
@@ -286,6 +308,16 @@ namespace U_Grow
                 }
             }
 
+            int indexprime = 0;
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    tileDatas[x, y] = levelSave.tileDatas[indexprime];
+                    indexprime++;
+                }
+            }
+
             day = levelSave.day;
             time = levelSave.time;
         }
@@ -301,6 +333,16 @@ namespace U_Grow
                 return null;
             }
             return tiles[_x, _y];
+        }
+
+        public ExtraTileData GetTileDataAt(int _x, int _y) // Get Tile Data At Certain X and Y in (Data) 2D tiles Array
+        {
+            if (_x > width || _x < 0 || _y > height || _y < 0)
+            {
+                Debug.LogError("Tile (" + _x + "," + _y + ") is out of World");
+                return null;
+            }
+            return tileDatas[_x, _y];
         }
     }
 }

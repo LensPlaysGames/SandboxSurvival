@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace U_Grow
+namespace LensorRadii.U_Grow
 {
     public class UIMouseManager : MonoBehaviour
     {
@@ -38,6 +38,8 @@ namespace U_Grow
         public Slot HoverSlot => hoverSlot;
 
         SlotDragHandler[] slots;
+
+        public Chest interactingChest;
 
         void Start()
         {
@@ -80,6 +82,7 @@ namespace U_Grow
             if (slotIndex >= 13 && slotIndex <= 89) // Set mouseSlot from Chest Slot [slotIndex - 13]
             {
                 // Actually find the chest and ya know, read the slot we need ta, yaf uc k
+                mouseSlot = interactingChest.slots[slotIndex - 13];
             }
             else if (slotIndex == 12) // Set mouseSlot from CraftSystem output Slot
             {
@@ -125,20 +128,33 @@ namespace U_Grow
                 {
                     int hoverINDEX = hoverSlotIndex - 13;
 
-                    // Find Chest to Add to, then, ya know, DO IT
+                    if (interactingChest.slots[hoverINDEX].count == 0)
+                    {
+                        interactingChest.SetSlot(hoverINDEX, mouseSlot);
+                    }
+                    else if (interactingChest.slots[hoverINDEX].item.itemType == mouseSlot.item.itemType)
+                    {
+                        if (interactingChest.slots[hoverINDEX].item.tileType == mouseSlot.item.tileType)
+                        {
+                            interactingChest.ModifySlotCount(hoverINDEX, mouseSlot.count);
+                        }
+                    }
+
+                    ClearCachedSlot();
+
+                    interactingChest.UpdateUI();
                 }
                 else if (hoverSlotIndex == 12) // If Hovering Over Output Slot
                 {
-                    // Dont Do Anything If Drag Item Onto Output Slot in Craft UI
-                    return;
+                    return; // Dont Do Anything If Drag Item Onto Output Slot in Craft UI
                 }
                 else if (hoverSlotIndex >= 10) // If Hovering Over Recipe Slots
                 {
                     int hoverINDEX = hoverSlotIndex - 10;
 
-                    if (GameReferences.craftSystem.recipeSlots[hoverINDEX].count == 0)
+                    if (GameReferences.craftSystem.recipeSlots[hoverINDEX].count == 0) // If Slot is Empty
                     {
-                        UnityEngine.Debug.Log("Setting Hovered Over Recipe Slot to Mouse Slot Data!");
+                        Debug.Log("Setting Hovered Over Recipe Slot to Mouse Slot Data!");
 
                         GameReferences.craftSystem.SetSlot(hoverINDEX, mouseSlot);
 
@@ -146,13 +162,13 @@ namespace U_Grow
 
                         GameReferences.craftSystem.updateRecipeSlotUI?.Invoke(hoverINDEX);
                     }
-                    else
+                    else // Or slot Can Stack
                     {
                         if (GameReferences.craftSystem.recipeSlots[hoverINDEX].item.itemType == mouseSlot.item.itemType)
                         {
                             if (GameReferences.craftSystem.recipeSlots[hoverINDEX].item.tileType == mouseSlot.item.tileType)
                             {
-                                UnityEngine.Debug.Log("Adding Mouse Slot Data to Hovered Over Craft Recipe Slot");
+                                Debug.Log("Adding Mouse Slot Data to Hovered Over Craft Recipe Slot");
 
                                 GameReferences.craftSystem.AddToSlot(hoverINDEX, mouseSlot);
 
@@ -168,7 +184,7 @@ namespace U_Grow
                 {
                     if (GameReferences.playerInv.slots[hoverSlotIndex].count == 0)
                     {
-                        UnityEngine.Debug.Log("Setting Hovered Over Player Inventory Slot to Mouse Slot Data");
+                        Debug.Log("Setting Hovered Over Player Inventory Slot to Mouse Slot Data");
 
                         GameReferences.playerInv.SetSlot(hoverSlotIndex, mouseSlot);
 
@@ -182,7 +198,7 @@ namespace U_Grow
                         {
                             if (GameReferences.playerInv.slots[hoverSlotIndex].item.tileType == mouseSlot.item.tileType)
                             {
-                                UnityEngine.Debug.Log("Adding Mouse Slot Data to Hovered Over Player Inventory Slot");
+                                Debug.Log("Adding Mouse Slot Data to Hovered Over Player Inventory Slot");
 
                                 GameReferences.playerInv.ModifySlotCount(hoverSlotIndex, mouseSlot.count);
 
@@ -207,6 +223,7 @@ namespace U_Grow
                 if (cachedSlotIndex >= 13 && cachedSlotIndex <= 89)
                 {
                     // Find Chest to take from... (cachedSlotIndex - 13)
+                    interactingChest.ClearSlot(cachedSlotIndex - 13);
                 }
                 else if (cachedSlotIndex == 12)
                 {
