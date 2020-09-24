@@ -115,7 +115,7 @@ namespace LensorRadii.U_Grow
 
                         string dayNotif = morningNotifText[UnityEngine.Random.Range(0, morningNotifText.Length)];
 
-                        GameReferences.uIHandler.SendNotif(dayNotif, 20f, Color.black);
+                        GameReferences.uIHandler.SendNotif(dayNotif, 20f, Color.white);
                     }
                 }
                 else if (currentTime >= dayNight && currentTime < dayLength) // If It's Night (After dayNight)
@@ -130,7 +130,7 @@ namespace LensorRadii.U_Grow
 
                         string nightNotif = nightNotifText[UnityEngine.Random.Range(0, nightNotifText.Length)];
 
-                        GameReferences.uIHandler.SendNotif(nightNotif, 20f, Color.black);
+                        GameReferences.uIHandler.SendNotif(nightNotif, 20f, Color.white);
                     }
                 }
                 else if (currentTime >= dayLength) // It's A Fresh New Day
@@ -140,7 +140,7 @@ namespace LensorRadii.U_Grow
 
                     string newDayNotif = newDayNotifText[UnityEngine.Random.Range(0, newDayNotifText.Length)];
 
-                    GameReferences.uIHandler.SendNotif(newDayNotif, 20f, Color.black);
+                    GameReferences.uIHandler.SendNotif(newDayNotif, 20f, Color.white);
                 }
             }
         }

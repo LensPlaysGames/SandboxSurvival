@@ -40,17 +40,7 @@ namespace LensorRadii.U_Grow
 
             for (int s = 0; s < numberOfSlots; s++)
             {
-                Slot slot = new Slot
-                {
-                    empty = true,
-                    count = 0,
-                    item = new Item
-                    {
-                        itemType = Item.ItemType.Tile,
-                        tileType = Tile.TileType.Air
-                    }
-                };
-
+                Slot slot = new Slot();
                 slots.Add(slot);
             }
 
@@ -250,16 +240,7 @@ namespace LensorRadii.U_Grow
 
             for (int s = 0; s < slots.Count; s++)
             {
-                Slot slot = new Slot
-                {
-                    count = slots[s].count,
-                    empty = slots[s].empty,
-                    item = new Item
-                    {
-                        itemType = slots[s].item.itemType,
-                        tileType = slots[s].item.tileType
-                    }
-                };
+                Slot slot = new Slot();
 
                 slotsToSave.Add(slot);
             }

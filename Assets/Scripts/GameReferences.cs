@@ -27,7 +27,7 @@ namespace LensorRadii.U_Grow
 
         void Awake()
         {
-            craftSystem = new CraftSystem(this);
+            craftSystem = new CraftSystem();
         }
     }
 }

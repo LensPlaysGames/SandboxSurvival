@@ -20,27 +20,15 @@ namespace LensorRadii.U_Grow
         public UIAllCraftingEvent updateAllRecipeSlots;
         public UIAllCraftingEvent updateOutputSlotUI;
 
-        public CraftSystem(MonoBehaviour mb)
+        public CraftSystem()
         {
             recipeSlots = new Slot[numberOfRecipeSlots];
             for (int i = 0; i < recipeSlots.Length; i++)
             {
-                recipeSlots[i] = new Slot
-                {
-                    empty = true,
-                    count = 0,
-                    item = new Item
-                    {
-                        itemType = Item.ItemType.Tile,
-                        tileType = Tile.TileType.Air
-                    }
-                };
+                recipeSlots[i] = new Slot();
             }
 
-            outputSlot = new Slot
-            {
-                item = new Item()
-            };
+            outputSlot = new Slot();
         }
 
         public void AddToSlot(int whatSlot, Slot slot)
@@ -190,16 +178,14 @@ namespace LensorRadii.U_Grow
 
                 for (int slot = 0; slot < recipeSlots.Length; slot++)
                 {
-                    if (recipeSlots[slot].item.itemType != recipes[r].ingredients[slot].item.itemType)
+                    if (recipeSlots[slot].item.itemType != recipes[r].ingredients[slot].item.itemType) // Item Type Does Not Match
                     {
-                        Debug.Log("Can Not Craft: itemType does not match!");
                         output = null;
                     }
                     else // Item Type Matches
                     {
-                        if (recipeSlots[slot].item.tileType != recipes[r].ingredients[slot].item.tileType) // But Tile Type Does Not
+                        if (recipeSlots[slot].item.tileType != recipes[r].ingredients[slot].item.tileType) // Tile Type Does Not Match
                         {
-                            Debug.Log("Can Not Craft: tileType does not match!");
                             output = null;
                         }
                     }
