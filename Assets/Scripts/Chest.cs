@@ -161,19 +161,15 @@ namespace LensorRadii.U_Grow
             if (!GameReferences.uIHandler.inMenu)
             {
                 Debug.Log("Opening Chest!");
-                Debug.Log("Chest Capacity: " + numberOfSlots);
-                Debug.Log("Slots Found: " + slots.Count);
-                Debug.Log("Slot Parents Found (should be 0): " + slotParents.Count);
 
-                GameReferences.uIMouseManager.interactingChest = this;
+                GameReferences.uIMouseManager.interactingChest = this; // Oh boi... At this rate each new crafting station/place would require a new variable and set of slot ranges and exception handling in UIMouseManager... I think I know what I need to (re)do next
 
                 GameReferences.uIHandler.inMenu = true;
                 GameReferences.uIHandler.ExitMenu += ExitUI; // THIS IS NOT ASS
 
                 GameReferences.chestUI.gameObject.SetActive(true);
 
-                // Fill Chest UI with SlotPrefabs (Instantiate), Fill slotParents List from Newly Created Prefabs (.Add())
-                for (int s = 0; s < slots.Count; s++)
+                for (int s = 0; s < slots.Count; s++) // Fill Chest UI with SlotPrefabs, Fill slotParents List from Newly Created Prefabs
                 {
                     GameObject slot = Instantiate(slotPrefab, GameReferences.chestUI.transform.Find("ChestBG"));
                     slot.GetComponent<SlotDragHandler>().slotIndex = s + 13; // THIS IS ASS
@@ -181,10 +177,7 @@ namespace LensorRadii.U_Grow
                     countTexts.Add(slot.transform.Find("CountTextPanel").transform.Find("Slot Count").GetComponent<TextMeshProUGUI>());
                 }
 
-                Debug.Log("Slot Parents Found: " + slotParents.Count);
-
-                // Update UI
-                UpdateUI();
+                UpdateUI(); // Update UI
             }
         }
 

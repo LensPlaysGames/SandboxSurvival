@@ -9517,7 +9517,7 @@ MonoBehaviour:
         tileType: 6
   - name: Chest
     ingredients:
-    - empty: 0
+    - empty: 1
       count: 1
       item:
         itemType: 0

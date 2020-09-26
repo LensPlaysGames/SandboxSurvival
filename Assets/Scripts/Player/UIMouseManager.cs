@@ -222,15 +222,11 @@ namespace LensorRadii.U_Grow
             {
                 if (cachedSlotIndex >= 13 && cachedSlotIndex <= 89)
                 {
-                    // Find Chest to take from... (cachedSlotIndex - 13)
                     interactingChest.ClearSlot(cachedSlotIndex - 13);
                 }
                 else if (cachedSlotIndex == 12)
                 {
-                    Debug.Log("Player Took Craft Item! Clear Output and Spend Ingredients");
-
-                    GameReferences.craftSystem.ClearOutputSlot();
-                    GameReferences.craftSystem.SpendRecipeIngredients();
+                    GameReferences.craftSystem.OnCraftItem();
                 }
                 else if (cachedSlotIndex >= 10)
                 {

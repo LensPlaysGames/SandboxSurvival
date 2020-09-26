@@ -37,10 +37,7 @@ namespace LensorRadii.U_Grow
             {
                 if (recipeSlots[whatSlot].empty == true) // Fill Slot
                 {
-                    recipeSlots[whatSlot].empty = false;
-                    recipeSlots[whatSlot].count = slot.count;
-                    recipeSlots[whatSlot].item.itemType = slot.item.itemType;
-                    recipeSlots[whatSlot].item.tileType = slot.item.tileType;
+                    SetSlot(whatSlot, slot);
 
                     updateRecipeSlotUI?.Invoke(whatSlot);
                 }
@@ -61,7 +58,7 @@ namespace LensorRadii.U_Grow
                 Debug.LogWarning("Crafting Slot " + whatSlot + " Was Not Found, Can Not Try to Add Item");
             }
         }
-        public void TryAddToSlot(Slot slot)
+        public void TryAddToSlot(Slot slot) // No need to try to add to any available recipe slot
         {
             return;
         }
@@ -128,7 +125,7 @@ namespace LensorRadii.U_Grow
 
             Slot output = GetRecipeOutput();
 
-            if (output != null)
+            if (output != null) // Valid Recipe Found, Set Output Slot
             {
                 Debug.Log("Setting Output Slot!");
 
@@ -203,6 +200,11 @@ namespace LensorRadii.U_Grow
             return null;
         }
 
+        public void OnCraftItem()
+        {
+            ClearOutputSlot();
+            SpendRecipeIngredients();
+        }
 
 
         public Slot GetRecipeSlot(int whatSlot)
