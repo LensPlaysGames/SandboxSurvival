@@ -15,16 +15,16 @@ namespace LensorRadii.U_Grow
 
         public bool canSelect;
 
-        Vector3 mousePos;
-        Tile selectedTile;
-        Tile.TileType buildTile = Tile.TileType.DevTile;
+        public Vector3 mousePos;
+        public Tile selectedTile;
+        public Tile.TileType buildTile = Tile.TileType.DevTile;
 
         public float scale;
-        bool scaleSet;
+        private bool scaleSet;
 
         public GameObject particlesOnGrassDestroyed;
 
-        void Start()
+        private void Start()
         {
             Cursor = GameObject.Find("Cursor");
 
@@ -37,7 +37,7 @@ namespace LensorRadii.U_Grow
             else if (locked == 0) { lockedToGrid = false; }
         }
 
-        void Update()
+        private void Update()
         {
             if (LevelGenerator.instance.worldCreated && !scaleSet)
             {
@@ -73,7 +73,7 @@ namespace LensorRadii.U_Grow
             }
         }
 
-        void SetCursorPos()
+        public void SetCursorPos()
         {
             // Set Cursor Position so it follows mouse and stays on grid
             Vector3 cursorPos = new Vector3();
@@ -82,7 +82,7 @@ namespace LensorRadii.U_Grow
             Cursor.transform.position = cursorPos;
         }
 
-        void SetCanSelect()
+        public void SetCanSelect()
         {
             GameObject pauseMenu = GameReferences.uIHandler.pauseMenu;
 
@@ -100,7 +100,7 @@ namespace LensorRadii.U_Grow
 
         #region Break Tile
 
-        void TryToDestroySelectedTile()
+        public void TryToDestroySelectedTile()
         {
             #region Based on Tile Type: Set Tile Break Time
 
@@ -140,11 +140,11 @@ namespace LensorRadii.U_Grow
             }
         }
 
-        IEnumerator BreakTileAfterX(float x)
+        public IEnumerator BreakTileAfterX(float x)
         {
             Tile breakingTile = selectedTile;
 
-            while (x >= 0) // REMOVE TIME SINCE LAST FRAME FROM DESTROY TIME EVERY FRAME IF PLAYER IS HOLDING BUTTON STILL
+            while (x >= 0)                          // REMOVE TIME SINCE LAST FRAME FROM DESTROY TIME EVERY FRAME IF PLAYER IS HOLDING BUTTON STILL
             {
                 if (Input.GetMouseButton(0))
                 {
@@ -157,11 +157,11 @@ namespace LensorRadii.U_Grow
                 }
             }
 
-            if (selectedTile == breakingTile) // Protection for using one coroutine to break anothers block (breaking blocks too fast while holding mouse button and dragging)
+            if (selectedTile == breakingTile)       // Protection for using one coroutine to break anothers block (breaking blocks too fast while holding mouse button and dragging)
             {
-                if (selectedTile.Type != Tile.TileType.Air) // Protection for player dragging off of block to break
+                if (selectedTile.Type != Tile.TileType.Air)                         // Protection for player dragging off of block to break
                 {
-                    if (x <= 0f) // IF BLOCK SHOULD BE DESTROYED
+                    if (x <= 0f)                                                    // IF BLOCK SHOULD BE DESTROYED
                     {
 
                         #region Based On Tile Type: Play Particles, Play Sound
@@ -191,8 +191,8 @@ namespace LensorRadii.U_Grow
 
                         #endregion
 
-                        // Actually Add the Damned Tile to Inventory
-                        Slot slotFromTile = new Slot
+
+                        Slot slotFromTile = new Slot                                // Actually add the damned tile to player's inventory
                         {
                             count = 1,
                             empty = false,
@@ -203,10 +203,8 @@ namespace LensorRadii.U_Grow
                             }
                         };
 
-                        GameReferences.playerInv.TryAddToSlot(slotFromTile);
-
-                        // Actually "Break" The Damn Tile
-                        selectedTile.Type = Tile.TileType.Air;
+                        GameReferences.playerInv.TryAddToSlot(slotFromTile);        // Add broken tile to player inventory
+                        selectedTile.Type = Tile.TileType.Air;                      // Actually "break" the damn tile
 
                         yield break;
                     }
@@ -218,24 +216,18 @@ namespace LensorRadii.U_Grow
 
         #endregion
 
-        void BuildTile()
+        public void BuildTile()
         {
             if (selectedTile.Type == Tile.TileType.Air)
             {
-                // Check if Selected Slot isTile, if so, place it
-                if (GameReferences.playerInv.selectedSlot.item.itemType == Item.ItemType.Tile)
+                if (GameReferences.playerInv.selectedSlot.item.itemType == Item.ItemType.Tile)                      // Check if Selected Slot isTile, if so, place it
                 {
-                    // Set Player Intended Build Tile to tile that is in the Selected Slot in Inventory
-                    buildTile = GameReferences.playerInv.selectedSlot.item.tileType;
-                    // If slot is not empty
-                    if (buildTile != Tile.TileType.Air)
+                    buildTile = GameReferences.playerInv.selectedSlot.item.tileType;                                // Set Player Intended Build Tile to tile that is in the Selected Slot in Inventory
+                    if (buildTile != Tile.TileType.Air)                                                             // If slot is not empty
                     {
-                        // Play Placed Tile Sound (could be based on tile type in future)
-                        GameReferences.audioManager.PlaySound("placedTile0");
-                        // Remove Tile Placed From Slot Selected
-                        GameReferences.playerInv.TryTakeFromSlot(GameReferences.playerInv.selectedSlotIndex);
-                        // Set Tile To The Intended Build Tile
-                        selectedTile.Type = buildTile;
+                        GameReferences.audioManager.PlaySound("placedTile0");                                       // Play Placed Tile Sound (could be based on tile type in future)
+                        GameReferences.playerInv.ModifySlotCount(GameReferences.playerInv.selectedSlotIndex, -1);   // Remove Tile Placed From Selected Inventory Slot 
+                        selectedTile.Type = buildTile;                                                              // Set Tile To The Intended Build Tile
                     }
                 }
             }

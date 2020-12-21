@@ -226,7 +226,7 @@ namespace LensorRadii.U_Grow
                 }
                 else if (cachedSlotIndex == 12)
                 {
-                    GameReferences.craftSystem.OnCraftItem();
+                    GameReferences.craftSystem.OnTakeCraftedItem();
                 }
                 else if (cachedSlotIndex >= 10)
                 {
