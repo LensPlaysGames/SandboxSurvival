@@ -2,6 +2,22 @@
 
 namespace LensorRadii.U_Grow
 {
+
+    /*  METHODS
+
+    If this is confusing, 'used' just means that is what is passed to the function, followed by what it do. 
+
+        - ISlotContainer:
+            - SetSlot()             Use slot index and slot to overwrite a slot in the inventory
+            - TryAddToSlot()        Use a slot and try to merge it anywhere it can fit in the available slots
+            - TryTakeFromSlot()     Use slot index to try and remove one count from the slot, or clear it if empty using ClearSlot()
+            - ModifySlotCount()     Use slot index and an integer, 'amount' (default 1), to add an amount to the slot at the passed slot index
+            - ClearSlot()           Use slot index to set the slot back to defaults (empty)
+
+        - ClearSlotDirect()         Use a slot directly to reset it (empty)                                                                         UPDATES UI
+        - SetSelectedSlot()         Use a slot index to set 'selectedSlot' variable to the given slot at slot index                                 UPDATES UI
+     */
+
     public class Inventory : MonoBehaviour, ISlotContainer
     {
         #region Singleton/Init
@@ -50,16 +66,16 @@ namespace LensorRadii.U_Grow
 
         #endregion
 
-        void OnEnable()
+        private void OnEnable()
         {
             inputManager.Enable();
         }
-        void OnDisable()
+        private void OnDisable()
         {
             inputManager.Disable();
         }
 
-        void Start()
+        private void Start()
         {
             // Initialize Inventory if Not Loaded
             if (!inventoryLoaded)
@@ -79,7 +95,7 @@ namespace LensorRadii.U_Grow
             SetSelectedSlot(0);
         }
 
-        void Update()
+        private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Alpha1)) { SetSelectedSlot(0); }
             if (Input.GetKeyDown(KeyCode.Alpha2)) { SetSelectedSlot(1); }
@@ -157,7 +173,10 @@ namespace LensorRadii.U_Grow
             }
             if (!itemDealt) // Player Inventory Full
             {
-                UnityEngine.Debug.LogWarning("Player Inventory Full, Not sure what to do with destroyed Tile");
+                Debug.LogWarning("Player Inventory Full, Not sure what to do with destroyed Tile");
+                GameReferences.uIHandler.SendNotif("Player Inventory Full, Tile Voided", 5, Color.red);
+
+                // TO-DO
                 // Do something like spawn entity for dropped tile or goowop beeboops events and such
             }
         }
@@ -182,31 +201,31 @@ namespace LensorRadii.U_Grow
             updateSlotCallback?.Invoke(slotIndex);
         }
 
-        public void TryTakeFromSlot(int slotIndex) // Take from Slot if Count > 0, Check if Count is 0 and Clear
+        public void TryTakeFromSlot(int slotIndex)                  // Take from Slot if Count > 0, Check if Count is 0 and Clear
         {
-            if (slots[slotIndex].count > 0) // Take from Slot if Something There
+            if (slots[slotIndex].count > 0)                         // Take from Slot if Something There
             {
                 slots[slotIndex].count--;
-
-                updateSlotCallback?.Invoke(selectedSlotIndex);
             }
 
-            if (slots[slotIndex].count <= 0) // Slot is Empty, Clear Slot
+            if (slots[slotIndex].count <= 0)                        // Slot is Empty, Clear Slot
             {
                 slots[slotIndex].empty = true;
 
                 ClearSlot(slotIndex);
             }
+
+            updateSlotCallback?.Invoke(selectedSlotIndex);          // UPDATE UI aka show the player what the hell just happened
         }
 
-        public void ClearSlot(int slotIndex)
+        public void ClearSlot(int slotIndex)                        // Pass a slot index to reset to default: empty
         {
             slots[slotIndex].empty = true;
             slots[slotIndex].count = 0;
             slots[slotIndex].item.itemType = Item.ItemType.Tile;
             slots[slotIndex].item.tileType = Tile.TileType.Air;
 
-            updateAllSlotsCallback?.Invoke();
+            updateAllSlotsCallback?.Invoke();                       // UPDATE UI
         }
 
         public void ClearSlotDirect(Slot slot)
@@ -216,7 +235,7 @@ namespace LensorRadii.U_Grow
             slot.item.itemType = Item.ItemType.Tile;
             slot.item.tileType = Tile.TileType.Air;
 
-            updateAllSlotsCallback?.Invoke();
+            updateAllSlotsCallback?.Invoke();                       // UPDATE UI
         }
 
 
@@ -249,7 +268,7 @@ namespace LensorRadii.U_Grow
 
             inventoryLoaded = true;
 
-            updateAllSlotsCallback?.Invoke();
+            updateAllSlotsCallback?.Invoke();                       // UPDATE UI
         }
     }
 

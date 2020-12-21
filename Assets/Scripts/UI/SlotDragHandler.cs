@@ -26,10 +26,10 @@ namespace LensorRadii.U_Grow
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            // We have clicked the slot, Send event for mouse slot population with index of hovered over slot
+            // We have clicked the slot, send event for mouse slot population with index of hovered over slot
             SetMouseSlot(slotIndex);
 
-            imgContainer = Instantiate(empty, this.transform);
+            imgContainer = Instantiate(empty, transform);
             imgContainer.transform.SetParent(GameReferences.playerInvUI.transform.Find("InventoryBackground").transform);
             imgContainer.transform.SetSiblingIndex(0);
             imgContainer.GetComponent<Image>().sprite = GlobalReferences.DDDOL.spriteDB[(int)GameReferences.uIMouseManager.MouseSlot.item.tileType];
