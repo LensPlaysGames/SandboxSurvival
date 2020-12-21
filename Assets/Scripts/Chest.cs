@@ -8,8 +8,6 @@ namespace LensorRadii.U_Grow
 {
     public class Chest : MonoBehaviour, IInteracteable, ISlotContainer
     {
-        private const int maxChestSize = 77;
-
         public int numberOfSlots = 18;
         public int maxStackSize = 90;
 
@@ -23,22 +21,10 @@ namespace LensorRadii.U_Grow
         private GameObject slotPrefab;
 
         private bool loaded = false;
-        private void Start()
+
+        private void Awake()
         {
-            // Prefab for UI image
-            empty = Resources.Load<GameObject>("Prefabs/EmptyImagePrefab");
-            slotPrefab = Resources.Load<GameObject>("Prefabs/Slot");
-
-            Level level = GameReferences.levelGenerator.GetLevelInstance();
-
-            x = (int)(transform.position.x / level.Scale);
-            y = (int)(transform.position.y / level.Scale);
-
-            #region Initialize slots Data
-
-            if (numberOfSlots > maxChestSize) { numberOfSlots = maxChestSize; }
-
-            for (int s = 0; s < numberOfSlots; s++)
+            for (int s = 0; s < numberOfSlots; s++)                             // Populate slots in chest
             {
                 Slot slot = new Slot();
                 slots.Add(slot);
@@ -46,10 +32,19 @@ namespace LensorRadii.U_Grow
 
             Debug.Log("Chest Initialized.");
             Debug.Log("Slots Initialized: " + slots.Count);
+        }
 
-            #endregion
+        private void Start()
+        {
+            empty = Resources.Load<GameObject>("Prefabs/EmptyImagePrefab");     // Prefab for empty UI image
+            slotPrefab = Resources.Load<GameObject>("Prefabs/Slot");            // Prefab for UI background
 
-            StartCoroutine(LoadChestAfterX(.2f));
+            Level level = GameReferences.levelGenerator.GetLevelInstance();
+
+            x = (int)(transform.position.x / level.Scale);
+            y = (int)(transform.position.y / level.Scale);
+
+            StartCoroutine(LoadChestAfterX(1f));
         }
 
         private IEnumerator LoadChestAfterX(float x)
@@ -233,12 +228,21 @@ namespace LensorRadii.U_Grow
 
             for (int s = 0; s < slots.Count; s++)
             {
-                Slot slot = new Slot();
+                Slot slot = new Slot                        // Load slot data into buffer
+                {
+                    count = slots[s].count,
+                    empty = slots[s].empty,
+                    item = new Item
+                    {
+                        itemType = slots[s].item.itemType,
+                        tileType = slots[s].item.tileType,
+                    }
+                };
 
-                slotsToSave.Add(slot);
+                slotsToSave.Add(slot);                      // Add buffered slot into list of slots to save
             }
 
-            return slotsToSave;
+            return slotsToSave;                             // Return list of slots to save
         }
 
         public void LoadChest()
