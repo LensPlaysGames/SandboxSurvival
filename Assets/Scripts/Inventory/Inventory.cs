@@ -130,44 +130,38 @@ namespace LensorRadii.U_Grow
         {
             bool itemDealt = false;
 
-            for (int s = 0; s < slots.Length; s++) // Check for stackable slots
+            for (int s = 0; s < slots.Length; s++)                      // Check for stackable slots
             {
-                // Not the best but check every slot per slot for a stack of tiles, if it's the same tile, stack, otherwise MAKE NEW STACK
-                if (slots[s].item.tileType == slot.item.tileType)
+                if (slots[s].item.tileType == slot.item.tileType)       // Slot tileType's match, ready to stack!
                 {
-                    if (slots[s].count + slot.count < maxStackSize)
+                    if (slots[s].count + slot.count <= maxStackSize)    // Make sure slot has room to stack
                     {
-                        // STACK ITEMS
-                        slots[s].count += slot.count;
+                        slots[s].count += slot.count;                   // STACK ITEMS
 
-                        itemDealt = true;
+                        itemDealt = true;                               // Set itemDealt flag to skip more checking
 
-                        updateSlotCallback?.Invoke(s);
-                        break;
+                        updateSlotCallback?.Invoke(s);                  // UPDATE UI
+                        break;                                          // Don't check anymore slots, we found one bois
                     }
                 }
             }
 
-            if (!itemDealt)
+            if (!itemDealt)                                 // If item could not stack,
             {
-                for (int s = 0; s < slots.Length; s++) // Find Empty Slot To Add To
+                for (int s = 0; s < slots.Length; s++)      // Find Empty Slot To Add To
                 {
-                    if (slot.item != slots[s].item) // No other slot with this item was found, lets see if this one is eligible
+                    if (slots[s].empty)                     // MAKE NEW STACK
                     {
-                        // MAKE NEW STACK
-                        if (slots[s].empty)
-                        {
-                            slots[s].item = slot.item;
-                            slots[s].empty = false;
-                            slots[s].count = 0;
-                            slots[s].count++;
+                        slots[s].item = slot.item;
+                        slots[s].empty = false;
+                        slots[s].count = 0;
+                        slots[s].count++;
 
-                            updateSlotCallback?.Invoke(s);
+                        updateSlotCallback?.Invoke(s);
 
-                            itemDealt = true;
+                        itemDealt = true;
 
-                            break;
-                        }
+                        break;
                     }
                 }
             }
