@@ -35,7 +35,7 @@ namespace LensorRadii.U_Grow
         {
             if (recipeSlots[whatSlot] != null)
             {
-                if (recipeSlots[whatSlot].empty == true) // Fill Slot
+                if (recipeSlots[whatSlot].empty == true)                                // Fill slot with new stack
                 {
                     SetSlot(whatSlot, slot);
 
@@ -43,7 +43,7 @@ namespace LensorRadii.U_Grow
                 }
                 else if (recipeSlots[whatSlot].item.itemType == slot.item.itemType)
                 {
-                    if (recipeSlots[whatSlot].item.tileType == slot.item.tileType) // Stack Tiles
+                    if (recipeSlots[whatSlot].item.tileType == slot.item.tileType)      // Stack tiles
                     {
                         recipeSlots[whatSlot].count++;
 
@@ -51,16 +51,16 @@ namespace LensorRadii.U_Grow
                     }
                 }
 
-                TryCraft();                                                 // Check for valid recipe and craft if one is found
+                TryCraft();                                                 // Check for valid recipe and update output if one is found
             }
             else
             {
                 Debug.LogWarning("Crafting Slot " + whatSlot + " Was Not Found, Can Not Try to Add Item");
             }
         }
-        public void TryAddToSlot(Slot slot) // No need to try to add to any available recipe slot
+        public void TryAddToSlot(Slot slot)     // Implemented from ISlotContainer
         {
-            return;
+            return;                             // No need to try to add to any available recipe slot unless doing weird feedback crafting... (although this does give me an idea)
         }
         public void SetSlot(int whatSlot, Slot slot)
         {

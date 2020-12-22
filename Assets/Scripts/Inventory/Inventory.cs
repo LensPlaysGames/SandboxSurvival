@@ -3,19 +3,17 @@
 namespace LensorRadii.U_Grow
 {
 
-    /*  METHODS
+    /*  INVENTORY METHODS
 
     If this is confusing, 'used' just means that is what is passed to the function, followed by what it do. 
 
         - ISlotContainer:
-            - SetSlot()             Use slot index and slot to overwrite a slot in the inventory
-            - TryAddToSlot()        Use a slot and try to merge it anywhere it can fit in the available slots
-            - TryTakeFromSlot()     Use slot index to try and remove one count from the slot, or clear it if empty using ClearSlot()
-            - ModifySlotCount()     Use slot index and an integer, 'amount' (default 1), to add an amount to the slot at the passed slot index
-            - ClearSlot()           Use slot index to set the slot back to defaults (empty)
+            - SetSlot()             Use slot index and slot to overwrite a slot in the inventory                                                    UPDATES UI
+            - TryAddToSlot()        Use a slot and try to merge it anywhere it can fit in the available slots                                       UPDATES UI
+            - ModifySlotCount()     Use slot index and an integer, 'amount' (default 1), to add an amount to the slot at the passed slot index      UPDATES UI
+            - ClearSlot()           Use slot index to set the slot back to defaults (empty)                                                         UPDATES UI
 
-        - ClearSlotDirect()         Use a slot directly to reset it (empty)                                                                         UPDATES UI
-        - SetSelectedSlot()         Use a slot index to set 'selectedSlot' variable to the given slot at slot index                                 UPDATES UI
+        - SetSelectedSlot()         Use a slot index to set 'selectedSlot' variable to the given slot at slot index                                 UPDATES SELECTOR ICON UI
      */
 
     public class Inventory : MonoBehaviour, ISlotContainer
@@ -53,7 +51,6 @@ namespace LensorRadii.U_Grow
         public Slot[] slots;
 
         public Slot[] slotsToSave;
-        private int a = 0;
 
         #region UI Event Declaration
 
@@ -80,7 +77,7 @@ namespace LensorRadii.U_Grow
             // Initialize Inventory if Not Loaded
             if (!inventoryLoaded)
             {
-                a = 0;
+                int a = 0;
                 foreach (Slot slot in slots)
                 {
                     a++;
@@ -97,6 +94,8 @@ namespace LensorRadii.U_Grow
 
         private void Update()
         {
+            // Hard-Coded buttons to select inventory slots
+            // Will replace with proper input manager mcgubbins at least before I add re-assignable buttons
             if (Input.GetKeyDown(KeyCode.Alpha1)) { SetSelectedSlot(0); }
             if (Input.GetKeyDown(KeyCode.Alpha2)) { SetSelectedSlot(1); }
             if (Input.GetKeyDown(KeyCode.Alpha3)) { SetSelectedSlot(2); }
@@ -108,22 +107,27 @@ namespace LensorRadii.U_Grow
             if (Input.GetKeyDown(KeyCode.Alpha9)) { SetSelectedSlot(8); }
             if (Input.GetKeyDown(KeyCode.Alpha0)) { SetSelectedSlot(9); }
 
+            // Mouse Scroll Changes Selected Slot
             if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex != 0) { SetSelectedSlot(selectedSlotIndex - 1); }
             else if (Input.mouseScrollDelta.y > 0 && selectedSlotIndex == 0) { SetSelectedSlot(9); }
             if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex != 9) { SetSelectedSlot(selectedSlotIndex + 1); }
             else if (Input.mouseScrollDelta.y < 0 && selectedSlotIndex == 9) { SetSelectedSlot(0); }
 
+            // Some input manager mcgubbins
             if (inputManager.PlayerUI.InventorySelectionBack.triggered && selectedSlotIndex != 0) { SetSelectedSlot(selectedSlotIndex - 1); }
             else if (inputManager.PlayerUI.InventorySelectionBack.triggered && selectedSlotIndex == 0) { SetSelectedSlot(9); }
             if (inputManager.PlayerUI.InventorySelectionForward.triggered && selectedSlotIndex != 9) { SetSelectedSlot(selectedSlotIndex + 1); }
             else if (inputManager.PlayerUI.InventorySelectionForward.triggered && selectedSlotIndex == 9) { SetSelectedSlot(0); }
         }
 
-        public void SetSelectedSlot(int slotIndex)
+        public void SetSlot(int slotIndex, Slot slot)
         {
-            selectedSlotIndex = slotIndex;
-            selectedSlot = slots[slotIndex];
-            updateSelectorUI?.Invoke(slotIndex);
+            slots[slotIndex].empty = slot.empty;
+            slots[slotIndex].count = slot.count;
+            slots[slotIndex].item.itemType = slot.item.itemType;
+            slots[slotIndex].item.tileType = slot.item.tileType;
+
+            updateSlotCallback?.Invoke(slotIndex);
         }
 
         public void TryAddToSlot(Slot slot)
@@ -175,16 +179,6 @@ namespace LensorRadii.U_Grow
             }
         }
 
-        public void SetSlot(int slotIndex, Slot slot)
-        {
-            slots[slotIndex].empty = slot.empty;
-            slots[slotIndex].count = slot.count;
-            slots[slotIndex].item.itemType = slot.item.itemType;
-            slots[slotIndex].item.tileType = slot.item.tileType;
-
-            updateSlotCallback?.Invoke(slotIndex);
-        }
-
         public void ModifySlotCount(int slotIndex, int amount = 1)
         {
             if (slots[slotIndex].count + amount <= maxStackSize)
@@ -193,23 +187,6 @@ namespace LensorRadii.U_Grow
             }
 
             updateSlotCallback?.Invoke(slotIndex);
-        }
-
-        public void TryTakeFromSlot(int slotIndex)                  // Take from Slot if Count > 0, Check if Count is 0 and Clear
-        {
-            if (slots[slotIndex].count > 0)                         // Take from Slot if Something There
-            {
-                slots[slotIndex].count--;
-            }
-
-            if (slots[slotIndex].count <= 0)                        // Slot is Empty, Clear Slot
-            {
-                slots[slotIndex].empty = true;
-
-                ClearSlot(slotIndex);
-            }
-
-            updateSlotCallback?.Invoke(selectedSlotIndex);          // UPDATE UI aka show the player what the hell just happened
         }
 
         public void ClearSlot(int slotIndex)                        // Pass a slot index to reset to default: empty
@@ -222,17 +199,12 @@ namespace LensorRadii.U_Grow
             updateAllSlotsCallback?.Invoke();                       // UPDATE UI
         }
 
-        public void ClearSlotDirect(Slot slot)
+        public void SetSelectedSlot(int slotIndex)
         {
-            slot.empty = true;
-            slot.count = 0;
-            slot.item.itemType = Item.ItemType.Tile;
-            slot.item.tileType = Tile.TileType.Air;
-
-            updateAllSlotsCallback?.Invoke();                       // UPDATE UI
+            selectedSlotIndex = slotIndex;
+            selectedSlot = slots[slotIndex];
+            updateSelectorUI?.Invoke(slotIndex);                    // UPDATE SELECTOR ICON UI
         }
-
-
 
         public Slot[] GetInventoryToSave()
         {

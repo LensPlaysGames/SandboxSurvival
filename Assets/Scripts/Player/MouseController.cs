@@ -86,16 +86,15 @@ namespace LensorRadii.U_Grow
         {
             GameObject pauseMenu = GameReferences.uIHandler.pauseMenu;
 
-            if (Mathf.Abs(Cursor.transform.position.x - Player.transform.position.x) > 6) { canSelect = false; } // If Too Far from Player Sideways, Can Not Select
-            else if (Cursor.transform.position.y - Player.transform.position.y > 8) { canSelect = false; } // If Too Far Above Player, Can Not Select
-            else if (Cursor.transform.position.y - Player.transform.position.y < -4.2) { canSelect = false; } // If Too Far below Player, Can Not Select
-
-            else if (pauseMenu.activeInHierarchy) { canSelect = false; } // If Player is In Pause Menu, Can Not Select
-
+            // If cursor is too far from player sideways, above, or below, player can not select
+            if (Mathf.Abs(Cursor.transform.position.x - Player.transform.position.x) > 6
+                || Cursor.transform.position.y - Player.transform.position.y > 8
+                || Cursor.transform.position.y - Player.transform.position.y < -4.2
+                || pauseMenu.activeInHierarchy)
+            { canSelect = false; }
             else { canSelect = true; }
 
-            if (canSelect) { Cursor.GetComponent<SpriteRenderer>().color = Color.white; }
-            else { Cursor.GetComponent<SpriteRenderer>().color = Color.red; }
+            Cursor.GetComponent<SpriteRenderer>().color = canSelect ? Color.white : Color.red;
         }
 
         #region Break Tile

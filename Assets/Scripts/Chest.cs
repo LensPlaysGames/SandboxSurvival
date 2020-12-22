@@ -20,8 +20,6 @@ namespace LensorRadii.U_Grow
         private GameObject empty;
         private GameObject slotPrefab;
 
-        private bool loaded = false;
-
         private void Awake()
         {
             for (int s = 0; s < numberOfSlots; s++)                             // Populate slots in chest
@@ -29,9 +27,6 @@ namespace LensorRadii.U_Grow
                 Slot slot = new Slot();
                 slots.Add(slot);
             }
-
-            Debug.Log("Chest Initialized.");
-            Debug.Log("Slots Initialized: " + slots.Count);
         }
 
         private void Start()
@@ -44,36 +39,7 @@ namespace LensorRadii.U_Grow
             x = (int)(transform.position.x / level.Scale);
             y = (int)(transform.position.y / level.Scale);
 
-            StartCoroutine(LoadChestAfterX(1f));
-        }
-
-        private IEnumerator LoadChestAfterX(float x)
-        {
-            yield return new WaitForSeconds(x);
-            if (GameReferences.levelGenerator.GetLevelInstance()?.GetTileDataAt(this.x, y)?.inventorySlots != null)
-            {
-                LoadChest();
-            }
-        }
-
-        public void ClearSlot(int slotIndex)
-        {
-            slots[slotIndex].empty = true;
-            slots[slotIndex].count = 0;
-            slots[slotIndex].item.itemType = Item.ItemType.Tile;
-            slots[slotIndex].item.tileType = Tile.TileType.Air;
-
-            UpdateUI();
-        }
-
-        public void ModifySlotCount(int slotIndex, int amount)
-        {
-            if (slots[slotIndex].count + amount <= maxStackSize)
-            {
-                slots[slotIndex].count += amount;
-
-                UpdateSlotUI(slotIndex);
-            }
+            StartCoroutine(LoadChestAfterX(.25f));
         }
 
         public void SetSlot(int slotIndex, Slot slot)
@@ -96,8 +62,6 @@ namespace LensorRadii.U_Grow
                 {
                     if (slots[s].count + slot.count < maxStackSize)
                     {
-                        Debug.Log("Found Stackable Slot in Chest!");
-
                         slots[s].count += slot.count;
 
                         itemDealt = true;
@@ -114,8 +78,6 @@ namespace LensorRadii.U_Grow
                 {
                     if (slots[s].empty)
                     {
-                        Debug.Log("Found Empty Slot in Chest!");
-
                         slots[s].empty = false;
                         slots[s].count = slot.count;
                         slots[s].item.itemType = slot.item.itemType;
@@ -131,48 +93,56 @@ namespace LensorRadii.U_Grow
 
             if (!itemDealt) // No Available Slots
             {
-                Debug.LogError("Error when Trying to add Item to Chest!");
+                GameReferences.uIHandler.SendNotif("Error when Trying to add Item to Chest!", 5, Color.red);
             }
         }
 
-        public void TryTakeFromSlot(int slotIndex)
+        public void ModifySlotCount(int slotIndex, int amount)
         {
-            if (slots[slotIndex].count > 0)
+            if (slots[slotIndex].count + amount <= maxStackSize)
             {
-                slots[slotIndex].count--;
+                slots[slotIndex].count += amount;
 
                 UpdateSlotUI(slotIndex);
             }
-            else
-            {
-                slots[slotIndex].empty = true;
+        }
 
-                ClearSlot(slotIndex);
-            }
+        public void ClearSlot(int slotIndex)
+        {
+            slots[slotIndex].empty = true;
+            slots[slotIndex].count = 0;
+            slots[slotIndex].item.itemType = Item.ItemType.Tile;
+            slots[slotIndex].item.tileType = Tile.TileType.Air;
+
+            UpdateUI();
         }
 
         public void Use()
         {
             if (!GameReferences.uIHandler.inMenu)
             {
-                Debug.Log("Opening Chest!");
+                GameReferences.uIMouseManager.interactingChest = this;
 
-                GameReferences.uIMouseManager.interactingChest = this; // Oh boi... At this rate each new crafting station/place would require a new variable and set of slot ranges and exception handling in UIMouseManager... I think I know what I need to (re)do next
+                /* 
+                 * Oh boi... At this rate each new crafting station/place would require
+                 * a new variable and set of slot ranges and exception handling in UIMouseManager...
+                 * I think I know what I need to (re)do next.... sadly.... (if only I knew how)
+                */
 
                 GameReferences.uIHandler.inMenu = true;
-                GameReferences.uIHandler.ExitMenu += ExitUI; // THIS IS NOT ASS
+                GameReferences.uIHandler.ExitMenu += ExitUI;                                                                                // THIS IS NOT ASS
 
                 GameReferences.chestUI.gameObject.SetActive(true);
 
-                for (int s = 0; s < slots.Count; s++) // Fill Chest UI with SlotPrefabs, Fill slotParents List from Newly Created Prefabs
+                for (int s = 0; s < slots.Count; s++)                                                               // Fill Chest UI with SlotPrefabs, Fill slotParents List from Newly Created Prefabs
                 {
                     GameObject slot = Instantiate(slotPrefab, GameReferences.chestUI.transform.Find("ChestBG"));
-                    slot.GetComponent<SlotDragHandler>().slotIndex = s + 13; // THIS IS ASS
+                    slot.GetComponent<SlotDragHandler>().slotIndex = s + 13;                                                                // THIS IS ASS
                     slotParents.Add(slot);
                     countTexts.Add(slot.transform.Find("CountTextPanel").transform.Find("Slot Count").GetComponent<TextMeshProUGUI>());
                 }
 
-                UpdateUI(); // Update UI
+                UpdateUI();                                                                                                                 // Update UI
             }
         }
 
@@ -256,8 +226,16 @@ namespace LensorRadii.U_Grow
                 slots[s].item.itemType = savedSlots[s].item.itemType;
                 slots[s].item.tileType = savedSlots[s].item.tileType;
             }
-
             UpdateUI();
+        }
+
+        private IEnumerator LoadChestAfterX(float x)
+        {
+            yield return new WaitForSeconds(x);
+            if (GameReferences.levelGenerator.GetLevelInstance()?.GetTileDataAt(this.x, y)?.inventorySlots != null)
+            {
+                LoadChest();
+            }
         }
     }
 }
