@@ -181,7 +181,7 @@ namespace LensorRadii.U_Grow
 
         public void ModifySlotCount(int slotIndex, int amount = 1)
         {
-            if (slots[slotIndex].count + amount <= maxStackSize)
+            if (slots[slotIndex].count + amount <= maxStackSize && slots[slotIndex].count + amount >= 0)
             {
                 slots[slotIndex].count += amount;
             }

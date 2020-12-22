@@ -45,23 +45,25 @@ namespace LensorRadii.U_Grow
                 {
                     if (recipeSlots[whatSlot].item.tileType == slot.item.tileType)      // Stack tiles
                     {
-                        recipeSlots[whatSlot].count++;
+                        recipeSlots[whatSlot].count += slot.count;
 
                         updateRecipeSlotUI?.Invoke(whatSlot);
                     }
                 }
 
-                TryCraft();                                                 // Check for valid recipe and update output if one is found
+                TryCraft();                                                             // Check for valid recipe and update output if one is found
             }
             else
             {
                 Debug.LogWarning("Crafting Slot " + whatSlot + " Was Not Found, Can Not Try to Add Item");
             }
         }
+
         public void TryAddToSlot(Slot slot)     // Implemented from ISlotContainer
         {
             return;                             // No need to try to add to any available recipe slot unless doing weird feedback crafting... (although this does give me an idea)
         }
+
         public void SetSlot(int whatSlot, Slot slot)
         {
             recipeSlots[whatSlot].empty = slot.empty;
@@ -71,31 +73,33 @@ namespace LensorRadii.U_Grow
 
             updateRecipeSlotUI?.Invoke(whatSlot);
 
-            TryCraft();                                                     // Check for valid recipe and craft if one is found
+            TryCraft();                                                         // Check for valid recipe and craft if one is found
         }
         public void TryTakeFromSlot(int whatSlot)
         {
-            if (recipeSlots[whatSlot].count > 0)                            // Slot is Not Empty, Take From Slot
+            if (recipeSlots[whatSlot].count > 0)                                // Slot is Not Empty, Take From Slot
             {
                 recipeSlots[whatSlot].count--;
 
                 updateRecipeSlotUI?.Invoke(whatSlot);
             }
-            if (recipeSlots[whatSlot].count <= 0)                           // Slot is Empty, Clear Slot Data
+            if (recipeSlots[whatSlot].count <= 0)                               // Slot is Empty, Clear Slot Data
             {
                 ClearSlot(whatSlot);
             }
 
-            TryCraft();                                                     // Check for valid recipe and craft if one is found
+            TryCraft();                                                         // Check for valid recipe and craft if one is found
         }
         public void ModifySlotCount(int whatSlot, int amount)
         {
-            recipeSlots[whatSlot].count += amount;
-            Mathf.Clamp(recipeSlots[whatSlot].count, 0f, 90f);
+            if (recipeSlots[whatSlot].count + amount <= 90 && recipeSlots[whatSlot].count + amount >= 0)
+            {
+                recipeSlots[whatSlot].count += amount;
 
-            updateRecipeSlotUI?.Invoke(whatSlot);
+                updateRecipeSlotUI?.Invoke(whatSlot);
 
-            TryCraft();                                                     // Check for valid recipe and craft if one is found
+                TryCraft();                                                     // Check for valid recipe and craft if one is found
+            }
         }
         public void ClearSlot(int whatSlot)
         {
@@ -138,9 +142,9 @@ namespace LensorRadii.U_Grow
         {
             Debug.Log($"Spending {cachedRecipe.name} Ingredients!");
 
-            for (int i = 0; i < cachedRecipe.ingredients.Length; i++)       // For each ingredient in the recipe
+            for (int i = 0; i < cachedRecipe.ingredients.Length; i++)           // For each ingredient in the recipe
             {
-                ModifySlotCount(i, -cachedRecipe.ingredients[i].count);     // Remove used ingredients
+                ModifySlotCount(i, -cachedRecipe.ingredients[i].count);         // Remove used ingredients
             }
         }
 
@@ -167,12 +171,13 @@ namespace LensorRadii.U_Grow
                     {
                         output = null;                                                                          // Null output
                     }
-                    else                                                                                        // Or, If Item Type Matches,
+                    else if (recipeSlots[slot].item.tileType != recipes[r].ingredients[slot].item.tileType)     // Or, If Item Type Matches, And Tile Type Does Not Match
                     {
-                        if (recipeSlots[slot].item.tileType != recipes[r].ingredients[slot].item.tileType)      // And Tile Type Does Not Match
-                        {
-                            output = null;                                                                      // Null output
-                        }
+                        output = null;                                                                          // Null output
+                    }
+                    else if (recipeSlots[slot].count < recipes[r].ingredients[slot].count)                      // If there is not enough in the recipe slot
+                    {
+                        output = null;
                     }
                 }
                 if (output != null)                         // If output was not nulled at this point, the current recipe is valid
@@ -184,7 +189,7 @@ namespace LensorRadii.U_Grow
             return null;                                    // No valid recipes, return null
         }
 
-        public void OnTakeCraftedItem()                   // Used by the mouse manager when the player takes from the output slot
+        public void OnTakeCraftedItem()         // Used by the mouse manager when the player takes from the output slot
         {
             ClearOutputSlot();
             SpendRecipeIngredients();

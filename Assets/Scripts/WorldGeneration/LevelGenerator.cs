@@ -20,17 +20,17 @@ namespace LensorRadii.U_Grow
             return level;
         }
 
-        public bool worldCreated;
+        public bool worldCreated;       // Are I am?
 
         [SerializeField]
-        private Material tileMat;
+        private Material tileMat;       // the material used to set global tile-lighting variables
 
-        void Start()
+        private void Awake()
         {
             if (instance != null)
             {
                 Debug.LogError("There Should NOT be more than one LevelGenerator");
-                Destroy(this.gameObject);
+                Destroy(gameObject);
             }
             else
             {
@@ -117,7 +117,7 @@ namespace LensorRadii.U_Grow
             level.SaveLevel(GlobalReferences.DDDOL.saveName);
 
             // SAVE PLAYER DATA
-            StartCoroutine(SaveAllPlayerDataAfterX(1f));
+            StartCoroutine(SaveAllPlayerDataAfterX(5f));
 
             GlobalReferences.debugLog.SaveString(GlobalReferences.debugLog.MyLog);
 
@@ -176,7 +176,7 @@ namespace LensorRadii.U_Grow
                             tileData.tileY * scale,
                             0);
                     tile.transform.localScale = new Vector3(scale, scale);
-                    tile.transform.SetParent(this.transform, true);
+                    tile.transform.SetParent(transform, true);
 
                     SpriteRenderer tile_SpriteRenderer = tile.AddComponent<SpriteRenderer>();
                     tile_SpriteRenderer.material = tileMat;
@@ -192,14 +192,16 @@ namespace LensorRadii.U_Grow
 
             #endregion
 
-            #region Load Player
-
-            // LOAD ALL PLAYER DATA
-            GameReferences.playerScript.LoadAllPlayerData(saveName);
-
-            #endregion
+            StartCoroutine(waitXForPlayerLoad(.5f));
 
             worldCreated = true;
+        }
+
+        private IEnumerator waitXForPlayerLoad(float x)
+        {
+            yield return new WaitForSeconds(x);
+
+            GameReferences.playerScript.LoadAllPlayerData(GlobalReferences.DDDOL.saveName);
 
             loadScreen = GlobalReferences.loadScreen;
             loadScreen.transform.Find("Loading").gameObject.SetActive(false);
@@ -251,16 +253,8 @@ namespace LensorRadii.U_Grow
 
         public void SetTileState(GameObject tile, bool solid)
         {
-            if (solid)
-            {
-                tile.GetComponent<BoxCollider2D>().enabled = true;
-                tile.layer = 8;
-            }
-            if (!solid)
-            {
-                tile.GetComponent<BoxCollider2D>().enabled = false;
-                tile.layer = 9;
-            }
+            tile.GetComponent<BoxCollider2D>().enabled = solid;
+            tile.layer = solid ? 8 : 9;
         }
 
         public GameObject GetTileGameObjectAtTileCoord(int x, int y)

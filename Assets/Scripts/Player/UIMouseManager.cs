@@ -154,13 +154,9 @@ namespace LensorRadii.U_Grow
 
                     if (GameReferences.craftSystem.recipeSlots[hoverINDEX].count == 0) // If Slot is Empty
                     {
-                        Debug.Log("Setting Hovered Over Recipe Slot to Mouse Slot Data!");
-
                         GameReferences.craftSystem.SetSlot(hoverINDEX, mouseSlot);
 
                         ClearCachedSlot();
-
-                        GameReferences.craftSystem.updateRecipeSlotUI?.Invoke(hoverINDEX);
                     }
                     else // Or slot Can Stack
                     {

@@ -12,7 +12,7 @@ namespace LensorRadii.U_Grow
 
         private bool playerDataLoaded;
 
-        void Awake()
+        private void Awake()
         {
             if (instance != null) { Debug.LogError("Multiple PLAYERS in scene... WHAT THE FUCK!?"); }
             else
@@ -25,7 +25,7 @@ namespace LensorRadii.U_Grow
             stats = GetComponent<PlayerStats>();
         }
 
-        void Start()
+        private void Start()
         {
             if (!playerDataLoaded)
             {
@@ -37,7 +37,7 @@ namespace LensorRadii.U_Grow
             }
         }
 
-        void FixedUpdate()
+        private void FixedUpdate()
         {
             // Shitty Respawn to Middle of World If Below Certain Y Value or above certain X... yuck!
             Level l = GameReferences.levelGenerator.GetLevelInstance();

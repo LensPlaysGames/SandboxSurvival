@@ -58,11 +58,11 @@ namespace LensorRadii.U_Grow
 
         #endregion
 
-        void Awake()
+        private void Awake()
         {
             if (instance != null)
             {
-                UnityEngine.Debug.LogError("MULTIPLE DayNightCycles IN SCENE. Destroying " + this.name);
+                Debug.Log("MULTIPLE DayNightCycles IN SCENE. Destroying " + name);
                 Destroy(this);
             }
             else
@@ -72,14 +72,14 @@ namespace LensorRadii.U_Grow
             }
         }
 
-        void Start()
+        private void Start()
         {
             sun = GameObject.Find("GlobalLight").GetComponent<Light2D>();
             GameReferences.sunLight = sun;
 
             // Set Sun Position based on World Size (Middle x, Top of World) and Scale
             Level level = GameReferences.levelGenerator.GetLevelInstance();
-            sun.transform.position = new Vector3((level.Width / 2) * level.Scale, (level.Height * level.Scale));
+            sun.transform.position = new Vector3(level.Width / 2 * level.Scale, level.Height * level.Scale);
             sun.transform.localScale = new Vector3(level.Scale, level.Scale, 1);
 
             isRunning = true;
@@ -95,7 +95,7 @@ namespace LensorRadii.U_Grow
             else { sun.intensity = nightBrightness; sun.color = nightColor; }
         }
 
-        void Update()
+        private void Update()
         {
             if (isRunning)
             {

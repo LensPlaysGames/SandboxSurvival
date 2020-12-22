@@ -95,11 +95,11 @@ namespace LensorRadii.U_Grow
             {
                 GameReferences.uIHandler.SendNotif("Error when Trying to add Item to Chest!", 5, Color.red);
             }
-        }
+        }                   // Not used yet, but is perfect for shift-click functionality
 
         public void ModifySlotCount(int slotIndex, int amount)
         {
-            if (slots[slotIndex].count + amount <= maxStackSize)
+            if (slots[slotIndex].count + amount <= maxStackSize && slots[slotIndex].count + amount >= 0)
             {
                 slots[slotIndex].count += amount;
 
