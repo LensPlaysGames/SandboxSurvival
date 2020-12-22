@@ -146,6 +146,8 @@ namespace LensorRadii.U_Grow
             {
                 ModifySlotCount(i, -cachedRecipe.ingredients[i].count);         // Remove used ingredients
             }
+
+            TryCraft();                                                         // Check for valid recipe and craft if one is found
         }
 
 

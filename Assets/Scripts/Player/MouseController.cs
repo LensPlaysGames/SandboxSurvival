@@ -105,37 +105,49 @@ namespace LensorRadii.U_Grow
 
             LevelGenerationParameters tileDestroyParams = GameObject.Find("DataDontDestroyOnLoad").GetComponent<LevelGenerationParameters>();
 
-            selectedTile.tileDestroyTime = tileDestroyParams.defaultDestroyTime;
 
-            if (selectedTile.Type == Tile.TileType.Dirt)
+
+            switch (selectedTile.Type)
             {
-                selectedTile.tileDestroyTime = tileDestroyParams.fastDestroyTime;
-            }
-            else if (selectedTile.Type == Tile.TileType.Stone || selectedTile.Type == Tile.TileType.DarkStone || selectedTile.Type == Tile.TileType.Adobe)
-            {
-                selectedTile.tileDestroyTime = tileDestroyParams.slowerDestroyTime;
-            }
-            else if (selectedTile.Type == Tile.TileType.Log)
-            {
-                selectedTile.tileDestroyTime = tileDestroyParams.slowDestroyTime;
-            }
-            else if (selectedTile.Type == Tile.TileType.Leaves)
-            {
-                selectedTile.tileDestroyTime = tileDestroyParams.fastestDestroyTime;
-            }
-            else if (selectedTile.Type == Tile.TileType.DevTile)
-            {
-                selectedTile.tileDestroyTime = tileDestroyParams.slowestDestroyTime;
+                // FASTEST
+                case Tile.TileType.Leaves:
+                    selectedTile.tileDestroyTime = tileDestroyParams.fastestDestroyTime;
+                    break;
+
+                // FAST
+                case Tile.TileType.Dirt:
+                    selectedTile.tileDestroyTime = tileDestroyParams.fastDestroyTime;
+                    break;
+
+                // SLOW
+                case Tile.TileType.Log:
+                    selectedTile.tileDestroyTime = tileDestroyParams.slowDestroyTime;
+                    break;
+
+                // SLOWER
+                case Tile.TileType.Stone:
+                case Tile.TileType.DarkStone:
+                case Tile.TileType.Adobe:
+                    selectedTile.tileDestroyTime = tileDestroyParams.slowerDestroyTime;
+                    break;
+
+                // SLOWEST
+                case Tile.TileType.DevTile:
+                    selectedTile.tileDestroyTime = tileDestroyParams.slowestDestroyTime;
+                    break;
+
+
+                default:
+                    selectedTile.tileDestroyTime = tileDestroyParams.defaultDestroyTime;
+                    break;
             }
 
             #endregion
 
-            selectedTile.tileDestroyTime *= stats.tileDestroyTimeMultiplier;
-
             if (selectedTile.Type != Tile.TileType.Air) // If tile isn't Air (aka a tile to break and collect) Then Actually try to destroy it
             {
                 // Start Breaking Block Until tileDestroyTime <= 0
-                StartCoroutine(BreakTileAfterX(selectedTile.tileDestroyTime));
+                StartCoroutine(BreakTileAfterX(selectedTile.tileDestroyTime * stats.tileDestroyTimeMultiplier));
             }
         }
 

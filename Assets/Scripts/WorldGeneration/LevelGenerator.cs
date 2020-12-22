@@ -29,7 +29,7 @@ namespace LensorRadii.U_Grow
         {
             if (instance != null)
             {
-                Debug.LogError("There Should NOT be more than one LevelGenerator");
+                Debug.Log("More than one LevelGenerator, destroying newly created");
                 Destroy(gameObject);
             }
             else
@@ -104,7 +104,7 @@ namespace LensorRadii.U_Grow
                     // 2.) Add Random Number Between 0 and 1000000 and append to intended save name
                     // This is assuming that the player won't get unlucky AND name new worlds the same everytime... Should probably add exception handling eventually grumble grumble
                     Debug.Log("World " + saveName + " was found when trying to create new world, setting new world name");
-                    GlobalReferences.DDDOL.saveName += UnityEngine.Random.Range(0, 1000000).ToString();
+                    GlobalReferences.DDDOL.saveName += Random.Range(0, 1000000).ToString();
                 }
             }
 
@@ -113,11 +113,11 @@ namespace LensorRadii.U_Grow
             level.time = GameReferences.dayNightCycle.MorningTime;
 
             // SAVE WORLD DATA
-            if (GlobalReferences.DDDOL.saveName == "") { GlobalReferences.DDDOL.saveName += UnityEngine.Random.Range(0, 1000000).ToString(); }
+            if (GlobalReferences.DDDOL.saveName == "") { GlobalReferences.DDDOL.saveName += Random.Range(0, 1000000).ToString(); }
             level.SaveLevel(GlobalReferences.DDDOL.saveName);
 
             // SAVE PLAYER DATA
-            StartCoroutine(SaveAllPlayerDataAfterX(5f));
+            StartCoroutine(SaveAllPlayerDataAfterX(2.5f));
 
             GlobalReferences.debugLog.SaveString(GlobalReferences.debugLog.MyLog);
 
@@ -192,7 +192,7 @@ namespace LensorRadii.U_Grow
 
             #endregion
 
-            StartCoroutine(waitXForPlayerLoad(.5f));
+            StartCoroutine(waitXForPlayerLoad(.1f));
 
             worldCreated = true;
         }
